@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+<!--  <properties resource="dbconfig.properties"></properties>-->
+<typeAliases>
+
+</typeAliases>
+<plugins>
+<plugin interceptor="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
+  <property value="com.github.miemiedev.mybatis.paginator.dialect.MySQLDialect" name="dialectClass" /> 
+  </plugin>
+  </plugins>
+
+	<mappers>
+		<mapper resource="com/abbooks/mapping/testMapping.xml"/>
+		<mapper resource="com/abbooks/mapping/userMapping.xml"/>
+		<mapper resource="com/abbooks/mapping/tokenMapping.xml"/>
+		</mappers>
+
+
+
+
+
+
+
+
+</configuration>
