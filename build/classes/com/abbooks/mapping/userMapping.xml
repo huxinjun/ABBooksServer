@@ -17,8 +17,11 @@
   </sql>
 	
 	<!-- 查询-->
-	<select id="query" parameterType="String" resultMap="map">
-		SELECT <include refid="colums"></include> FROM user WHERE id=#{id};
+	<select id="queryByName" parameterType="String" resultMap="map">
+		SELECT <include refid="colums"></include> FROM user WHERE nikename like CONCAT(CONCAT('%', #{nike}), '%')
+	</select>
+	<select id="queryById" parameterType="String" resultMap="map">
+		SELECT <include refid="colums"></include> FROM user WHERE id = #{id};
 	</select>
 	
 	<!-- 插入 -->

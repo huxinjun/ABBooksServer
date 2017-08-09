@@ -10,6 +10,9 @@ public class UserInfo {
 	public String city;
 	public String province;
 	public String language;
+	
+	
+	
 	@Override
 	public String toString() {
 		return "UserInfo [id=" + id + ", nickName=" + nickName + ", avatarUrl=" + avatarUrl + ", gender=" + gender

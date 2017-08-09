@@ -76,7 +76,7 @@ public class LoginController {
     	
     	String token=tokenService.generateToken();
     	
-    	tokenService.updateToken(databaseUser.id,token);
+    	tokenService.updateToken(databaseUser.id,token,false);
     	
     	result.token=token;
 		return result;

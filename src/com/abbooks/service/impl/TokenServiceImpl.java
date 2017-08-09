@@ -23,23 +23,30 @@ public class TokenServiceImpl implements ITokenService {
 		TokenInfo tokenInfo = dao.queryIdByToken(token);
 		if(tokenInfo==null)
 			return null;
-		if(System.currentTimeMillis()>tokenInfo.expireTime)
-			return null;
+		if(tokenInfo.expireTime!=-1)
+			if(System.currentTimeMillis()>tokenInfo.expireTime)
+				return null;
 		return tokenInfo.id;
 	}
 
 	@Override
-	public String updateToken(String id, String token) {
+	public String updateToken(String id, String token,boolean isExpire) {
 		TokenInfo queryTokenById = dao.queryTokenById(id);
 		if(queryTokenById==null){
 			queryTokenById=new TokenInfo();
 			queryTokenById.id=id;
 			queryTokenById.token=token;
-			queryTokenById.expireTime=System.currentTimeMillis()+EXPIRE_TIME_INTERVAL;
+			if(isExpire)
+				queryTokenById.expireTime=System.currentTimeMillis()+EXPIRE_TIME_INTERVAL;
+			else
+				queryTokenById.expireTime=-1;
 			dao.insert(queryTokenById);
 		}else{
 			queryTokenById.token=token;
-			queryTokenById.expireTime=System.currentTimeMillis()+EXPIRE_TIME_INTERVAL;
+			if(isExpire)
+				queryTokenById.expireTime=System.currentTimeMillis()+EXPIRE_TIME_INTERVAL;
+			else
+				queryTokenById.expireTime=-1;
 			dao.update(queryTokenById);
 		}
 		return null;

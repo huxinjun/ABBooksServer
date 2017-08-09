@@ -10,6 +10,7 @@ import com.abbooks.modle.UserInfo;
 
 public interface IUserService {
 	
+	public List<UserInfo> searchUser(String name);
 	public UserInfo findUser(String id);
 	public void newUSer(UserInfo user);
 	public void updateUser(UserInfo user);
