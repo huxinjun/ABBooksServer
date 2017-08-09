@@ -66,11 +66,11 @@ public class UserController {
 	
 	@ResponseBody
 	@RequestMapping("/search")
-	public Result searchByName(String token,@Param("name")String name){
+	public Result searchByName(String token,String nickname){
 		UserSearchResult result=new UserSearchResult();
 		
 		System.out.println(token);
-		System.out.println(name);
+		System.out.println(nickname);
 		
 		String id = tokenService.getId(token);
 		System.out.println(id);
@@ -81,7 +81,7 @@ public class UserController {
 		}
 		
 		
-		result.users = userService.searchUser(name);
+		result.users = userService.searchUser(nickname);
 		
 		
 		result.status=0;

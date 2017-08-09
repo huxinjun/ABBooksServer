@@ -29,8 +29,8 @@ public class UserServiceImpl implements IUserService {
 	@Autowired
 	UserDao userDao;
 	@Override
-	public List<UserInfo> searchUser(String name) {
-		return userDao.queryByName(name);
+	public List<UserInfo> searchUser(String nickname) {
+		return userDao.queryByName(nickname);
 	}
 
 }

@@ -1,9 +1,12 @@
 package com.abbooks.modle;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class UserInfo {
 	
 	public String id;
-	public String nickName;
+	@JSONField(name="nickName")
+	public String nickname;
 	public String avatarUrl;
 	public String gender;
 	public String country;
@@ -15,7 +18,7 @@ public class UserInfo {
 	
 	@Override
 	public String toString() {
-		return "UserInfo [id=" + id + ", nickName=" + nickName + ", avatarUrl=" + avatarUrl + ", gender=" + gender
+		return "UserInfo [id=" + id + ", nickname=" + nickname + ", avatarUrl=" + avatarUrl + ", gender=" + gender
 				+ ", country=" + country + ", city=" + city + ", province=" + province + ", language=" + language + "]";
 	}
 	

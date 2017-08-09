@@ -3,7 +3,7 @@
 <mapper namespace="com.abbooks.dao.UserDao" >
   <resultMap id="map" type="com.abbooks.modle.UserInfo" >
     <id column="id" property="id" jdbcType="VARCHAR" />
-    <result column="nikename" property="nickName" jdbcType="VARCHAR" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
     <result column="avatarUrl" property="avatarUrl" jdbcType="VARCHAR" />
     <result column="gender" property="gender" jdbcType="INTEGER" />
     <result column="country" property="country" jdbcType="VARCHAR" />
@@ -13,12 +13,12 @@
   </resultMap>
   
   <sql id="colums" >
-    id,nikename,avatarUrl,gender,country,city,province,language
+    id,nickname,avatarUrl,gender,country,city,province,language
   </sql>
 	
 	<!-- 查询-->
 	<select id="queryByName" parameterType="String" resultMap="map">
-		SELECT <include refid="colums"></include> FROM user WHERE nikename like CONCAT(CONCAT('%', #{nike}), '%')
+		SELECT <include refid="colums"></include> FROM user WHERE nickname like CONCAT(CONCAT('%', #{nickname}), '%')
 	</select>
 	<select id="queryById" parameterType="String" resultMap="map">
 		SELECT <include refid="colums"></include> FROM user WHERE id = #{id};
@@ -27,15 +27,15 @@
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.abbooks.modle.UserInfo">
 	insert into user(<include refid="colums"></include>)
-	values(#{id},#{nickName},#{avatarUrl},#{gender},#{country},#{city},#{province},#{language})
+	values(#{id},#{nickname},#{avatarUrl},#{gender},#{country},#{city},#{province},#{language})
 	</insert>
 	
 	<!-- 更新 -->
 	<update id="update" parameterType="com.abbooks.modle.UserInfo">
 		update user set 
 		<trim suffixOverrides=",">
-		<if test="nickName!=null and nickName.length()>0">
-			nikename=#{nickName},
+		<if test="nickname!=null and nickname.length()>0">
+			nickname=#{nickname},
 		</if>
 		<if test="avatarUrl!=null and avatarUrl.length()>0">
 			avatarUrl=#{avatarUrl},

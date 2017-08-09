@@ -60,7 +60,7 @@ public class LoginController {
         	result.msg="新用户";
         	
     		System.out.println("创建新用户一个,未完善个人信息!");
-    	}else if(databaseUser.nickName==null || databaseUser.nickName.equals("")){
+    	}else if(databaseUser.nickname==null || databaseUser.nickname.equals("")){
     		
     		result.status=1;
         	result.msg="未完善用户信息";
