@@ -1,6 +1,6 @@
 package com.abbooks.modle;
 
-public class WxLoginInfo {
+public class WxSession {
 
 	public String openid;
 	public String session_key;

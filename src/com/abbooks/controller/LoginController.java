@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.abbooks.globle.Constants;
 import com.abbooks.modle.UserInfo;
-import com.abbooks.modle.WxLoginInfo;
+import com.abbooks.modle.WxSession;
 import com.abbooks.modle.result.LoginResult;
 import com.abbooks.modle.result.Result;
 import com.abbooks.service.ITokenService;
@@ -43,9 +43,9 @@ public class LoginController {
     	params.put("secret", Constants.APP_SECRET);
     	params.put("js_code", code);
     	params.put("grant_type", "authorization_code");
-    	String info=HttpUtils.send("https://api.weixin.qq.com/sns/jscode2session",params);
+    	String info=HttpUtils.sendPost("https://api.weixin.qq.com/sns/jscode2session",params);
     	
-    	WxLoginInfo loginInfo=JSON.parseObject(info, WxLoginInfo.class);
+    	WxSession loginInfo=JSON.parseObject(info, WxSession.class);
     	System.out.println(loginInfo);
     	
     	//查找数据库有没有此openid为username的用户
