@@ -24,7 +24,7 @@
   </filter-mapping>
   <filter>
     <filter-name>access</filter-name>
-    <filter-class>com.abbooks.filter.AccessControllerFilter</filter-class>
+    <filter-class>com.accountbook.filter.AccessControllerFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>access</filter-name>
@@ -37,7 +37,7 @@
     <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
   </listener>
   <listener>
-    <listener-class>com.abbooks.listener.ContextInitParamListener</listener-class>
+    <listener-class>com.accountbook.listener.ContextInitParamListener</listener-class>
   </listener>
   <servlet>
     <servlet-name>SpringMVC</servlet-name>

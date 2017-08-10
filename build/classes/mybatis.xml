@@ -13,9 +13,10 @@
   </plugins>
 
 	<mappers>
-		<mapper resource="com/abbooks/mapping/testMapping.xml"/>
-		<mapper resource="com/abbooks/mapping/userMapping.xml"/>
-		<mapper resource="com/abbooks/mapping/tokenMapping.xml"/>
+		<mapper resource="com/accountbook/mapping/testMapping.xml"/>
+		<mapper resource="com/accountbook/mapping/userMapping.xml"/>
+		<mapper resource="com/accountbook/mapping/tokenMapping.xml"/>
+		<mapper resource="com/accountbook/mapping/msgMapping.xml"/>
 		</mappers>
 
 
