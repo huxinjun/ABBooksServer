@@ -28,10 +28,10 @@
 	
 	
 	<!-- 更新 -->
-	<update id="update" parameterType="com.accountbook.modle.TestModel">
+	<update id="update" parameterType="com.accountbook.modle.TokenInfo">
 		update token set 
 		token=#{token},
-		expire_time=#{expireTime}
+		expire_time=#{expireTime} where id=#{id}
 	</update>
 	
 </mapper>

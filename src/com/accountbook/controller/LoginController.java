@@ -46,7 +46,6 @@ public class LoginController {
     	String info=HttpUtils.sendPost("https://api.weixin.qq.com/sns/jscode2session",params);
     	
     	WxSession loginInfo=JSON.parseObject(info, WxSession.class);
-    	System.out.println(loginInfo);
     	
     	//查找数据库有没有此openid为username的用户
     	UserInfo databaseUser=userService.findUser(loginInfo.openid);
@@ -75,6 +74,7 @@ public class LoginController {
     	
     	
     	String token=tokenService.generateToken();
+    	System.out.println("派发token:"+token);
     	
     	tokenService.updateToken(databaseUser.id,token,false);
     	

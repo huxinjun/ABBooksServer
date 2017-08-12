@@ -43,11 +43,13 @@ public class TokenServiceImpl implements ITokenService {
 				queryTokenById.expireTime=-1;
 			dao.insert(queryTokenById);
 		}else{
+			queryTokenById.id=id;
 			queryTokenById.token=token;
 			if(isExpire)
 				queryTokenById.expireTime=System.currentTimeMillis()+EXPIRE_TIME_INTERVAL;
 			else
 				queryTokenById.expireTime=-1;
+			System.out.println("queryTokenById:"+queryTokenById);
 			dao.update(queryTokenById);
 		}
 		return null;
@@ -62,7 +64,6 @@ public class TokenServiceImpl implements ITokenService {
 	public String generateToken(){
 		UUID uuid=UUID.randomUUID();
     	String token = Base64.getEncoder().encodeToString(uuid.toString().getBytes());
-    	System.out.println(token);
     	return token;
 	}
 
