@@ -1,5 +1,7 @@
 package com.accountbook.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +21,12 @@ public class MessageServiceImpl implements IMessageService{
 	}
 
 	@Override
-	public Message findMessage(int id) {
-		return dao.queryById(id);
+	public List<Message> findMessage(String toId) {
+		return dao.queryById(toId);
+	}
+	@Override
+	public List<Message> findInviteMessage(String toId) {
+		return dao.queryInviteMsgById(toId);
 	}
 
 	@Override
@@ -47,5 +53,7 @@ public class MessageServiceImpl implements IMessageService{
 	public void makeRefused(int id) {
 		dao.updateStatus(id, Message.STATUS_INVITE_REFUSE);
 	}
+
+	
 
 }

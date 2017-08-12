@@ -1,5 +1,7 @@
 package com.accountbook.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -8,7 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.accountbook.modle.result.Result;
+import com.accountbook.modle.Message;
+import com.accountbook.modle.result.ListResult;
 import com.accountbook.service.IMessageService;
 
 
@@ -25,11 +28,14 @@ public class MessageController {
 	
     
     @ResponseBody
-    @RequestMapping("/")
-    public Result getSimpleMapNeedInfo(HttpServletRequest request,HttpServletResponse response){
+    @RequestMapping("/invite")
+    public ListResult getInviteMessage(HttpServletRequest request,HttpServletResponse response,String token,String id){
     	
-    	Result result=new Result();
+    	ListResult result=new ListResult();
     	result.status=0;
+    	
+    	List<Message> msgs = mMsgService.findInviteMessage(id);
+    	result.datas=msgs;
     	
 		return result;
     	

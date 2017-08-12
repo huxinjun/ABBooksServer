@@ -16,11 +16,14 @@
   </sql>
 	
 	<select id="queryById" parameterType="String" resultMap="map">
-		SELECT * FROM user WHERE id = #{id};
+		SELECT * FROM message WHERE to_id = #{toId};
+	</select>
+	<select id="queryInviteMsgById" parameterType="String" resultMap="map">
+		SELECT * FROM message WHERE to_id = #{toId} and type=1;
 	</select>
 	
 	<select id="queryUnreadCount" parameterType="String" resultType="integer">
-		SELECT * FROM user WHERE id = #{id} and status=0;
+		SELECT * FROM message WHERE to_id = #{toId} and status=0;
 	</select>
 	
 	<!-- 插入 -->
@@ -31,6 +34,6 @@
 	
 	<!-- 更新 -->
 	<update id="updateStatus" parameterType="integer">
-		update user set status=#{status} where id=#{id}
+		update message set status=#{status} where id=#{id}
 	</update>
 </mapper>

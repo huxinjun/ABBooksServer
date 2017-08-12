@@ -24,7 +24,7 @@ import com.accountbook.modle.WxTemplateInvite;
 import com.accountbook.modle.WxTemplateInvite.KeyWord;
 import com.accountbook.modle.result.Result;
 import com.accountbook.modle.result.TestAllResult;
-import com.accountbook.modle.result.UserSearchResult;
+import com.accountbook.modle.result.ListResult;
 import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITestService;
 import com.accountbook.service.ITokenService;
@@ -80,13 +80,13 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping("/search")
 	public Result searchByName(String token,String nickname){
-		UserSearchResult result=new UserSearchResult();
+		ListResult result=new ListResult();
 		
-		System.out.println(token);
-		System.out.println(nickname);
+		System.out.println("UserController(搜索者带来的token)："+token);
+		System.out.println("UserController(搜索的用户昵称)："+nickname);
 		
 		String id = tokenService.getId(token);
-		System.out.println(id);
+		System.out.println("UserController(根据token查找的openid)："+id);
 		if(id==null){
 			result.status=1;
 			result.msg="token无效";
@@ -94,7 +94,7 @@ public class UserController {
 		}
 		
 		
-		result.users = userService.searchUser(nickname);
+		result.datas = userService.searchUser(nickname);
 		
 		
 		result.status=0;
@@ -130,7 +130,7 @@ public class UserController {
 		msgService.newMessage(msg);
 		
 		
-		
+		//发送模板消息start-------------------------------------------------------------------------------------------------------
 		//获取accesstoken
     	Map<String,String> params=new HashMap<>();
     	params.put("appid", Constants.APP_ID);
@@ -148,7 +148,7 @@ public class UserController {
 		WxTemplateInvite invite=new WxTemplateInvite();
 		invite.touser=openid;
 		invite.template_id="r63a82Qy_kap-4SxZUT9SfwS5004qb-l_i17zzUOqY4";
-		invite.page="pages/index/index";
+		invite.page="pages/msg_invite/msg_invite";
 		invite.form_id=formId;
 		List<KeyWord> data=new ArrayList<>();
 		data.add(new KeyWord(me.nickname,"#173177"));
@@ -158,6 +158,7 @@ public class UserController {
 		System.out.println(invite.toString());
 		
 		String str=HttpUtils.sendPost(url,invite.toString());
+		//发送模板消息end-------------------------------------------------------------------------------------------------------
 		
 		result.status=0;
 		result.msg=str;
