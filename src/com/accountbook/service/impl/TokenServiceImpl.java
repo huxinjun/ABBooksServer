@@ -2,6 +2,7 @@ package com.accountbook.service.impl;
 
 import java.util.Base64;
 import java.util.Random;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,13 +60,14 @@ public class TokenServiceImpl implements ITokenService {
 	 * @return
 	 */
 	public String generateToken(){
-		Random rnd = new Random(System.currentTimeMillis());
-        byte[] tokenData = new byte[16];
-        rnd.nextBytes(tokenData);
-        String token=Base64.getEncoder().encodeToString(tokenData);
-    	System.out.println("token:"+token);
-    	
+		UUID uuid=UUID.randomUUID();
+    	String token = Base64.getEncoder().encodeToString(uuid.toString().getBytes());
+    	System.out.println(token);
     	return token;
 	}
 
+//	public static void main(String args[]){
+//		for(int i=0;i<100;i++)
+//			new TokenServiceImpl().generateToken();
+//	}
 }
