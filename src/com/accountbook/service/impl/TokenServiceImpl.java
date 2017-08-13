@@ -1,7 +1,6 @@
 package com.accountbook.service.impl;
 
 import java.util.Base64;
-import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.accountbook.dao.TokenDao;
 import com.accountbook.modle.TokenInfo;
+import com.accountbook.modle.result.Result;
 import com.accountbook.service.ITokenService;
 
 @Service
@@ -18,6 +18,24 @@ public class TokenServiceImpl implements ITokenService {
 	
 	@Autowired
 	public TokenDao dao;
+	
+	
+	@Override
+	public Result validate(String token) {
+		Result result = new Result();
+		String id = getId(token);
+		System.out.println("UserController(根据token查找的openid)："+id);
+		if(id==null){
+			result.status=1;
+			result.msg="token无效";
+			return result;
+		}
+		result.status=0;
+		result.msg=id;
+		return result;
+	}
+	
+	
 
 	@Override
 	public String getId(String token) {

@@ -7,20 +7,21 @@ package com.accountbook.modle;
  */
 public class Message {
 	
-	public static final int MESSAGE_TYPE_NORMAL=0;
+	public static final int MESSAGE_TYPE_SYSTEM=0;
 	public static final int MESSAGE_TYPE_INVITE=1;
+	public static final int MESSAGE_TYPE_OTHER=2;
 	
 	
 	public static final int STATUS_UNREAD=0;
 	public static final int STATUS_READED=1;
 	public static final int STATUS_DELETE=2;
 	
-	public static final int STATUS_INVITE_ACCEPT=10;
-	public static final int STATUS_INVITE_REFUSE=11;
+	public static final int STATUS_INVITE_ACCEPT=11;
+	public static final int STATUS_INVITE_REFUSE=12;
 
 	public int id;
-	public String fromId;
-	public String toId;
+	public String inviteId;
+	public String acceptId;
 	public int type;
 	public String content;
 	/**

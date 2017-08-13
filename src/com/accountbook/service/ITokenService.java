@@ -1,10 +1,21 @@
 package com.accountbook.service;
 
-import java.util.List;
+import com.accountbook.modle.result.Result;
 
-import com.accountbook.modle.TestModel;
-
+/**
+ * token
+ * @author XINJUN
+ *
+ */
 public interface ITokenService {
+	
+	/**
+	 * 检查token有效性
+	 * @param token
+	 * @return
+	 */
+	public Result validate(String token);
+	
 	public String getId(String token);
 	/**
 	 * 更新token

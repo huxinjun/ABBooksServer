@@ -9,7 +9,7 @@
   <sql id="colums" >
     id,value
   </sql>
-  	<!-- 插入新闻 -->
+  	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.modle.TestModel">
 	insert into ttt(<include refid="colums"></include>)
 	values(null,#{name})

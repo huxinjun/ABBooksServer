@@ -3,8 +3,8 @@
 <mapper namespace="com.accountbook.dao.MessageDao" >
   <resultMap id="map" type="com.accountbook.modle.Message" >
     <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="from_id" property="fromId" jdbcType="VARCHAR" />
-    <result column="to_id" property="toId" jdbcType="VARCHAR" />
+    <result column="invite_id" property="inviteId" jdbcType="VARCHAR" />
+    <result column="accept_id" property="acceptId" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="TINYINT" />
     <result column="content" property="content" jdbcType="VARCHAR" />
     <result column="time" property="timeMiles" jdbcType="INTEGER" />
@@ -12,28 +12,42 @@
   </resultMap>
   
   <sql id="colums" >
-    id,from_id,to_id,type,content,time,status
+    id,from_id,accept_id,type,content,time,status
   </sql>
-	
-	<select id="queryById" parameterType="String" resultMap="map">
-		SELECT * FROM message WHERE to_id = #{toId};
+	<select id="query" parameterType="integer" resultMap="map">
+		SELECT * FROM message WHERE id = #{id};
+	</select>
+	<select id="queryAllMsgById" parameterType="String" resultMap="map">
+		SELECT * FROM message WHERE accept_id = #{acceptId};
 	</select>
 	<select id="queryInviteMsgById" parameterType="String" resultMap="map">
-		SELECT * FROM message WHERE to_id = #{toId} and type=1;
+		SELECT * FROM message WHERE accept_id = #{acceptId} and type=1 and status!=2;
+	</select>
+	
+	<select id="querySystemMsgById" parameterType="String" resultMap="map">
+		SELECT * FROM message WHERE accept_id = #{acceptId} and type=0 and status!=2;
 	</select>
 	
 	<select id="queryUnreadCount" parameterType="String" resultType="integer">
-		SELECT * FROM message WHERE to_id = #{toId} and status=0;
+		SELECT * FROM message WHERE accept_id = #{acceptId} and status=0;
+	</select>
+	
+	<select id="queryInviteUnreadCount" parameterType="String" resultType="integer">
+		SELECT * FROM message WHERE accept_id = #{acceptId} and type=1 and status=0;
+	</select>
+	
+	<select id="querySystemUnreadCount" parameterType="String" resultType="integer">
+		SELECT * FROM message WHERE accept_id = #{acceptId} and type=0 and status=0;
 	</select>
 	
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.modle.Message">
 		insert into message(<include refid="colums"></include>)
-		values(null,#{fromId},#{toId},#{type},#{content},#{timeMiles},#{status})
+		values(null,#{fromId},#{acceptId},#{type},#{content},#{timeMiles},#{status})
 	</insert>
 	
 	<!-- 更新 -->
-	<update id="updateStatus" parameterType="integer">
-		update message set status=#{status} where id=#{id}
+	<update id="updateStatus" parameterType="java.lang.Integer">
+		update message set status=#{1} where id=#{0}
 	</update>
 </mapper>

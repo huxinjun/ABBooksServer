@@ -7,9 +7,20 @@ import com.accountbook.modle.Message;
 public interface IMessageService {
 	
 	public void newMessage(Message data);
-	public List<Message> findMessage(String id);
-	public List<Message> findInviteMessage(String toId);
-	public int getUnreadCount();
+	/**
+	 * 根据数据库id查询
+	 */
+	public Message findMessage(int id);
+	/**
+	 * 根据用户id查询
+	 */
+	public List<Message> findMessage(String acceptId);
+	public List<Message> findInviteMessage(String acceptId);
+	public List<Message> findSystemMsgById(String acceptId);
+	
+	public int getUnreadCount(String acceptId);
+	public int getInviteUnreadCount(String acceptId);
+	public int getSystemUnreadCount(String acceptId);
 	
 	public void makeReaded(int id);
 	public void makeDeleted(int id);

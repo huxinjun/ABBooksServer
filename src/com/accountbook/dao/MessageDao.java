@@ -12,8 +12,12 @@ import com.accountbook.modle.Message;
  */
 public interface MessageDao {
 	public void insert(Message data);
-	public List<Message> queryById(String toId);
-	public List<Message> queryInviteMsgById(String toId);
-	public int queryUnreadCount();
+	public Message query(int id);
+	public List<Message> queryAllMsgById(String acceptId);
+	public List<Message> queryInviteMsgById(String acceptId);
+	public List<Message> querySystemMsgById(String acceptId);
+	public int queryUnreadCount(String acceptId);
+	public int queryInviteUnreadCount(String acceptId);
+	public int querySystemUnreadCount(String acceptId);
 	public void updateStatus(int id,int status);
 }

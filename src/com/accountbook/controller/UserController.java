@@ -5,11 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.mapping.ParameterMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,16 +12,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.accountbook.globle.Constants;
 import com.accountbook.modle.Message;
-import com.accountbook.modle.TestModel;
 import com.accountbook.modle.UserInfo;
 import com.accountbook.modle.WxAccessToken;
 import com.accountbook.modle.WxTemplateInvite;
 import com.accountbook.modle.WxTemplateInvite.KeyWord;
 import com.accountbook.modle.result.Result;
-import com.accountbook.modle.result.TestAllResult;
 import com.accountbook.modle.result.ListResult;
 import com.accountbook.service.IMessageService;
-import com.accountbook.service.ITestService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.HttpUtils;
@@ -52,21 +44,24 @@ public class UserController {
     
 	@ResponseBody
     @RequestMapping("/updateInfo")
-    public Result updateUserInfo(String token,String info){
+    public Object updateUserInfo(String token,String info){
+		//token检查-----------------------------------------------
+		Result tokenValidResult=tokenService.validate(token);
+		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
+			return tokenValidResult;
+		String findId=tokenValidResult.msg;
+		//--------------------------------------------------------
+		
+		
+		
 		Result result=new Result();
 		
 		UserInfo userinfo=JSON.parseObject(info, UserInfo.class);
 		System.out.println(info);
 		System.out.println(userinfo);
 		
-		String id = tokenService.getId(token);
-		if(id==null){
-			result.status=1;
-			result.msg="token无效";
-			return result;
-		}
 			
-		userinfo.id=id;
+		userinfo.id=findId;
 		
 		userService.updateUser(userinfo);
 		
@@ -79,25 +74,23 @@ public class UserController {
 	
 	@ResponseBody
 	@RequestMapping("/search")
-	public Result searchByName(String token,String nickname){
+	public Object searchByName(String token,String nickname){
+		//token检查-----------------------------------------------
+		Result tokenValidResult=tokenService.validate(token);
+		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
+			return tokenValidResult;
+		//--------------------------------------------------------
+		
+		
 		ListResult result=new ListResult();
 		
 		System.out.println("UserController(搜索者带来的token)："+token);
 		System.out.println("UserController(搜索的用户昵称)："+nickname);
 		
-		String id = tokenService.getId(token);
-		System.out.println("UserController(根据token查找的openid)："+id);
-		if(id==null){
-			result.status=1;
-			result.msg="token无效";
-			return result;
-		}
-		
-		
 		result.datas = userService.searchUser(nickname);
 		
 		
-		result.status=0;
+		result.status=Result.RESULT_OK;
 		result.msg="查询成功!";
 		return result;
 		
@@ -105,24 +98,27 @@ public class UserController {
 	
 	@ResponseBody
 	@RequestMapping("/invite")
-	public Result inviteUser(String token,String code,String openid,String formId){
+	public Object inviteUser(String token,String code,String openid,String formId){
+		//token检查-----------------------------------------------
+		Result tokenValidResult=tokenService.validate(token);
+		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
+			return tokenValidResult;
+		String findId=tokenValidResult.msg;
+		//--------------------------------------------------------
+		
+		
 		Result result=new Result();
-		String id = tokenService.getId(token);
-		System.out.println(id);
-		if(id==null){
-			result.status=1;
-			result.msg="token无效";
-			return result;
-		}
-		UserInfo me = userService.findUser(id);
+		
+		
+		UserInfo me = userService.findUser(findId);
 		UserInfo he = userService.findUser(openid);
 		
 		
 		
 		//数据库中加入邀请信息
 		Message msg=new Message();
-		msg.fromId=me.id;
-		msg.toId=openid;
+		msg.inviteId=me.id;
+		msg.acceptId=openid;
 		msg.type=Message.MESSAGE_TYPE_INVITE;
 		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",我们一起记账吧^~^";
 		msg.timeMiles=System.currentTimeMillis();
@@ -160,7 +156,7 @@ public class UserController {
 		String str=HttpUtils.sendPost(url,invite.toString());
 		//发送模板消息end-------------------------------------------------------------------------------------------------------
 		
-		result.status=0;
+		result.status=Result.RESULT_OK;
 		result.msg=str;
 		return result;
 		

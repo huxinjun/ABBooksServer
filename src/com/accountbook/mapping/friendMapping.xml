@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.accountbook.dao.FriendDao" >
+  <resultMap id="map" type="com.accountbook.modle.Friend" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="accept_id" property="acceptId" jdbcType="VARCHAR" />
+    <result column="invite_id" property="inviteId" jdbcType="VARCHAR" />
+    <result column="time" property="time" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="colums" >
+    id,accept_id,invite_id,time
+  </sql>
+  	<!-- 插入 -->
+	<insert id="insert" parameterType="com.accountbook.modle.Friend">
+	insert into friend(<include refid="colums"></include>)
+	values(null,#{acceptId},#{inviteId},#{time})
+	</insert>
+	
+	<!-- 查询两个id是否是好友关系-->
+	<select id="queryByTwoUserId" parameterType="String" resultMap="map">
+		SELECT <include refid="colums"></include> FROM friend WHERE accept_id=#{0} and invite_id=#{1};
+	</select>
+	
+	<!-- 查询一个用户的所有好友-->
+	<select id="query" parameterType="String" resultMap="map">
+		SELECT <include refid="colums"></include> FROM friend WHERE accept_id=#{userId} or invite_id=#{userId};
+	</select>
+
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="Integer">
+		delete friend where id=#{id};
+	</delete>
+	
+</mapper>
