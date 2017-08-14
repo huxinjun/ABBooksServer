@@ -88,7 +88,6 @@ public class MessageController {
 		Result tokenValidResult=tokenService.validate(token);
 		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
 			return tokenValidResult;
-		String findId=tokenValidResult.msg;
 		//--------------------------------------------------------
 		
 		Result result=new Result();
@@ -113,6 +112,32 @@ public class MessageController {
 		
 		result.status=0;
 		result.msg="添加好友成功!";
+		return result;
+		
+    }
+    
+    
+    @ResponseBody
+    @RequestMapping("/invite/refuse")
+    public Object refuse(HttpServletRequest request,HttpServletResponse response,String token,int msgId){
+    	//token检查-----------------------------------------------
+		Result tokenValidResult=tokenService.validate(token);
+		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
+			return tokenValidResult;
+		//--------------------------------------------------------
+		Result result=new Result();
+		Message message = mMsgService.findMessage(msgId);
+		if(message.status==Message.STATUS_INVITE_ACCEPT ||message.status==Message.STATUS_INVITE_REFUSE){
+			result.status=Result.RESULT_COMMAND_INVALID;
+			result.msg="重复操作";
+			return result;
+		}
+		
+		
+		mMsgService.makeRefused(msgId);
+		
+		result.status=0;
+		result.msg="操作成功!";
 		return result;
 		
     }

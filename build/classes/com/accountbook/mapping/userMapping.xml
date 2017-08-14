@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.accountbook.dao.UserDao" >
+  <resultMap id="map" type="com.accountbook.modle.UserInfo" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="avatarUrl" property="avatarUrl" jdbcType="VARCHAR" />
+    <result column="gender" property="gender" jdbcType="INTEGER" />
+    <result column="country" property="country" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="language" property="language" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="colums" >
+    id,nickname,avatarUrl,gender,country,city,province,language
+  </sql>
+	
+	<!-- 查询-->
+	<select id="queryByName" parameterType="String" resultMap="map">
+		SELECT <include refid="colums"></include> FROM user WHERE nickname like CONCAT(CONCAT('%', #{nickname}), '%')
+	</select>
+	<select id="queryById" parameterType="String" resultMap="map">
+		SELECT <include refid="colums"></include> FROM user WHERE id = #{id};
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.accountbook.modle.UserInfo">
+	insert into user(<include refid="colums"></include>)
+	values(#{id},#{nickname},#{avatarUrl},#{gender},#{country},#{city},#{province},#{language})
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="update" parameterType="com.accountbook.modle.UserInfo">
+		update user set 
+		<trim suffixOverrides=",">
+		<if test="nickname!=null and nickname.length()>0">
+			nickname=#{nickname},
+		</if>
+		<if test="avatarUrl!=null and avatarUrl.length()>0">
+			avatarUrl=#{avatarUrl},
+		</if>
+		<if test="gender!=0">
+			gender=#{gender},
+		</if>
+		<if test="country!=null and country.length()>0">
+			country=#{country},
+		</if>
+		<if test="city!=null and city.length()>0">
+			city=#{city},
+		</if>
+		<if test="province!=null and province.length()>0">
+			province=#{province},
+		</if>
+		<if test="language!=null and language.length()>0">
+			language=#{language},
+		</if>
+	</trim>
+	where id=#{id}
+	</update>
+</mapper>
