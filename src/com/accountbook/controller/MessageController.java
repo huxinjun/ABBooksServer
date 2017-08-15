@@ -141,4 +141,29 @@ public class MessageController {
 		return result;
 		
     }
+    
+    @ResponseBody
+    @RequestMapping("/invite/delete")
+    public Object delete(HttpServletRequest request,HttpServletResponse response,String token,int msgId){
+    	//token检查-----------------------------------------------
+		Result tokenValidResult=tokenService.validate(token);
+		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
+			return tokenValidResult;
+		//--------------------------------------------------------
+		Result result=new Result();
+		Message message = mMsgService.findMessage(msgId);
+		if(message.status==Message.STATUS_DELETE){
+			result.status=Result.RESULT_COMMAND_INVALID;
+			result.msg="重复操作";
+			return result;
+		}
+		
+		
+		mMsgService.makeDeleted(msgId);
+		
+		result.status=0;
+		result.msg="操作成功!";
+		return result;
+		
+    }
 }

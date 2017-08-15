@@ -17,7 +17,9 @@ import com.accountbook.modle.WxAccessToken;
 import com.accountbook.modle.WxTemplateInvite;
 import com.accountbook.modle.WxTemplateInvite.KeyWord;
 import com.accountbook.modle.result.Result;
+import com.accountbook.modle.result.SearchUserResult;
 import com.accountbook.modle.result.ListResult;
+import com.accountbook.service.IFriendService;
 import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
@@ -39,6 +41,9 @@ public class UserController {
 	
 	@Autowired
 	IMessageService msgService;
+	
+	@Autowired
+	IFriendService friendService;
 	
 	
     
@@ -79,6 +84,7 @@ public class UserController {
 		Result tokenValidResult=tokenService.validate(token);
 		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
 			return tokenValidResult;
+		String findId=tokenValidResult.msg;
 		//--------------------------------------------------------
 		
 		
@@ -87,8 +93,12 @@ public class UserController {
 		System.out.println("UserController(搜索者带来的token)："+token);
 		System.out.println("UserController(搜索的用户昵称)："+nickname);
 		
-		result.datas = userService.searchUser(nickname);
+		List<UserInfo> searchUsers = userService.searchUser(nickname);
 		
+		for(UserInfo info:searchUsers)
+			info.flag=friendService.isFriend(findId, info.id);
+		
+		result.datas=searchUsers;
 		
 		result.status=Result.RESULT_OK;
 		result.msg="查询成功!";

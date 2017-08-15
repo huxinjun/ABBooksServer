@@ -15,6 +15,8 @@ public class UserInfo {
 	public String language;
 	
 	
+	public boolean flag;
+	
 	
 	@Override
 	public String toString() {

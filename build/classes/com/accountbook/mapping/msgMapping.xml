@@ -12,7 +12,7 @@
   </resultMap>
   
   <sql id="colums" >
-    id,from_id,accept_id,type,content,time,status
+    id,invite_id,accept_id,type,content,time,status
   </sql>
 	<select id="query" parameterType="integer" resultMap="map">
 		SELECT * FROM message WHERE id = #{id};
@@ -43,7 +43,7 @@
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.modle.Message">
 		insert into message(<include refid="colums"></include>)
-		values(null,#{fromId},#{acceptId},#{type},#{content},#{timeMiles},#{status})
+		values(null,#{inviteId},#{acceptId},#{type},#{content},#{timeMiles},#{status})
 	</insert>
 	
 	<!-- 更新 -->
