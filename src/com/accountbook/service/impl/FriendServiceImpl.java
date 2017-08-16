@@ -40,13 +40,8 @@ public class FriendServiceImpl implements IFriendService {
 		System.out.println("oneId:"+oneId);
 		System.out.println("anotherId:"+anotherId);
 		System.out.println("aaaaa:"+friend);
-		if(friend==null){
-			
-			friend = dao.queryByTwoUserId(anotherId, oneId);
-			System.out.println(friend);
-			if(friend==null)
-				return false;
-		}
+		if(friend==null)
+			return false;
 		return true;
 	}
 

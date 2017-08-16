@@ -19,7 +19,7 @@
 	
 	<!-- 查询两个id是否是好友关系-->
 	<select id="queryByTwoUserId" parameterType="String" resultMap="map">
-		SELECT <include refid="colums"></include> FROM friend WHERE accept_id=#{0} and invite_id=#{1};
+		SELECT <include refid="colums"></include> FROM friend WHERE accept_id=#{0} and invite_id=#{1} or accept_id=#{1} and invite_id=#{0};
 	</select>
 	
 	<!-- 查询一个用户的所有好友-->
