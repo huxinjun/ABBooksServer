@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -19,7 +20,7 @@ public class FileUtils {
     	InputStream is;
 		try {
 			is = file.getInputStream();
-			String fileName=System.currentTimeMillis()+"";//.split("\\.")[0]
+			String fileName=UUID.randomUUID().toString();//.split("\\.")[0]
 			String savePath=dir+""+fileName;
 			File serverFile = save(is,savePath);
 			System.out.println("存储文件:"+serverFile.getPath());

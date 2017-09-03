@@ -12,15 +12,9 @@ public class Constants {
 	 * 用户上传的，或者其他方式获取的文件都存储在这个目录下
 	 */
 	public static String EXTERN_FILE_DIR;
-	/**PATH_IMAGE
-	 * 为了避免重新发布时将上传的文件删除,所以将上传的XLSX文件存入其他盘符
-	 */
-	public static final String PATH_XLSX="/xlsx/";
-	
-	public static final String REQUEST_BASE_URL="http://localhost:8080/AccountBook";
 	/**
 	 * 图片
 	 */
-	public static final String PATH_IMAGE_DOWNLOAD="/img/download/";
-	public static final String PATH_IMAGE_UPLOAD="/img/upload/";
+	public static final String PATH_IMAGE_DOWNLOAD="img/download/";
+	public static final String PATH_IMAGE_UPLOAD="img/upload/";
 }
