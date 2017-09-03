@@ -34,8 +34,7 @@ public class ImageController {
 		File serverFile=FileUtils.saveUploadFile(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD, file);
 		Result result=new Result();
 		result.status=0;
-		String baseUrl="http://"+request.getHeader("Host")+request.getContextPath();
-		result.msg=baseUrl+"/image/get/"+serverFile.getName();
+		result.msg=serverFile.getName();
 		return result;
 	}
 
