@@ -1,0 +1,55 @@
+{
+  "name": "火锅",
+  "paid_in": 1000.0,
+  "persons": [
+        {
+              "id":"000",
+              "name": "小卡",
+              "paid_in": 0.0,   //实付
+              "pay_rule": {
+                    "number_type": 0,
+                    //-1:实行AA 0:基于总支出的百分比的值  1:缴费为一个固定值
+                    "number": 0.2,
+                    //给自己买东西的钱,其他人不会AA支付这个数额
+                    "money_for_me":0.0
+              },
+              "shoud_pay": 0.0, //应付
+              "tempData":0.0
+        },
+        {
+              "id":"001",
+              "name": "小红",
+              "paid_in": 0.0,
+              "shoud_pay": 0.0
+
+        },
+        {
+              "id":"002",
+              "name": "小明",
+              "paid_in": 0.0,
+              "shoud_pay": 0.0,
+              "tempData":0.0
+        },
+        {
+              "id":"003",
+              "name": "小黑",
+              "paid_in": 0.0,
+              "shoud_pay": 0.0,
+              "tempData":0.0
+        }
+  ],
+  "pay_result":[
+        {
+              "pay_target": [//付账计算结果
+                    {
+                      //谁支付
+                      "pay_id": "001",
+                      //给谁支付
+                      "get_id": "002",
+                      //支付多少
+                      "money": "100"
+                    }
+              ]
+        }
+  ]
+}
