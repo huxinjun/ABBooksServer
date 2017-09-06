@@ -6,8 +6,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.Base64.Encoder;
 
-import sun.misc.BASE64Encoder;
 
 public class MD5 {
 
@@ -28,9 +29,9 @@ public class MD5 {
 		try {
 			md5 = MessageDigest.getInstance("MD5");
 			byte[] digest = md5.digest(str.getBytes());
-			BASE64Encoder base64en = new BASE64Encoder();
+			Encoder encoder = Base64.getEncoder();
 			// 加密后的字符串
-			newstr = base64en.encode(digest).replace("/", "_");
+			newstr = new String(encoder.encode(digest)).replace("/", "_");
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -59,6 +60,7 @@ public class MD5 {
 	public static String getMD5(File file) {
 
 		FileInputStream fis = null;
+		String newstr="";
 
 		try {
 
@@ -79,9 +81,9 @@ public class MD5 {
 			}
 
 			byte[] digest = md.digest();
-			BASE64Encoder base64en = new BASE64Encoder();
+			Encoder encoder = Base64.getEncoder();
 			// 加密后的字符串
-			String newstr = base64en.encode(digest);
+			newstr = new String(encoder.encode(digest)).replace("/", "_");
 			return newstr.replace("/", "_");
 
 		} catch (Exception ex) {
