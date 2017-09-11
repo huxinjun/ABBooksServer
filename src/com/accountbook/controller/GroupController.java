@@ -68,6 +68,36 @@ public class GroupController {
 		
 	}*/
 	
+	
+	@ResponseBody
+    @RequestMapping("/create")
+    public Object createNewGroup(String token,String name,String desc,String icon){
+//		token检查-----------------------------------------------
+		Result tokenValidResult=tokenService.validate(token);
+		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
+			return tokenValidResult;
+		String findId=tokenValidResult.msg;
+//		--------------------------------------------------------
+		
+		
+		Result result=new Result();
+		
+		Group group=new Group();
+		group.name=name;
+		group.desc=desc;
+		group.icon=icon;
+		group.createId=findId;
+		group.time=System.currentTimeMillis();
+		
+		groupService.addGroup(group);
+		
+		
+		result.status=0;
+		result.msg="创建分组成功!";
+		return result;
+		
+	}
+	
 	@ResponseBody
 	@RequestMapping("/invite")
 	public Object inviteUser(String token,String code,String openid,int groupId,String formId){

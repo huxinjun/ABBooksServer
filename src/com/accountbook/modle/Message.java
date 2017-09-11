@@ -35,4 +35,6 @@ public class Message {
 	 * 邀请消息:0未处理,1接受,2拒绝,3删除
 	 */
 	public int status;
+	
+	
 }
