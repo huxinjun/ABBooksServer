@@ -15,7 +15,7 @@ public interface IMessageService {
 	 * 根据用户id查询
 	 */
 	public List<Message> findMessage(String acceptId);
-	public List<Message> findInviteMessage(String acceptId);
+	public List<Message> findInviteMessage(String acceptId,String type);
 	public List<Message> findSystemMsgById(String acceptId);
 	
 	public int getUnreadCount(String acceptId);

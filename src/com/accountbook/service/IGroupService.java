@@ -1,0 +1,27 @@
+package com.accountbook.service;
+
+import java.util.List;
+
+import com.accountbook.modle.Group;
+import com.accountbook.modle.UserInfo;
+
+public interface IGroupService {
+	
+	/**查询组成员*/
+	public List<UserInfo> findUsersByGroupId(int groupId);
+	/**加入的组*/
+	public List<Group> findJoinGroups(int userId);
+	/**组中加入用户*/
+	public void joinGroup(int groupId,String userId);
+	/**删除组中用户*/
+	public void exitGroup(int groupId,String userId);
+	
+	/**查询组*/
+	public Group queryGroupInfo(int groupId);
+	/**添加组*/
+	public void addGroup(Group data);
+	/**更新组*/
+	public void updateGroupInfo(Group data);
+	
+	
+}

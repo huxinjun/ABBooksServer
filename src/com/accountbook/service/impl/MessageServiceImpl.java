@@ -29,7 +29,7 @@ public class MessageServiceImpl implements IMessageService{
 		return dao.queryAllMsgById(acceptId);
 	}
 	@Override
-	public List<Message> findInviteMessage(String acceptId) {
+	public List<Message> findInviteMessage(String acceptId,String type) {
 		return dao.queryInviteMsgById(acceptId);
 	}
 	@Override

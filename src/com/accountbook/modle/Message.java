@@ -8,8 +8,9 @@ package com.accountbook.modle;
 public class Message {
 	
 	public static final int MESSAGE_TYPE_SYSTEM=0;
-	public static final int MESSAGE_TYPE_INVITE=1;
-	public static final int MESSAGE_TYPE_OTHER=2;
+	public static final int MESSAGE_TYPE_INVITE_USER=1;
+	public static final int MESSAGE_TYPE_INVITE_GROUP=2;
+	public static final int MESSAGE_TYPE_OTHER=99;
 	
 	
 	public static final int STATUS_UNREAD=0;

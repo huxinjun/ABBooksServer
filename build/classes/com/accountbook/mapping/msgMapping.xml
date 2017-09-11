@@ -21,7 +21,7 @@
 		SELECT * FROM message WHERE accept_id = #{acceptId};
 	</select>
 	<select id="queryInviteMsgById" parameterType="String" resultMap="map">
-		SELECT * FROM message WHERE accept_id = #{acceptId} and type=1 and status!=2;
+		SELECT * FROM message WHERE accept_id = #{0,jdbcType=VARCHAR} and type=#{1,jdbcType=TINYINT} and status!=2;
 	</select>
 	
 	<select id="querySystemMsgById" parameterType="String" resultMap="map">

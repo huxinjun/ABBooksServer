@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.accountbook.dao.GroupDao" >
+  <resultMap id="map" type="com.accountbook.modle.Group" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="createId" property="createId" jdbcType="VARCHAR" />
+    <result column="icon" property="icon" jdbcType="INTEGER" />
+    <result column="desc" property="desc" jdbcType="VARCHAR" />
+    <result column="time" property="time" jdbcType="INTEGER" />
+  </resultMap>
+
+  
+  <resultMap id="usermap" type="com.accountbook.modle.UserInfo" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="avatarUrl" property="avatarUrl" jdbcType="VARCHAR" />
+    <result column="gender" property="gender" jdbcType="INTEGER" />
+    <result column="country" property="country" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="language" property="language" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="queryById" parameterType="String" resultMap="map">
+		SELECT * FROM group_user group_id=#{groupId};
+	</select>
+  
+  
+  <select id="queryUsers" parameterType="integer" resultMap="usermap">
+		SELECT * FROM group_user LEFT JOIN user ON group_user.user_id = user.id 
+		WHERE group_id=#{id};
+  </select>
+  
+  
+	<select id="queryGroups" parameterType="String" resultMap="map">
+		SELECT * FROM group_user LEFT JOIN group_ ON group_user.group_id=group_.id WHERE user_id==#{userId};
+	</select>
+	
+	<!-- 插入组 -->
+	<insert id="insert" parameterType="com.accountbook.modle.Group">
+		insert into group values(#{id},#{name},#{createId},#{icon},#{desc},#{time})
+	</insert>
+	
+	<!-- 组中加用户 -->
+	<insert id="insertUser" parameterType="java.util.Map">
+		insert into group_user values(null,#{groupId, jdbcType=INTEGER},#{userId, jdbcType=VARCHAR})
+	</insert>
+	
+	<!-- 组中移除用户 -->
+	<insert id="deleteUser" parameterType="java.util.Map">
+		delete from group_user where group_id=#{groupId, jdbcType=INTEGER} and user_id=#{userId, jdbcType=VARCHAR}
+	</insert>
+	
+	
+	
+	
+	<!-- 更新 -->
+	<update id="update" parameterType="com.accountbook.modle.UserInfo">
+		update group set 
+		<trim suffixOverrides=",">
+		<if test="name!=null and name.length()>0">
+			name=#{name},
+		</if>
+		<if test="icon!=null and icon.length()>0">
+			icon=#{icon},
+		</if>
+		<if test="desc!=null and desc.length()>0">
+			desc=#{desc},
+		</if>
+	</trim>
+	where id=#{id}
+	</update>
+</mapper>

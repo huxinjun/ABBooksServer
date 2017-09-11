@@ -18,6 +18,7 @@
 		<mapper resource="com/accountbook/mapping/tokenMapping.xml"/>
 		<mapper resource="com/accountbook/mapping/msgMapping.xml"/>
 		<mapper resource="com/accountbook/mapping/friendMapping.xml"/>
+		<mapper resource="com/accountbook/mapping/groupMapping.xml"/>
 		</mappers>
 
 

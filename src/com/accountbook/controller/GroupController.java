@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.accountbook.globle.Constants;
+import com.accountbook.modle.Group;
 import com.accountbook.modle.Message;
 import com.accountbook.modle.UserInfo;
 import com.accountbook.modle.WxAccessToken;
 import com.accountbook.modle.WxTemplateInvite;
 import com.accountbook.modle.WxTemplateInvite.KeyWord;
-import com.accountbook.modle.result.ListResult;
 import com.accountbook.modle.result.Result;
-import com.accountbook.service.IFriendService;
+import com.accountbook.service.IGroupService;
 import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
@@ -27,9 +27,9 @@ import com.alibaba.fastjson.JSON;
 
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/group")
 	
-public class UserController {
+public class GroupController {
 	
 
 	@Autowired
@@ -42,72 +42,35 @@ public class UserController {
 	IMessageService msgService;
 	
 	@Autowired
-	IFriendService friendService;
+	IGroupService groupService;
 	
 	
     
-	@ResponseBody
-    @RequestMapping("/updateInfo")
-    public Object updateUserInfo(String token,String info){
-		//token检查-----------------------------------------------
+	/*@ResponseBody
+    @RequestMapping("/invite")
+    public Object inviteUser(String token,int groupId,String userId){
+//		token检查-----------------------------------------------
 		Result tokenValidResult=tokenService.validate(token);
 		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
 			return tokenValidResult;
 		String findId=tokenValidResult.msg;
-		//--------------------------------------------------------
-		
+//		--------------------------------------------------------
 		
 		
 		Result result=new Result();
 		
-		UserInfo userinfo=JSON.parseObject(info, UserInfo.class);
-		System.out.println(info);
-		System.out.println(userinfo);
-		
-			
-		userinfo.id=findId;
-		
-		userService.updateUser(userinfo);
+		groupService.joinGroup(groupId, userId);
 		
 		
 		result.status=0;
-		result.msg="更新用户信息成功!";
+		result.msg="加入分组成功!";
 		return result;
 		
-	}
-	
-	@ResponseBody
-	@RequestMapping("/search")
-	public Object searchByName(String token,String nickname){
-		//token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		String findId=tokenValidResult.msg;
-		//--------------------------------------------------------
-		
-		
-		ListResult result=new ListResult();
-		
-		System.out.println("UserController(搜索者带来的token)："+token);
-		System.out.println("UserController(搜索的用户昵称)："+nickname);
-		
-		List<UserInfo> searchUsers = userService.searchUser(nickname);
-		
-		for(UserInfo info:searchUsers)
-			info.flag=friendService.isFriend(findId, info.id);
-		
-		result.datas=searchUsers;
-		
-		result.status=Result.RESULT_OK;
-		result.msg="查询成功!";
-		return result;
-		
-	}
+	}*/
 	
 	@ResponseBody
 	@RequestMapping("/invite")
-	public Object inviteUser(String token,String code,String openid,String formId){
+	public Object inviteUser(String token,String code,String openid,int groupId,String formId){
 		//token检查-----------------------------------------------
 		Result tokenValidResult=tokenService.validate(token);
 		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
@@ -122,14 +85,14 @@ public class UserController {
 		UserInfo me = userService.findUser(findId);
 		UserInfo he = userService.findUser(openid);
 		
-		
+		Group groupInfo = groupService.queryGroupInfo(groupId);
 		
 		//数据库中加入邀请信息
 		Message msg=new Message();
 		msg.inviteId=me.id;
 		msg.acceptId=openid;
-		msg.type=Message.MESSAGE_TYPE_INVITE_USER;
-		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",我们一起记账吧^~^";
+		msg.type=Message.MESSAGE_TYPE_INVITE_GROUP;
+		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",加入分组["+groupInfo.name+"]一起记账哦^~^";
 		msg.timeMiles=System.currentTimeMillis();
 		msg.status=Message.STATUS_UNREAD;
 		msgService.newMessage(msg);
@@ -153,7 +116,7 @@ public class UserController {
 		WxTemplateInvite invite=new WxTemplateInvite();
 		invite.touser=openid;
 		invite.template_id="r63a82Qy_kap-4SxZUT9SfwS5004qb-l_i17zzUOqY4";
-		invite.page="pages/msg_invite/msg_invite";
+		invite.page="pages/msg_invite/group_invite";
 		invite.form_id=formId;
 		List<KeyWord> data=new ArrayList<>();
 		data.add(new KeyWord(me.nickname,"#173177"));
@@ -170,4 +133,5 @@ public class UserController {
 		return result;
 		
 	}
+	
 }

@@ -47,7 +47,8 @@ public class MessageController {
     
     @ResponseBody
     @RequestMapping("/invite")
-    public Object getInviteMessage(HttpServletRequest request,HttpServletResponse response,String token){
+    
+    public Object getInviteMessage(HttpServletRequest request,HttpServletResponse response,String token,int type/**type必须:1帐友邀请,2加入组邀请*/){
     	//token检查-----------------------------------------------
     	Result tokenValidResult=tokenService.validate(token);
 		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
@@ -59,7 +60,7 @@ public class MessageController {
     	ListResult result=new ListResult();
     	
     	
-    	List<Message> msgs = mMsgService.findInviteMessage(findId);
+    	List<Message> msgs = mMsgService.findInviteMessage(findId,type+"");
     	
     	List<MessageResult> msgResults=new ArrayList<>();
     	for(Message msg:msgs){
