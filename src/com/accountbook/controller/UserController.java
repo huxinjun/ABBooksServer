@@ -1,9 +1,13 @@
 package com.accountbook.controller;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,6 +27,7 @@ import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.HttpUtils;
+import com.accountbook.utils.ImageUtils;
 import com.alibaba.fastjson.JSON;
 
 
@@ -43,6 +48,9 @@ public class UserController {
 	
 	@Autowired
 	IFriendService friendService;
+	
+	
+	
 	
 	
     
@@ -76,8 +84,103 @@ public class UserController {
 		
 	}
 	
+	@RequestMapping("/qr")
+	public void qrAddUser(String token,HttpServletResponse response){
+		//token检查-----------------------------------------------
+//		Result tokenValidResult=tokenService.validate(token);
+//		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
+//			return;
+//		String findId=tokenValidResult.msg;
+		//--------------------------------------------------------
+		
+		String findId="oCBrx0FreB-L8pIQM5_RYDGoWOKQ";
+		
+		//获取二维码start-------------------------------------------------------------------------------------------------------
+		//获取accesstoken
+    	Map<String,String> params=new HashMap<>();
+    	params.put("appid", Constants.APP_ID);
+    	params.put("secret", Constants.APP_SECRET);
+    	params.put("grant_type", "client_credential");
+    	String accessUrl="https://api.weixin.qq.com/cgi-bin/token";
+    	String info=HttpUtils.sendGet(accessUrl,params);
+		
+    	
+		WxAccessToken accessToken=JSON.parseObject(info, WxAccessToken.class);
+		System.out.println(accessToken);
+		
+		String url="https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token="+accessToken.access_token;
+		byte[] result=HttpUtils.sendPost2(url,"{\"path\": \"pages/index/index?friendId="+findId+"\", \"width\": 430}");
+		
+		try {
+			ImageUtils.send(result, response.getOutputStream());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@ResponseBody
-	@RequestMapping("/search")
+//	@RequestMapping("/search")
+	@Deprecated
+	//改用二维码加好友,不使用搜索方式了
 	public Object searchByName(String token,String nickname){
 		//token检查-----------------------------------------------
 		Result tokenValidResult=tokenService.validate(token);
@@ -157,7 +260,7 @@ public class UserController {
 		invite.form_id=formId;
 		List<KeyWord> data=new ArrayList<>();
 		data.add(new KeyWord(me.nickname,"#173177"));
-		data.add(new KeyWord("赶紧加入小账本本!!!呲呲的^_^","#173177"));
+		data.add(new KeyWord("赶紧进入小账本本!!!呲呲的^_^","#173177"));
 		invite.data=data;
 		
 		System.out.println(invite.toString());

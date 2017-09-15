@@ -78,4 +78,21 @@ public class ImageUtils {
         }  
 		return false;
 	}
+	/**
+	 * 把byte输送到输出流中去,送给客户端
+	 * @param localPath
+	 * @param os
+	 * @return
+	 */
+	public static boolean send(byte[] bytes,OutputStream os) {
+		try {  
+			os.write(bytes);
+			os.flush();
+			os.close();
+			return true;
+		} catch (Exception e) {  
+			e.printStackTrace();  
+		}  
+		return false;
+	}
 }
