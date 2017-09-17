@@ -8,7 +8,7 @@ public class Group {
 	
 	public int id;
 	public String name;
-	public String createId;
+	public String adminId;
 	public String icon;
 	public String desc;
 	public long time;

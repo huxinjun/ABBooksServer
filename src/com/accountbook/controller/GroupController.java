@@ -17,11 +17,13 @@ import com.accountbook.modle.UserInfo;
 import com.accountbook.modle.WxAccessToken;
 import com.accountbook.modle.WxTemplateInvite;
 import com.accountbook.modle.WxTemplateInvite.KeyWord;
+import com.accountbook.modle.result.GroupResult;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IGroupService;
 import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
+import com.accountbook.utils.IconUtil;
 import com.accountbook.utils.HttpUtils;
 import com.alibaba.fastjson.JSON;
 
@@ -45,33 +47,11 @@ public class GroupController {
 	IGroupService groupService;
 	
 	
-    
-	/*@ResponseBody
-    @RequestMapping("/invite")
-    public Object inviteUser(String token,int groupId,String userId){
-//		token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		String findId=tokenValidResult.msg;
-//		--------------------------------------------------------
-		
-		
-		Result result=new Result();
-		
-		groupService.joinGroup(groupId, userId);
-		
-		
-		result.status=0;
-		result.msg="加入分组成功!";
-		return result;
-		
-	}*/
 	
 	
 	@ResponseBody
-    @RequestMapping("/create")
-    public Object createNewGroup(String token,String name,String desc,String icon){
+    @RequestMapping("/add")
+    public Object createNewGroup(String token,String name,String desc){
 //		token检查-----------------------------------------------
 		Result tokenValidResult=tokenService.validate(token);
 		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
@@ -85,8 +65,8 @@ public class GroupController {
 		Group group=new Group();
 		group.name=name;
 		group.desc=desc;
-		group.icon=icon;
-		group.createId=findId;
+		group.icon=IconUtil.createIcon(name, null);
+		group.adminId=findId;
 		group.time=System.currentTimeMillis();
 		
 		groupService.addGroup(group);
@@ -95,8 +75,86 @@ public class GroupController {
 		result.status=0;
 		result.msg="创建分组成功!";
 		return result;
-		
 	}
+	
+	@ResponseBody
+    @RequestMapping("/get")
+    public Object getGroupInfo(String token,int groupId){
+//		token检查-----------------------------------------------
+		Result tokenValidResult=tokenService.validate(token);
+		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
+			return tokenValidResult;
+		String findId=tokenValidResult.msg;
+//		--------------------------------------------------------
+		
+		
+		GroupResult result=new GroupResult();
+		
+		result.group=groupService.queryGroupInfo(groupId);
+		if(findId.equals(result.group.adminId))
+			result.isAdmin=true;
+			
+		result.users=groupService.findUsersByGroupId(groupId);
+		for(UserInfo info:result.users)
+			if(findId.equals(info.id)){
+				result.isMember=true;
+				break;
+			}
+		
+		
+		result.status=0;
+		result.msg="查询分组信息成功!";
+		return result;
+	}
+	
+	
+	@ResponseBody
+    @RequestMapping("/join")
+    public Object joinGroup(String token,int groupId){
+//		token检查-----------------------------------------------
+		Result tokenValidResult=tokenService.validate(token);
+		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
+			return tokenValidResult;
+		String findId=tokenValidResult.msg;
+//		--------------------------------------------------------
+		
+		Result result=new Result();
+		groupService.joinGroup(groupId, findId);
+		
+		//TODO 更新分组icon
+		
+		
+		result.status=0;
+		result.msg="成功加入分组!";
+		return result;
+	}
+	
+	@ResponseBody
+    @RequestMapping("/quit")
+    public Object quitGroup(String token,int groupId){
+//		token检查-----------------------------------------------
+		Result tokenValidResult=tokenService.validate(token);
+		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
+			return tokenValidResult;
+		String findId=tokenValidResult.msg;
+//		--------------------------------------------------------
+		
+		Result result=new Result();
+		groupService.exitGroup(groupId,findId);
+		
+		
+		//TODO 更新分组icon
+		
+		
+		result.status=0;
+		result.msg="成功加入分组!";
+		return result;
+	}
+	
+	
+	
+	
+	
 	
 	@ResponseBody
 	@RequestMapping("/invite")

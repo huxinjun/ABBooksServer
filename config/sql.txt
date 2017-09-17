@@ -1,0 +1,16 @@
+#自己加入或创建的组
+SELECT group_id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' UNION #查询加入的组
+SELECT id FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' #查询自己为管理员的组
+
+#和自己相关的账单
+SELECT account_id FROM account_member WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR 
+member_id IN (SELECT group_id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' UNION 
+SELECT id FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')
+
+#和自己相关的分组
+CREATE OR REPLACE VIEW `temp_me_account` AS
+SELECT DISTINCT account_id FROM account_member WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR 
+member_id IN (SELECT group_id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' UNION 
+SELECT id FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ');
+
+SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN(SELECT account_id FROM temp_me_account)
