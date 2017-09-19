@@ -6,11 +6,18 @@ package com.accountbook.modle;
  */
 public class Group {
 	
-	public int id;
+	public String id;
 	public String name;
 	public String adminId;
 	public String icon;
 	public String desc;
 	public long time;
+	@Override
+	public String toString() {
+		return "Group [id=" + id + ", name=" + name + ", adminId=" + adminId + ", icon=" + icon + ", desc=" + desc
+				+ ", time=" + time + "]";
+	}
+	
+	
 
 }

@@ -60,7 +60,8 @@ public class IconUtil {
 				int[] position = calcPosition(memberIcons.size()>9?9:memberIcons.size(), i, iconSize, iconSize/25);
 				g.drawImage(srcImage, position[0], position[1], position[2], position[3], null);  //将原始图片 按固定大小绘制到image中
 			}
-			if(memberIcons.size()==0){
+			if(memberIcons==null || memberIcons.size()==0){
+				
 				int padding=iconSize/25;
 				int fontSize=iconSize-padding*2;
 				System.out.println("字体大小："+fontSize);
@@ -68,10 +69,10 @@ public class IconUtil {
 				g.setColor(Color.black);
 				if(groupName!=null && groupName.length()>0){
 					char charAt=groupName.charAt(0);
-					System.out.println("char:"+(int)charAt);
 					int charWidth = g.getFontMetrics().stringWidth(String.valueOf(charAt));
+					System.out.println("char0:"+String.valueOf(charAt));
 					System.out.println("charWidth:"+charWidth);
-					g.drawString(String.valueOf(groupName.charAt(0)), (iconSize-charWidth)/2, fontSize-padding*2);
+					g.drawString(String.valueOf(charAt), (iconSize-charWidth)/2, fontSize-padding*2);
 				}
 				
 			}

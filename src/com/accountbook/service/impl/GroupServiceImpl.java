@@ -22,20 +22,19 @@ public class GroupServiceImpl implements IGroupService {
 	GroupDao dao;
 
 	@Override
-	public List<UserInfo> findUsersByGroupId(int groupId) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<UserInfo> findUsersByGroupId(String groupId) {
+		return dao.queryUsers(groupId);
 	}
 
 	@Override
-	public List<Group> findJoinGroups(int userId) {
+	public List<Group> findJoinGroups(String userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@SuppressWarnings("serial")
 	@Override
-	public void joinGroup(int groupId, String userId) {
+	public void joinGroup(String groupId, String userId) {
 		dao.insertUser(new HashMap<String,String>(){
 			{
 				put("groupId", groupId+"");
@@ -46,7 +45,7 @@ public class GroupServiceImpl implements IGroupService {
 
 	@SuppressWarnings("serial")
 	@Override
-	public void exitGroup(int groupId, String userId) {
+	public void exitGroup(String groupId, String userId) {
 		dao.deleteUser(new HashMap<String,String>(){
 			{
 				put("groupId", groupId+"");
@@ -57,9 +56,8 @@ public class GroupServiceImpl implements IGroupService {
 	}
 
 	@Override
-	public Group queryGroupInfo(int groupId) {
-		// TODO Auto-generated method stub
-		return null;
+	public Group queryGroupInfo(String groupId) {
+		return dao.queryById(groupId);
 	}
 
 	@Override

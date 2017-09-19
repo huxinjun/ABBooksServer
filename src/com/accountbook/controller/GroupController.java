@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +24,7 @@ import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.IconUtil;
 import com.accountbook.utils.HttpUtils;
+import com.accountbook.utils.IDUtil;
 import com.alibaba.fastjson.JSON;
 
 
@@ -58,11 +58,12 @@ public class GroupController {
 			return tokenValidResult;
 		String findId=tokenValidResult.msg;
 //		--------------------------------------------------------
-		
+		System.out.println("group name:"+name);
 		
 		Result result=new Result();
 		
 		Group group=new Group();
+		group.id=IDUtil.generateNewId();
 		group.name=name;
 		group.desc=desc;
 		group.icon=IconUtil.createIcon(name, null);
@@ -73,13 +74,14 @@ public class GroupController {
 		
 		
 		result.status=0;
-		result.msg="创建分组成功!";
+		result.msg=group.id;
 		return result;
 	}
 	
 	@ResponseBody
-    @RequestMapping("/get")
-    public Object getGroupInfo(String token,int groupId){
+	@RequestMapping("/get")
+    public Object getGroupInfo(String token,String groupId){
+		System.out.println("!!!!!!!!!!!!!!!!"+token+"--------------"+groupId);
 //		token检查-----------------------------------------------
 		Result tokenValidResult=tokenService.validate(token);
 		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
@@ -91,15 +93,18 @@ public class GroupController {
 		GroupResult result=new GroupResult();
 		
 		result.group=groupService.queryGroupInfo(groupId);
-		if(findId.equals(result.group.adminId))
+		
+		System.out.println("group:"+result.group);
+		if(result.group!=null && findId.equals(result.group.adminId))
 			result.isAdmin=true;
 			
 		result.users=groupService.findUsersByGroupId(groupId);
-		for(UserInfo info:result.users)
-			if(findId.equals(info.id)){
-				result.isMember=true;
-				break;
-			}
+		if(result.users!=null)
+			for(UserInfo info:result.users)
+				if(findId.equals(info.id)){
+					result.isMember=true;
+					break;
+				}
 		
 		
 		result.status=0;
@@ -110,7 +115,7 @@ public class GroupController {
 	
 	@ResponseBody
     @RequestMapping("/join")
-    public Object joinGroup(String token,int groupId){
+    public Object joinGroup(String token,String groupId){
 //		token检查-----------------------------------------------
 		Result tokenValidResult=tokenService.validate(token);
 		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
@@ -131,7 +136,7 @@ public class GroupController {
 	
 	@ResponseBody
     @RequestMapping("/quit")
-    public Object quitGroup(String token,int groupId){
+    public Object quitGroup(String token,String groupId){
 //		token检查-----------------------------------------------
 		Result tokenValidResult=tokenService.validate(token);
 		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
@@ -158,7 +163,7 @@ public class GroupController {
 	
 	@ResponseBody
 	@RequestMapping("/invite")
-	public Object inviteUser(String token,String code,String openid,int groupId,String formId){
+	public Object inviteUser(String token,String code,String openid,String groupId,String formId){
 		//token检查-----------------------------------------------
 		Result tokenValidResult=tokenService.validate(token);
 		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
@@ -221,5 +226,10 @@ public class GroupController {
 		return result;
 		
 	}
+	
+	
+	
+	
+	
 	
 }

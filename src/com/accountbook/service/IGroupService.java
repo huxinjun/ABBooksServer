@@ -8,16 +8,16 @@ import com.accountbook.modle.UserInfo;
 public interface IGroupService {
 	
 	/**查询组成员*/
-	public List<UserInfo> findUsersByGroupId(int groupId);
+	public List<UserInfo> findUsersByGroupId(String groupId);
 	/**加入的组*/
-	public List<Group> findJoinGroups(int userId);
+	public List<Group> findJoinGroups(String userId);
 	/**组中加入用户*/
-	public void joinGroup(int groupId,String userId);
+	public void joinGroup(String groupId,String userId);
 	/**删除组中用户*/
-	public void exitGroup(int groupId,String userId);
+	public void exitGroup(String groupId,String userId);
 	
 	/**查询组*/
-	public Group queryGroupInfo(int groupId);
+	public Group queryGroupInfo(String groupId);
 	/**添加组*/
 	public void addGroup(Group data);
 	/**更新组*/

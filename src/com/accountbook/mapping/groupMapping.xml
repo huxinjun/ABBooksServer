@@ -4,10 +4,10 @@
   <resultMap id="map" type="com.accountbook.modle.Group" >
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="adminId" property="adminId" jdbcType="VARCHAR" />
-    <result column="icon" property="icon" jdbcType="INTEGER" />
-    <result column="desc" property="desc" jdbcType="VARCHAR" />
+    <result column="admin_id" property="adminId" jdbcType="VARCHAR" />
     <result column="time" property="time" jdbcType="INTEGER" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
+    <result column="desc" property="desc" jdbcType="VARCHAR" />
   </resultMap>
 
   
@@ -23,11 +23,11 @@
   </resultMap>
   
   <select id="queryById" parameterType="String" resultMap="map">
-		SELECT * FROM group_user group_id=#{groupId};
+		SELECT * FROM group_ WHERE id=#{id};
 	</select>
   
   
-  <select id="queryUsers" parameterType="integer" resultMap="usermap">
+  <select id="queryUsers" parameterType="String" resultMap="usermap">
 		SELECT * FROM group_user LEFT JOIN user ON group_user.user_id = user.id 
 		WHERE group_id=#{id};
   </select>
@@ -39,7 +39,7 @@
 	
 	<!-- 插入组 -->
 	<insert id="insert" parameterType="com.accountbook.modle.Group">
-		insert into group values(#{id},#{name},#{adminId},#{icon},#{desc},#{time})
+		insert into group_ values(#{id},#{name},#{adminId},#{time},#{icon},#{desc})
 	</insert>
 	
 	<!-- 组中加用户 -->
@@ -57,7 +57,7 @@
 	
 	<!-- 更新 -->
 	<update id="update" parameterType="com.accountbook.modle.UserInfo">
-		update group set 
+		update group_ set 
 		<trim suffixOverrides=",">
 		<if test="name!=null and name.length()>0">
 			name=#{name},
