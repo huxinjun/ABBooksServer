@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,14 +55,8 @@ public class UserController {
     
 	@ResponseBody
     @RequestMapping("/updateInfo")
-    public Object updateUserInfo(String token,String info){
-		//token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		String findId=tokenValidResult.msg;
-		//--------------------------------------------------------
-		
+    public Object updateUserInfo(HttpServletRequest request,String info){
+		String findId=request.getAttribute("userid").toString();
 		
 		
 		Result result=new Result();
@@ -83,13 +78,7 @@ public class UserController {
 	}
 	
 	@RequestMapping("/qr")
-	public void qrAddUser(String token,HttpServletResponse response){
-		//token检查-----------------------------------------------
-//		Result tokenValidResult=tokenService.validate(token);
-//		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-//			return;
-//		String findId=tokenValidResult.msg;
-		//--------------------------------------------------------
+	public void qrAddUser(HttpServletRequest request,HttpServletResponse response){
 		
 		String findId="oCBrx0FreB-L8pIQM5_RYDGoWOKQ";
 		
@@ -114,7 +103,7 @@ public class UserController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+		  
 	}
 	
 	
@@ -179,18 +168,11 @@ public class UserController {
 //	@RequestMapping("/search")
 	@Deprecated
 	//改用二维码加好友,不使用搜索方式了
-	public Object searchByName(String token,String nickname){
-		//token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		String findId=tokenValidResult.msg;
-		//--------------------------------------------------------
-		
+	public Object searchByName(HttpServletRequest request,String nickname){
+		String findId=request.getAttribute("userid").toString();
 		
 		ListResult result=new ListResult();
 		
-		System.out.println("UserController(搜索者带来的token)："+token);
 		System.out.println("UserController(搜索的用户昵称)："+nickname);
 		
 		List<UserInfo> searchUsers = userService.searchUser(nickname);
@@ -208,14 +190,8 @@ public class UserController {
 	
 	@ResponseBody
 	@RequestMapping("/invite")
-	public Object inviteUser(String token,String code,String openid,String formId){
-		//token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		String findId=tokenValidResult.msg;
-		//--------------------------------------------------------
-		
+	public Object inviteUser(HttpServletRequest request,String code,String openid,String formId){
+		String findId=request.getAttribute("userid").toString();
 		
 		Result result=new Result();
 		

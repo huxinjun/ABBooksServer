@@ -48,13 +48,8 @@ public class MessageController {
     @ResponseBody
     @RequestMapping("/invite")
     
-    public Object getInviteMessage(HttpServletRequest request,HttpServletResponse response,String token,String type/**type必须:1帐友邀请,2加入组邀请*/){
-    	//token检查-----------------------------------------------
-    	Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		String findId=tokenValidResult.msg;
-		//--------------------------------------------------------
+    public Object getInviteMessage(HttpServletRequest request,HttpServletResponse response,String type/**type必须:1帐友邀请,2加入组邀请*/){
+    	String findId=request.getAttribute("userid").toString();
     	
     	
     	ListResult result=new ListResult();
@@ -84,12 +79,8 @@ public class MessageController {
     
     @ResponseBody
     @RequestMapping("/invite/accept")
-    public Object accept(HttpServletRequest request,HttpServletResponse response,String token,int msgId){
-    	//token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		//--------------------------------------------------------
+    public Object accept(HttpServletRequest request,HttpServletResponse response,int msgId){
+
 		
 		Result result=new Result();
 		mMsgService.makeAccepted(msgId);
@@ -120,12 +111,8 @@ public class MessageController {
     
     @ResponseBody
     @RequestMapping("/invite/refuse")
-    public Object refuse(HttpServletRequest request,HttpServletResponse response,String token,int msgId){
-    	//token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		//--------------------------------------------------------
+    public Object refuse(HttpServletRequest request,HttpServletResponse response,int msgId){
+
 		Result result=new Result();
 		Message message = mMsgService.findMessage(msgId);
 		if(message.status==Message.STATUS_INVITE_ACCEPT ||message.status==Message.STATUS_INVITE_REFUSE){
@@ -145,12 +132,8 @@ public class MessageController {
     
     @ResponseBody
     @RequestMapping("/invite/delete")
-    public Object delete(HttpServletRequest request,HttpServletResponse response,String token,int msgId){
-    	//token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		//--------------------------------------------------------
+    public Object delete(HttpServletRequest request,HttpServletResponse response,int msgId){
+
 		Result result=new Result();
 		Message message = mMsgService.findMessage(msgId);
 		if(message.status==Message.STATUS_DELETE){

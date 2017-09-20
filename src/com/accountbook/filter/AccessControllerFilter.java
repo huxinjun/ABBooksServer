@@ -27,7 +27,6 @@ public class AccessControllerFilter implements Filter {
 			response.addHeader("Access-Control-Allow-Origin", "*");
 			response.addHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
     	response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept,X-Requested-With");
-			
 		}
 		arg2.doFilter(arg0, arg1);
 	}

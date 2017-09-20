@@ -10,7 +10,7 @@
   <sql id="colums" >
     id,token,expire_time
   </sql>
-  	<!-- 插入新闻 -->
+  	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.modle.TokenInfo">
 	insert into token(<include refid="colums"></include>)
 	values(#{id},#{token},#{expireTime})

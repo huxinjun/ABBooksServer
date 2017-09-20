@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.ServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,13 +54,8 @@ public class GroupController {
 	
 	@ResponseBody
     @RequestMapping("/add")
-    public Object createNewGroup(String token,String name,String desc){
-//		token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		String findId=tokenValidResult.msg;
-//		--------------------------------------------------------
+    public Object createNewGroup(ServletRequest req,String name,String desc){
+		String findId=req.getAttribute("userid").toString();
 		System.out.println("group name:"+name);
 		
 		Result result=new Result();
@@ -80,14 +78,8 @@ public class GroupController {
 	
 	@ResponseBody
 	@RequestMapping("/get")
-    public Object getGroupInfo(String token,String groupId){
-		System.out.println("!!!!!!!!!!!!!!!!"+token+"--------------"+groupId);
-//		token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		String findId=tokenValidResult.msg;
-//		--------------------------------------------------------
+    public Object getGroupInfo(ServletRequest req,String groupId){
+		String findId=req.getAttribute("userid").toString();
 		
 		
 		GroupResult result=new GroupResult();
@@ -115,13 +107,8 @@ public class GroupController {
 	
 	@ResponseBody
     @RequestMapping("/join")
-    public Object joinGroup(String token,String groupId){
-//		token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		String findId=tokenValidResult.msg;
-//		--------------------------------------------------------
+    public Object joinGroup(ServletRequest req,String groupId){
+		String findId=req.getAttribute("userid").toString();
 		
 		Result result=new Result();
 		groupService.joinGroup(groupId, findId);
@@ -136,13 +123,8 @@ public class GroupController {
 	
 	@ResponseBody
     @RequestMapping("/quit")
-    public Object quitGroup(String token,String groupId){
-//		token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		String findId=tokenValidResult.msg;
-//		--------------------------------------------------------
+    public Object quitGroup(ServletRequest req,String groupId){
+		String findId=req.getAttribute("userid").toString();
 		
 		Result result=new Result();
 		groupService.exitGroup(groupId,findId);
@@ -163,13 +145,8 @@ public class GroupController {
 	
 	@ResponseBody
 	@RequestMapping("/invite")
-	public Object inviteUser(String token,String code,String openid,String groupId,String formId){
-		//token检查-----------------------------------------------
-		Result tokenValidResult=tokenService.validate(token);
-		if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID)
-			return tokenValidResult;
-		String findId=tokenValidResult.msg;
-		//--------------------------------------------------------
+	public Object inviteUser(ServletRequest req,String code,String openid,String groupId,String formId){
+		String findId=req.getAttribute("userid").toString();
 		
 		
 		Result result=new Result();
