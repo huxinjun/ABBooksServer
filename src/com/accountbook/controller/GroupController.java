@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletRequest;
-import javax.xml.registry.infomodel.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,9 +25,9 @@ import com.accountbook.service.IGroupService;
 import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
-import com.accountbook.utils.IconUtil;
 import com.accountbook.utils.HttpUtils;
 import com.accountbook.utils.IDUtil;
+import com.accountbook.utils.IconUtil;
 import com.alibaba.fastjson.JSON;
 
 
@@ -55,7 +54,7 @@ public class GroupController {
 	
 	@ResponseBody
     @RequestMapping("/add")
-    public Object createNewGroup(ServletRequest req,String name,String desc){
+    public Object createNewGroup(ServletRequest req,String name,String category){
 		String findId=req.getAttribute("userid").toString();
 		System.out.println("group name:"+name);
 		
@@ -64,7 +63,7 @@ public class GroupController {
 		Group group=new Group();
 		group.id=IDUtil.generateNewId();
 		group.name=name;
-		group.desc=desc;
+		group.category=category;
 		group.icon=IconUtil.createIcon(name, null);
 		group.adminId=findId;
 		group.time=System.currentTimeMillis();
@@ -79,7 +78,7 @@ public class GroupController {
 	
 	@ResponseBody
 	@RequestMapping("/update")
-	public Object changeGroupInfo(ServletRequest req,String groupId,String name,String desc){
+	public Object changeGroupInfo(ServletRequest req,String groupId,String name,String category){
 		String findId=req.getAttribute("userid").toString();
 		System.out.println("group name:"+name);
 		
@@ -97,15 +96,19 @@ public class GroupController {
 		
 		List<String> icons=new ArrayList<>();
 		for(UserInfo user:result.users){
-			icons.add(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+user.icon);
+			String iconPath=Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+user.icon;
+			
+			icons.add(iconPath);
 		}
 		
-		Group group=new Group();
-		group.name=name;
-		group.desc=desc;
-		group.icon=IconUtil.createIcon(name, icons);
 		
-		groupService.updateGroupInfo(group);
+		result.group.name=name;
+		result.group.category=category;
+		result.group.icon=IconUtil.createIcon(name, icons);
+		
+		System.out.println(result.group);
+		
+		groupService.updateGroupInfo(result.group);
 		
 		result.status=0;
 		result.msg="更新成功!";

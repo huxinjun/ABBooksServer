@@ -56,13 +56,14 @@ public class IconUtil {
 			for(int i=0;memberIcons!=null && i<memberIcons.size();i++){
 				if(i>8)
 					break;
+				System.out.println("本地头像路径："+memberIcons.get(i));
 				Image srcImage = ImageIO.read(new File(memberIcons.get(i))); //读取图片文件
 				int[] position = calcPosition(memberIcons.size()>9?9:memberIcons.size(), i, iconSize, iconSize/25);
 				g.drawImage(srcImage, position[0], position[1], position[2], position[3], null);  //将原始图片 按固定大小绘制到image中
 			}
 			if(memberIcons==null || memberIcons.size()==0){
 				
-				int padding=iconSize/25;
+				int padding=iconSize/50;
 				int fontSize=iconSize-padding*2;
 				System.out.println("字体大小："+fontSize);
 				g.setFont(new Font("微软雅黑",Font.BOLD,fontSize));
@@ -77,6 +78,7 @@ public class IconUtil {
 				
 			}
 			ImageIO.write(image, "jpeg", new File(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename));  //写入磁盘
+			System.out.println("输入绘制头像："+new File(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename).getAbsolutePath());
 
 		} catch (IOException e) {
 			e.printStackTrace();

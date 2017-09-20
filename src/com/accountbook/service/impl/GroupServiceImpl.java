@@ -67,8 +67,7 @@ public class GroupServiceImpl implements IGroupService {
 
 	@Override
 	public void updateGroupInfo(Group data) {
-		// TODO Auto-generated method stub
-		
+		dao.update(data);
 	}
 
 

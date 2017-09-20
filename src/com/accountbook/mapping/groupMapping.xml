@@ -7,7 +7,7 @@
     <result column="admin_id" property="adminId" jdbcType="VARCHAR" />
     <result column="time" property="time" jdbcType="INTEGER" />
     <result column="icon" property="icon" jdbcType="VARCHAR" />
-    <result column="desc" property="desc" jdbcType="VARCHAR" />
+    <result column="category" property="category" jdbcType="VARCHAR" />
   </resultMap>
 
   
@@ -39,7 +39,7 @@
 	
 	<!-- 插入组 -->
 	<insert id="insert" parameterType="com.accountbook.modle.Group">
-		insert into group_ values(#{id},#{name},#{adminId},#{time},#{icon},#{desc})
+		insert into group_ values(#{id},#{name},#{adminId},#{time},#{icon},#{category})
 	</insert>
 	
 	<!-- 组中加用户 -->
@@ -56,19 +56,19 @@
 	
 	
 	<!-- 更新 -->
-	<update id="update" parameterType="com.accountbook.modle.UserInfo">
+	<update id="update" parameterType="com.accountbook.modle.Group">
 		update group_ set 
 		<trim suffixOverrides=",">
-		<if test="name!=null and name.length()>0">
-			name=#{name},
-		</if>
-		<if test="icon!=null and icon.length()>0">
-			icon=#{icon},
-		</if>
-		<if test="desc!=null and desc.length()>0">
-			desc=#{desc},
-		</if>
-	</trim>
-	where id=#{id}
+			<if test="name!=null and name.length()>0">
+				name=#{name},
+			</if>
+			<if test="icon!=null and icon.length()>0">
+				icon=#{icon},
+			</if>
+			<if test="category!=null and category.length()>0">
+				category=#{category},
+			</if>
+		</trim>
+		where id=#{id}
 	</update>
 </mapper>

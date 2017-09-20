@@ -10,11 +10,11 @@ public class Group {
 	public String name;
 	public String adminId;
 	public String icon;
-	public String desc;
+	public String category;
 	public long time;
 	@Override
 	public String toString() {
-		return "Group [id=" + id + ", name=" + name + ", adminId=" + adminId + ", icon=" + icon + ", desc=" + desc
+		return "Group [id=" + id + ", name=" + name + ", adminId=" + adminId + ", icon=" + icon + ", category=" + category
 				+ ", time=" + time + "]";
 	}
 	
