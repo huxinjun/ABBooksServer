@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletRequest;
+import javax.xml.registry.infomodel.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -77,6 +78,41 @@ public class GroupController {
 	}
 	
 	@ResponseBody
+	@RequestMapping("/update")
+	public Object changeGroupInfo(ServletRequest req,String groupId,String name,String desc){
+		String findId=req.getAttribute("userid").toString();
+		System.out.println("group name:"+name);
+		
+		GroupResult result=new GroupResult();
+		
+		result.group=groupService.queryGroupInfo(groupId);
+		result.users=groupService.findUsersByGroupId(groupId);
+		
+		if(!result.group.adminId.equals(findId)){
+			result.status=Result.RESULT_COMMAND_INVALID;
+			result.msg="没有权限!";
+			return result;
+		}
+		
+		
+		List<String> icons=new ArrayList<>();
+		for(UserInfo user:result.users){
+			icons.add(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+user.icon);
+		}
+		
+		Group group=new Group();
+		group.name=name;
+		group.desc=desc;
+		group.icon=IconUtil.createIcon(name, icons);
+		
+		groupService.updateGroupInfo(group);
+		
+		result.status=0;
+		result.msg="更新成功!";
+		return result;
+	}
+	
+	@ResponseBody
 	@RequestMapping("/get")
     public Object getGroupInfo(ServletRequest req,String groupId){
 		String findId=req.getAttribute("userid").toString();
@@ -86,7 +122,6 @@ public class GroupController {
 		
 		result.group=groupService.queryGroupInfo(groupId);
 		
-		System.out.println("group:"+result.group);
 		if(result.group!=null && findId.equals(result.group.adminId))
 			result.isAdmin=true;
 			

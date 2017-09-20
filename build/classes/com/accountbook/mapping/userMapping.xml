@@ -4,6 +4,7 @@
   <resultMap id="map" type="com.accountbook.modle.UserInfo" >
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
     <result column="avatarUrl" property="avatarUrl" jdbcType="VARCHAR" />
     <result column="gender" property="gender" jdbcType="INTEGER" />
     <result column="country" property="country" jdbcType="VARCHAR" />
@@ -12,22 +13,18 @@
     <result column="language" property="language" jdbcType="VARCHAR" />
   </resultMap>
   
-  <sql id="colums" >
-    id,nickname,avatarUrl,gender,country,city,province,language
-  </sql>
 	
 	<!-- 查询-->
 	<select id="queryByName" parameterType="String" resultMap="map">
-		SELECT <include refid="colums"></include> FROM user WHERE nickname like CONCAT(CONCAT('%', #{nickname}), '%')
+		SELECT * FROM user WHERE nickname like CONCAT(CONCAT('%', #{nickname}), '%')
 	</select>
 	<select id="queryById" parameterType="String" resultMap="map">
-		SELECT <include refid="colums"></include> FROM user WHERE id = #{id};
+		SELECT * FROM user WHERE id = #{id};
 	</select>
 	
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.modle.UserInfo">
-	insert into user(<include refid="colums"></include>)
-	values(#{id},#{nickname},#{avatarUrl},#{gender},#{country},#{city},#{province},#{language})
+		insert into user values(#{id},#{nickname},#{avatarUrl},#{gender},#{country},#{city},#{province},#{language})
 	</insert>
 	
 	<!-- 更新 -->
@@ -36,6 +33,9 @@
 		<trim suffixOverrides=",">
 		<if test="nickname!=null and nickname.length()>0">
 			nickname=#{nickname},
+		</if>
+		<if test="icon!=null and icon.length()>0">
+			icon=#{icon},
 		</if>
 		<if test="avatarUrl!=null and avatarUrl.length()>0">
 			avatarUrl=#{avatarUrl},

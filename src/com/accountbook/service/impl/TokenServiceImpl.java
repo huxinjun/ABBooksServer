@@ -3,7 +3,6 @@ package com.accountbook.service.impl;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,13 +94,10 @@ public class TokenServiceImpl implements ITokenService {
             	result.token=rs.getString("token");
             	result.expireTime=rs.getLong("expire_time");
             }
-        } catch (SQLException e) {
-            System.out.println("MySQL操作错误");
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            
+            conn=null;
+            return jdbcQuery(token);
         }
         return result;
 	}

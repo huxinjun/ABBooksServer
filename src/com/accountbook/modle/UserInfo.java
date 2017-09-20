@@ -7,6 +7,7 @@ public class UserInfo {
 	public String id;
 	@JSONField(name="nickName")
 	public String nickname;
+	public String icon;
 	public String avatarUrl;
 	public String gender;
 	public String country;
@@ -16,13 +17,15 @@ public class UserInfo {
 	
 	
 	public boolean flag;
-	
-	
+
+
 	@Override
 	public String toString() {
-		return "UserInfo [id=" + id + ", nickname=" + nickname + ", avatarUrl=" + avatarUrl + ", gender=" + gender
-				+ ", country=" + country + ", city=" + city + ", province=" + province + ", language=" + language + "]";
+		return "UserInfo [id=" + id + ", nickname=" + nickname + ", icon=" + icon + ", avatarUrl=" + avatarUrl
+				+ ", gender=" + gender + ", country=" + country + ", city=" + city + ", province=" + province
+				+ ", language=" + language + ", flag=" + flag + "]";
 	}
+	
 	
 	
 
