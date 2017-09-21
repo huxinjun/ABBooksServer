@@ -43,6 +43,8 @@ public class ImageController {
 	@ResponseBody
 	@RequestMapping(value="/get/{filename}",method=RequestMethod.GET)
 	public void getImage(@PathVariable String filename,HttpServletRequest request,HttpServletResponse response){
+		if(filename==null || "".equals(filename) || "null".equals(filename))
+			return;
 		try {
 			ImageUtils.send(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename, response.getOutputStream());
 		} catch (IOException e) {

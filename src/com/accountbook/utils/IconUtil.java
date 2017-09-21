@@ -34,7 +34,7 @@ public class IconUtil {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		createIcon("主卧", null);
+		createIcon("AB", null);
 	}
 	
 	/**
@@ -63,7 +63,7 @@ public class IconUtil {
 			}
 			if(memberIcons==null || memberIcons.size()==0){
 				
-				int padding=iconSize/50;
+				int padding=(int) (iconSize*(0.1f));
 				int fontSize=iconSize-padding*2;
 				System.out.println("字体大小："+fontSize);
 				g.setFont(new Font("微软雅黑",Font.BOLD,fontSize));
@@ -73,18 +73,19 @@ public class IconUtil {
 					int charWidth = g.getFontMetrics().stringWidth(String.valueOf(charAt));
 					System.out.println("char0:"+String.valueOf(charAt));
 					System.out.println("charWidth:"+charWidth);
-					g.drawString(String.valueOf(charAt), (iconSize-charWidth)/2, fontSize-padding*2);
+					g.drawString(String.valueOf(charAt), (iconSize-charWidth)/2, iconSize-padding*2);
 				}
 				
 			}
+//			ImageIO.write(image, "jpeg", new File("C:\\Users\\Administrator\\Desktop\\aaa.jpg"));  //写入磁盘
 			ImageIO.write(image, "jpeg", new File(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename));  //写入磁盘
 			System.out.println("输入绘制头像："+new File(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename).getAbsolutePath());
-
+			return filename;
 		} catch (IOException e) {
 			e.printStackTrace();
+			return null;
 		}
-		
-	    return filename;
+	    
 	}
 
 	public static int[] calcPosition(int totalCount, int index, int size, int padding) {

@@ -30,6 +30,7 @@ public class TokenFilter implements Filter {
 	@SuppressWarnings("serial")
 	public static List<String> C=new ArrayList<String>(){
 		{
+			add("");
 			add("image");
 		}
 	};
@@ -56,8 +57,8 @@ public class TokenFilter implements Filter {
 		String token = request.getParameter("token");
 		String uri=((HttpServletRequest)request).getRequestURI();
 		
-		System.out.println("TokenFilter.uri:"+uri);
-		System.out.println("TokenFilter.token:"+token);
+//		System.out.println("TokenFilter.uri:"+uri);
+//		System.out.println("TokenFilter.token:"+token);
 		if(token!=null && !"".equals(token)){
 			if(tokenService==null)
 				tokenService=new TokenServiceImpl();
@@ -65,7 +66,7 @@ public class TokenFilter implements Filter {
 			
 			if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID){
 				response.getOutputStream().write("{\"status\":1,\"msg\":\"token无效\"}".getBytes("utf-8"));
-				System.out.println("TokenFilter.error:"+token);
+//				System.out.println("TokenFilter.error:"+token);
 				return;
 			}
 			String findId=tokenValidResult.msg;
@@ -77,8 +78,8 @@ public class TokenFilter implements Filter {
 			String controllerName=split.length>=3?split[2]:"";
 			String methodName=split.length>=4?split[3]:"";
 			
-			System.out.println("TokenFilter.controllerName:"+controllerName);
-			System.out.println("TokenFilter.methodName:"+methodName);
+//			System.out.println("TokenFilter.controllerName:"+controllerName);
+//			System.out.println("TokenFilter.methodName:"+methodName);
 			if(C.contains(controllerName)){
 				chain.doFilter(request, response);
 				return;
@@ -88,7 +89,7 @@ public class TokenFilter implements Filter {
 				return;
 			}
 			response.getOutputStream().write("{\"status\":1,\"msg\":\"token无效\"}".getBytes("utf-8"));
-			System.out.println("TokenFilter.nullToken");
+//			System.out.println("TokenFilter.nullToken");
 		}
 		
 		

@@ -78,37 +78,32 @@ public class GroupController {
 	
 	@ResponseBody
 	@RequestMapping("/update")
-	public Object changeGroupInfo(ServletRequest req,String groupId,String name,String category){
+	public Object updateGroupInfo(ServletRequest req,String groupId,String name,String category){
 		String findId=req.getAttribute("userid").toString();
 		System.out.println("group name:"+name);
 		
-		GroupResult result=new GroupResult();
+		Result result=new Result();
 		
-		result.group=groupService.queryGroupInfo(groupId);
-		result.users=groupService.findUsersByGroupId(groupId);
+		Group group=groupService.queryGroupInfo(groupId);
+		int userCount=groupService.findUsersCountByGroupId(groupId);
+		System.out.println("查询的组:"+group);
+		System.out.println("查询的组用户数:"+userCount);
 		
-		if(!result.group.adminId.equals(findId)){
-			result.status=Result.RESULT_COMMAND_INVALID;
+		if(!group.adminId.equals(findId)){
+			result.status=Result.RESULT_COMMAND_INVALID; 
 			result.msg="没有权限!";
 			return result;
 		}
 		
-		
-		List<String> icons=new ArrayList<>();
-		for(UserInfo user:result.users){
-			String iconPath=Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+user.icon;
-			
-			icons.add(iconPath);
+		if(userCount==0 && !group.name.equals(name)){
+			group.icon=IconUtil.createIcon(name, null);
+			System.out.println("更新头像(无成员):"+group);
 		}
 		
+		group.name=name;
+		group.category=category;
 		
-		result.group.name=name;
-		result.group.category=category;
-		result.group.icon=IconUtil.createIcon(name, icons);
-		
-		System.out.println(result.group);
-		
-		groupService.updateGroupInfo(result.group);
+		groupService.updateGroupInfo(group);
 		
 		result.status=0;
 		result.msg="更新成功!";
@@ -152,6 +147,7 @@ public class GroupController {
 		groupService.joinGroup(groupId, findId);
 		
 		//TODO 更新分组icon
+		updateGroupIcon(groupId);
 		
 		
 		result.status=0;
@@ -169,11 +165,34 @@ public class GroupController {
 		
 		
 		//TODO 更新分组icon
+		updateGroupIcon(groupId);
 		
 		
 		result.status=0;
 		result.msg="成功加入分组!";
 		return result;
+	}
+	
+	/**
+	 * 更新分组头像,当成员变动时,或者初次创建时
+	 */
+	private void updateGroupIcon(String groupId){
+		
+		Group group=groupService.queryGroupInfo(groupId);
+		List<UserInfo> users = groupService.findUsersByGroupId(groupId);
+		
+		
+		List<String> icons=new ArrayList<>();
+		for(UserInfo user:users){
+			String iconPath=Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+user.icon;
+			icons.add(iconPath);
+		}
+		
+		group.icon=IconUtil.createIcon(group.name, icons);
+		
+		System.out.println("更新头像:"+group);
+		
+		groupService.updateGroupInfo(group);
 	}
 	
 	

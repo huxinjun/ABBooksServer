@@ -32,6 +32,10 @@
 		WHERE group_id=#{id};
   </select>
   
+  <select id="queryUsersCount" parameterType="String" resultType="Integer">
+		SELECT COUNT(*) FROM group_user LEFT JOIN user ON group_user.user_id = user.id 
+		WHERE group_id=#{id};
+  </select>
   
 	<select id="queryGroups" parameterType="String" resultMap="map">
 		SELECT * FROM group_user LEFT JOIN group_ ON group_user.group_id=group_.id WHERE user_id==#{userId};

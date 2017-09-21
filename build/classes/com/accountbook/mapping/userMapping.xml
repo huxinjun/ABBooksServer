@@ -24,7 +24,7 @@
 	
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.modle.UserInfo">
-		insert into user values(#{id},#{nickname},#{avatarUrl},#{gender},#{country},#{city},#{province},#{language})
+		insert into user values(#{id},#{nickname},#{icon},#{avatarUrl},#{gender},#{country},#{city},#{province},#{language})
 	</insert>
 	
 	<!-- 更新 -->

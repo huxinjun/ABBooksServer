@@ -9,6 +9,9 @@ public interface IGroupService {
 	
 	/**查询组成员*/
 	public List<UserInfo> findUsersByGroupId(String groupId);
+	/**查询组成员个数*/
+	public int findUsersCountByGroupId(String groupId);
+	
 	/**加入的组*/
 	public List<Group> findJoinGroups(String userId);
 	/**组中加入用户*/

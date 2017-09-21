@@ -14,3 +14,8 @@ member_id IN (SELECT group_id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_
 SELECT id FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ');
 
 SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN(SELECT account_id FROM temp_me_account)
+
+
+
+#使列的数据支持emoji表情
+ALTER TABLE  group_ CHANGE  `name`  `name` VARCHAR( 100 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL

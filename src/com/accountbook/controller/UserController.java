@@ -68,6 +68,11 @@ public class UserController {
 			
 		userinfo.id=findId;
 		
+		//更新信息的时候下载微信头像到服务器
+		String iconName = ImageUtils.download(userinfo.avatarUrl);
+		if(iconName!=null)
+			userinfo.icon=iconName;
+		
 		userService.updateUser(userinfo);
 		
 		

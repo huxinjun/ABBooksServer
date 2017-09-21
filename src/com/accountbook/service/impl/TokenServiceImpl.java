@@ -63,11 +63,13 @@ public class TokenServiceImpl implements ITokenService {
 		
         String sql;
         // MySQL的JDBC URL编写方式：jdbc:mysql://主机名称：连接端口/数据库的名称?参数=值
-        // 避免中文乱码要指定useUnicode和characterEncoding
+        // 避免中文乱码要指定useUnicode和characterEncoding---&useUnicode=true&characterEncoding=UTF8
         // 执行数据库操作之前要在数据库管理系统上创建一个数据库，名字自己定，
         // 下面语句之前就要先创建javademo数据库
-        String url = "jdbc:mysql://118.184.85.209:8888/accountbook?"
-                + "user=root&password=root&useUnicode=true&characterEncoding=UTF8";
+//        String url = "jdbc:mysql://118.184.85.209:8888/accountbook?"
+//                + "user=root&password=root&useUnicode=true&characterEncoding=UTF8";
+        String url = "jdbc:mysql://localhost:3306/accountbook?"
+        		+ "user=root&password=root";
  
         try {
             // 之所以要使用下面这条语句，是因为要使用MySQL的驱动，所以我们要把它驱动起来，

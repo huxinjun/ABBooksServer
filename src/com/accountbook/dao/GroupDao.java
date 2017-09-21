@@ -11,6 +11,9 @@ public interface GroupDao {
 	
 	/**查询组成员*/
 	public List<UserInfo> queryUsers(String groupId);
+	/**查询组成员个数*/
+	public int queryUsersCount(String groupId);
+	
 	/**加入的组*/
 	public List<Group> queryGroups(String userId);
 	/**组中加入用户*/

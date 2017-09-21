@@ -55,18 +55,17 @@ public class LoginController {
     		databaseUser.id=loginInfo.openid;
     		userService.newUSer(databaseUser);
     		
-    		result.status=1;
-        	result.msg="新用户";
+    		result.status=Result.RESULT_USERINFO_INVALID;
+        	result.msg="新用户,请完善用户信息";
         	
     		System.out.println("创建新用户一个,未完善个人信息!");
     	}else if(databaseUser.nickname==null || databaseUser.nickname.equals("")){
     		
-    		result.status=1;
+    		result.status=Result.RESULT_USERINFO_INVALID;
         	result.msg="未完善用户信息";
     		
     	}else{
-    		
-    		result.status=0;
+    		result.status=Result.RESULT_OK;
         	result.msg="登录成功";
         	System.out.println("登录旧用户!");
     	}

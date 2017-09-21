@@ -25,6 +25,11 @@ public class GroupServiceImpl implements IGroupService {
 	public List<UserInfo> findUsersByGroupId(String groupId) {
 		return dao.queryUsers(groupId);
 	}
+	@Override
+	public int findUsersCountByGroupId(String groupId) {
+		return dao.queryUsersCount(groupId);
+	}
+	
 
 	@Override
 	public List<Group> findJoinGroups(String userId) {
@@ -69,6 +74,8 @@ public class GroupServiceImpl implements IGroupService {
 	public void updateGroupInfo(Group data) {
 		dao.update(data);
 	}
+
+	
 
 
 }
