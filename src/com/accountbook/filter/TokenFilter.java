@@ -44,6 +44,17 @@ public class TokenFilter implements Filter {
 		}
 	};
 	
+	/**
+	 * 这个list中配置不需要token的Controller/method
+	 */
+	@SuppressWarnings("serial")
+	public static List<String> CM=new ArrayList<String>(){
+		{
+			add("group/qr");
+		}
+	};
+	
+	
 
 	@Override
 	public void destroy() {
@@ -85,6 +96,10 @@ public class TokenFilter implements Filter {
 				return;
 			}
 			if(M.contains(methodName)){
+				chain.doFilter(request, response);
+				return;
+			}
+			if(CM.contains(controllerName+"/"+methodName)){
 				chain.doFilter(request, response);
 				return;
 			}

@@ -9,6 +9,7 @@ public class UserInfo {
 	public String nickname;
 	public String icon;
 	public String avatarUrl;
+	public String qr;
 	public String gender;
 	public String country;
 	public String city;
@@ -21,11 +22,10 @@ public class UserInfo {
 
 	@Override
 	public String toString() {
-		return "UserInfo [id=" + id + ", nickname=" + nickname + ", icon=" + icon + ", avatarUrl=" + avatarUrl
-				+ ", gender=" + gender + ", country=" + country + ", city=" + city + ", province=" + province
+		return "UserInfo [id=" + id + ", nickname=" + nickname + ", icon=" + icon + ", avatarUrl=" + avatarUrl + ", qr="
+				+ qr + ", gender=" + gender + ", country=" + country + ", city=" + city + ", province=" + province
 				+ ", language=" + language + ", flag=" + flag + "]";
 	}
-	
 	
 	
 

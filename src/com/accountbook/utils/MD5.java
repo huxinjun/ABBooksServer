@@ -72,7 +72,6 @@ public class MD5 {
 
 			int length = -1;
 
-			long s = System.currentTimeMillis();
 
 			while ((length = fis.read(buffer)) != -1) {
 

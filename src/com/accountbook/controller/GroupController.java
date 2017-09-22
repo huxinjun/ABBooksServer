@@ -1,11 +1,14 @@
 package com.accountbook.controller;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,19 +19,16 @@ import com.accountbook.globle.Constants;
 import com.accountbook.modle.Group;
 import com.accountbook.modle.Message;
 import com.accountbook.modle.UserInfo;
-import com.accountbook.modle.WxAccessToken;
-import com.accountbook.modle.WxTemplateInvite;
-import com.accountbook.modle.WxTemplateInvite.KeyWord;
 import com.accountbook.modle.result.GroupResult;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IGroupService;
 import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
-import com.accountbook.utils.HttpUtils;
 import com.accountbook.utils.IDUtil;
 import com.accountbook.utils.IconUtil;
-import com.alibaba.fastjson.JSON;
+import com.accountbook.utils.ImageUtils;
+import com.accountbook.utils.WxUtil;
 
 
 @Controller
@@ -197,6 +197,63 @@ public class GroupController {
 	
 	
 	
+	/**
+	 * 此接口获取分组的二维码
+	 */
+	@ResponseBody
+	@RequestMapping("/qr")
+	public Object qr(HttpServletRequest request,HttpServletResponse response,String groupId){
+		
+		//已经生成过的直接取
+		Group findGroup = groupService.queryGroupInfo(groupId);
+		System.out.println("qr.findGroup:"+findGroup);
+		
+		if(findGroup==null)
+			return new Result(Result.RESULT_FAILD,"未查询到分组");
+		
+		if(findGroup.qr!=null && !"".equals(findGroup.qr))
+			return new Result(Result.RESULT_OK,findGroup.qr);
+		
+		
+		//获取二维码start-------------------------------------------------------------------------------------------------------
+		
+		Result result=new Result();
+		
+		
+		@SuppressWarnings("serial")
+		byte[] image=WxUtil.getQrImage("pages/index/index",new HashMap<String,String>(){
+			{
+				put("groupId",groupId);
+			}
+		});
+		
+		try {
+			//存储到服务器
+			String filename=UUID.randomUUID().toString();
+			String filePath=Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename;
+			
+			ImageUtils.send(image, new FileOutputStream(filePath));
+			
+			Group group=new Group();
+			group.id=groupId;
+			group.qr=filename;
+			groupService.updateGroupInfo(group);
+			
+			result.status=Result.RESULT_OK;
+			result.msg=filename;
+		} catch (Exception e) {
+			
+			result.status=Result.RESULT_FILE_SAVE_ERROR;
+			result.msg="二维码文件存储失败!";
+			e.printStackTrace();
+		}
+		
+		return result;
+		  
+	}
+	
+	
+	
 	
 	
 	
@@ -225,38 +282,11 @@ public class GroupController {
 		msgService.newMessage(msg);
 		
 		
-		//发送模板消息start-------------------------------------------------------------------------------------------------------
-		//获取accesstoken
-    	Map<String,String> params=new HashMap<>();
-    	params.put("appid", Constants.APP_ID);
-    	params.put("secret", Constants.APP_SECRET);
-    	params.put("grant_type", "client_credential");
-    	String accessUrl="https://api.weixin.qq.com/cgi-bin/token";
-    	String info=HttpUtils.sendGet(accessUrl,params);
 		
-    	
-		WxAccessToken accessToken=JSON.parseObject(info, WxAccessToken.class);
-		System.out.println(accessToken);
-		
-		String url="https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token="+accessToken.access_token;
-		
-		WxTemplateInvite invite=new WxTemplateInvite();
-		invite.touser=openid;
-		invite.template_id="r63a82Qy_kap-4SxZUT9SfwS5004qb-l_i17zzUOqY4";
-		invite.page="pages/msg_invite/group_invite";
-		invite.form_id=formId;
-		List<KeyWord> data=new ArrayList<>();
-		data.add(new KeyWord(me.nickname,"#173177"));
-		data.add(new KeyWord("赶紧加入小账本本!!!呲呲的^_^","#173177"));
-		invite.data=data;
-		
-		System.out.println(invite.toString());
-		
-		String str=HttpUtils.sendPost(url,invite.toString());
-		//发送模板消息end-------------------------------------------------------------------------------------------------------
+		String sendResult = WxUtil.sendTemplateInviteMessage(openid, formId, me.nickname, msg.content);
 		
 		result.status=Result.RESULT_OK;
-		result.msg=str;
+		result.msg=sendResult;
 		return result;
 		
 	}

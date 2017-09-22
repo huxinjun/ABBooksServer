@@ -2,6 +2,11 @@ package com.accountbook.modle;
 
 import java.util.List;
 
+/**
+ * 邀请模板
+ * @author Administrator
+ *
+ */
 public class WxTemplateInvite {
 	
 	public String touser;

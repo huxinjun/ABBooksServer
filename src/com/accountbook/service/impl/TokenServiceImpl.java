@@ -58,6 +58,8 @@ public class TokenServiceImpl implements ITokenService {
 	 * @return
 	 */
 	private Connection conn = null;
+	//腾讯云服务器
+	private String host = "139.199.123.164:3306";
 	private TokenInfo jdbcQuery(String token){
 		TokenInfo result = null;
 		
@@ -68,7 +70,7 @@ public class TokenServiceImpl implements ITokenService {
         // 下面语句之前就要先创建javademo数据库
 //        String url = "jdbc:mysql://118.184.85.209:8888/accountbook?"
 //                + "user=root&password=root&useUnicode=true&characterEncoding=UTF8";
-        String url = "jdbc:mysql://localhost:3306/accountbook?"
+        String url = "jdbc:mysql://"+host+"/accountbook?"
         		+ "user=root&password=root";
  
         try {

@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -28,6 +29,8 @@ public class ImageUtils {
 		String download = download("https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eqicvuNcjOEqE68x3yVt8JpI9wuMSw3ib0LIgs7ZPqpz9TzWKS139bftAYTWWM8J0FhVyd4eqcgIdiag/0");
 		System.out.println(download);
 	}
+	
+	
 	/**
 	 * 下载别人的图片
 	 * @param imgUrl
@@ -124,6 +127,15 @@ public class ImageUtils {
 			e.printStackTrace();  
 		}  
 		return false;
+	}
+	
+	
+	public static void saveBytesToTestFile(byte[] rawData){
+		try {
+			ImageUtils.send(rawData, new FileOutputStream("C:\\Users\\Administrator\\Desktop\\test"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	

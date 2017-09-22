@@ -10,12 +10,13 @@ public class Group {
 	public String name;
 	public String adminId;
 	public String icon;
+	public String qr;
 	public String category;
 	public long time;
 	@Override
 	public String toString() {
-		return "Group [id=" + id + ", name=" + name + ", adminId=" + adminId + ", icon=" + icon + ", category=" + category
-				+ ", time=" + time + "]";
+		return "Group [id=" + id + ", name=" + name + ", adminId=" + adminId + ", icon=" + icon + ", qr=" + qr
+				+ ", category=" + category + ", time=" + time + "]";
 	}
 	
 	
