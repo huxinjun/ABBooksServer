@@ -19,7 +19,6 @@ import com.accountbook.globle.Constants;
 import com.accountbook.modle.Group;
 import com.accountbook.modle.Message;
 import com.accountbook.modle.UserInfo;
-import com.accountbook.modle.result.GroupResult;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IGroupService;
 import com.accountbook.service.IMessageService;
@@ -70,9 +69,7 @@ public class GroupController {
 		
 		groupService.addGroup(group);
 		
-		
-		result.status=0;
-		result.msg=group.id;
+		result.put(Result.RESULT_OK, group.id);
 		return result;
 	}
 	
@@ -90,9 +87,7 @@ public class GroupController {
 		System.out.println("查询的组用户数:"+userCount);
 		
 		if(!group.adminId.equals(findId)){
-			result.status=Result.RESULT_COMMAND_INVALID; 
-			result.msg="没有权限!";
-			return result;
+			return result.put(Result.RESULT_COMMAND_INVALID, "没有权限!");
 		}
 		
 		if(userCount==0 && !group.name.equals(name)){
@@ -105,9 +100,7 @@ public class GroupController {
 		
 		groupService.updateGroupInfo(group);
 		
-		result.status=0;
-		result.msg="更新成功!";
-		return result;
+		return result.put(Result.RESULT_OK, "更新成功!");
 	}
 	
 	@ResponseBody
@@ -116,25 +109,23 @@ public class GroupController {
 		String findId=req.getAttribute("userid").toString();
 		
 		
-		GroupResult result=new GroupResult();
+		Result result=new Result();
 		
-		result.group=groupService.queryGroupInfo(groupId);
+		Group groupInfo = groupService.queryGroupInfo(groupId);
+		result.put("group", groupService.queryGroupInfo(groupId));
 		
-		if(result.group!=null && findId.equals(result.group.adminId))
-			result.isAdmin=true;
+		if(groupInfo!=null && findId.equals(groupInfo.adminId))
+			result.put("isAdmin",true);
 			
-		result.users=groupService.findUsersByGroupId(groupId);
-		if(result.users!=null)
-			for(UserInfo info:result.users)
+		List<UserInfo> findUsersByGroupId = groupService.findUsersByGroupId(groupId);
+		if(findUsersByGroupId!=null)
+			for(UserInfo info:findUsersByGroupId)
 				if(findId.equals(info.id)){
-					result.isMember=true;
+					result.put("isMember",true);
 					break;
 				}
 		
-		
-		result.status=0;
-		result.msg="查询分组信息成功!";
-		return result;
+		return result.put(Result.RESULT_OK, "查询分组信息成功!");
 	}
 	
 	
@@ -150,9 +141,7 @@ public class GroupController {
 		updateGroupIcon(groupId);
 		
 		
-		result.status=0;
-		result.msg="成功加入分组!";
-		return result;
+		return result.put(Result.RESULT_OK, "成功加入分组!");
 	}
 	
 	@ResponseBody
@@ -167,10 +156,7 @@ public class GroupController {
 		//TODO 更新分组icon
 		updateGroupIcon(groupId);
 		
-		
-		result.status=0;
-		result.msg="成功加入分组!";
-		return result;
+		return result.put(Result.RESULT_OK, "成功退出分组!");
 	}
 	
 	/**
@@ -206,7 +192,6 @@ public class GroupController {
 		
 		//已经生成过的直接取
 		Group findGroup = groupService.queryGroupInfo(groupId);
-		System.out.println("qr.findGroup:"+findGroup);
 		
 		if(findGroup==null)
 			return new Result(Result.RESULT_FAILD,"未查询到分组");
@@ -239,12 +224,9 @@ public class GroupController {
 			group.qr=filename;
 			groupService.updateGroupInfo(group);
 			
-			result.status=Result.RESULT_OK;
-			result.msg=filename;
+			result.put(Result.RESULT_OK, filename);
 		} catch (Exception e) {
-			
-			result.status=Result.RESULT_FILE_SAVE_ERROR;
-			result.msg="二维码文件存储失败!";
+			result.put(Result.RESULT_FILE_SAVE_ERROR, "二维码文件存储失败!");
 			e.printStackTrace();
 		}
 		
@@ -285,9 +267,7 @@ public class GroupController {
 		
 		String sendResult = WxUtil.sendTemplateInviteMessage(openid, formId, me.nickname, msg.content);
 		
-		result.status=Result.RESULT_OK;
-		result.msg=sendResult;
-		return result;
+		return result.put(Result.RESULT_FILE_SAVE_ERROR, sendResult);
 		
 	}
 	

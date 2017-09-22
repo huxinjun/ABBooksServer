@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.accountbook.globle.Constants;
 import com.accountbook.modle.Message;
 import com.accountbook.modle.UserInfo;
-import com.accountbook.modle.result.ListResult;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IFriendService;
 import com.accountbook.service.IMessageService;
@@ -47,7 +46,17 @@ public class UserController {
 	
 	
 	
-	
+	@ResponseBody
+    @RequestMapping("/get")
+    public Object findUser(HttpServletRequest request,String userId){
+//		String findId=request.getAttribute("userid").toString();
+		
+		
+		Result result=new Result();
+		
+		UserInfo userinfo=userService.findUser(userId);
+		return result.put(Result.RESULT_OK, "更新用户信息成功!").put("userinfo", userinfo);
+	}
 	
     
 	@ResponseBody
@@ -73,9 +82,7 @@ public class UserController {
 		userService.updateUser(userinfo);
 		
 		
-		result.status=0;
-		result.msg="更新用户信息成功!";
-		return result;
+		return result.put(Result.RESULT_OK, "更新用户信息成功");
 		
 	}
 	
@@ -121,12 +128,9 @@ public class UserController {
 			user.qr=filename;
 			userService.updateUser(user);
 			
-			result.status=Result.RESULT_OK;
-			result.msg=filename;
+			result.put(Result.RESULT_OK, filename);
 		} catch (Exception e) {
-			
-			result.status=Result.RESULT_FILE_SAVE_ERROR;
-			result.msg="二维码文件存储失败!";
+			result.put(Result.RESULT_FILE_SAVE_ERROR, "二维码文件存储失败!");
 			e.printStackTrace();
 		}
 		
@@ -164,9 +168,7 @@ public class UserController {
 		
 		String sendResult = WxUtil.sendTemplateInviteMessage(openid, formId, me.nickname, msg.content);
 		
-		result.status=Result.RESULT_OK;
-		result.msg=sendResult;
-		return result;
+		return result.put(Result.RESULT_OK, sendResult);
 		
 	}
 	
@@ -212,7 +214,7 @@ public class UserController {
 	public Object searchByName(HttpServletRequest request,String nickname){
 		String findId=request.getAttribute("userid").toString();
 		
-		ListResult result=new ListResult();
+		Result result=new Result();
 		
 		System.out.println("UserController(搜索的用户昵称)："+nickname);
 		
@@ -221,11 +223,7 @@ public class UserController {
 		for(UserInfo info:searchUsers)
 			info.flag=friendService.isFriend(findId, info.id);
 		
-		result.datas=searchUsers;
-		
-		result.status=Result.RESULT_OK;
-		result.msg="查询成功!";
-		return result;
+		return result.put("datas", searchUsers).put(Result.RESULT_OK, "查询成功!");
 		
 	}
 }

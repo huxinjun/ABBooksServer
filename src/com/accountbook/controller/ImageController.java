@@ -32,10 +32,7 @@ public class ImageController {
 	public Object upload(@RequestParam("image")CommonsMultipartFile file,HttpServletRequest request,HttpServletResponse response) throws IOException{
 		System.out.println("文件来了");
 		File serverFile=FileUtils.saveUploadFile(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD, file);
-		Result result=new Result();
-		result.status=0;
-		result.msg=serverFile.getName();
-		return result;
+		return new Result(Result.RESULT_OK,serverFile.getName());
 	}
 
 	

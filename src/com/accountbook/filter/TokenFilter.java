@@ -75,12 +75,13 @@ public class TokenFilter implements Filter {
 				tokenService=new TokenServiceImpl();
 			Result tokenValidResult=tokenService.validate(token);
 			
-			if(tokenValidResult.status==Result.RESULT_TOKEN_INVALID){
+			
+			if((int)tokenValidResult.get("status")==Result.RESULT_TOKEN_INVALID){
 				response.getOutputStream().write("{\"status\":1,\"msg\":\"token无效\"}".getBytes("utf-8"));
 //				System.out.println("TokenFilter.error:"+token);
 				return;
 			}
-			String findId=tokenValidResult.msg;
+			String findId=tokenValidResult.get("msg").toString();
 			request.setAttribute("userid", findId);
 			chain.doFilter(request, response);
 		}else{

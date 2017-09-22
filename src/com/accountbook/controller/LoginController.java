@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.accountbook.globle.Constants;
 import com.accountbook.modle.UserInfo;
 import com.accountbook.modle.WxSession;
-import com.accountbook.modle.result.LoginResult;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
@@ -35,7 +34,7 @@ public class LoginController {
 	@ResponseBody
     @RequestMapping("/fromWX")
     public Result loginFromWx(HttpServletRequest request,HttpServletResponse response,@RequestParam(required=true) String code){
-		LoginResult result=new LoginResult();
+		Result result=new Result();
     	
 		//换取openid和session_key
     	Map<String,String> params=new HashMap<>();
@@ -55,18 +54,17 @@ public class LoginController {
     		databaseUser.id=loginInfo.openid;
     		userService.newUSer(databaseUser);
     		
-    		result.status=Result.RESULT_USERINFO_INVALID;
-        	result.msg="新用户,请完善用户信息";
+    		result.put(Result.RESULT_USERINFO_INVALID, "新用户,请完善用户信息");
         	
     		System.out.println("创建新用户一个,未完善个人信息!");
     	}else if(databaseUser.nickname==null || databaseUser.nickname.equals("")){
     		
-    		result.status=Result.RESULT_USERINFO_INVALID;
-        	result.msg="未完善用户信息";
+    		
+    		result.put(Result.RESULT_USERINFO_INVALID, "未完善用户信息");
     		
     	}else{
-    		result.status=Result.RESULT_OK;
-        	result.msg="登录成功";
+    		
+    		result.put(Result.RESULT_OK, "登录成功");
         	System.out.println("登录旧用户!");
     	}
     	
@@ -77,7 +75,7 @@ public class LoginController {
     	
     	tokenService.updateToken(databaseUser.id,token,false);
     	
-    	result.token=token;
+    	result.put("token", token);
 		return result;
     	
     }

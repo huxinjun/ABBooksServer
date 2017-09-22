@@ -29,13 +29,9 @@ public class TokenServiceImpl implements ITokenService {
 		String id = getId(token);
 		System.out.println("UserController(根据token["+token+"]查找的openid)："+id);
 		if(id==null){
-			result.status=1;
-			result.msg="token无效";
-			return result;
+			return result.put(Result.RESULT_TOKEN_INVALID, "token无效");
 		}
-		result.status=0;
-		result.msg=id;
-		return result;
+		return result.put(Result.RESULT_OK, id);
 	}
 	
 	

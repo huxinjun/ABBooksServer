@@ -94,7 +94,7 @@ public class ImageUtils {
 	 * @return
 	 */
 	public static boolean send(String localPath,OutputStream os) {
-		System.out.println(localPath);
+		System.out.println("ImageUtils.sendServerFile:"+localPath);
 		try {  
 			  
 			FileInputStream fis=new FileInputStream(localPath);

@@ -68,7 +68,7 @@ public class WxUtil {
 		}
 		sb.append("\",\"width\": 500}");
 		
-		System.out.println(sb.toString());
+		System.out.println("WxUtil.getQrImage:"+sb.toString());
 		
 		byte[] rawData = HttpUtils.sendPost2(url,sb.toString());
 		
