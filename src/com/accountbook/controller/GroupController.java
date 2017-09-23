@@ -164,7 +164,9 @@ public class GroupController {
 					break;
 				}
 		
-		return result.put(Result.RESULT_OK, "查询分组信息成功!");
+		
+		
+		return result.put(Result.RESULT_OK, "查询分组信息成功!").put("users", findUsersByGroupId);
 	}
 	
 	
