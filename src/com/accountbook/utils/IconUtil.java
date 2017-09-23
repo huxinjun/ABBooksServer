@@ -12,7 +12,6 @@ import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
-import com.accountbook.globle.Constants;
 
 /**
  * 创建分组头像的工具
@@ -58,7 +57,7 @@ public class IconUtil {
 					break;
 				System.out.println("本地头像路径："+memberIcons.get(i));
 				Image srcImage = ImageIO.read(new File(memberIcons.get(i))); //读取图片文件
-				int[] position = calcPosition(memberIcons.size()>9?9:memberIcons.size(), i, iconSize, iconSize/25);
+				int[] position = calcPosition(memberIcons.size()>9?9:memberIcons.size(), i, iconSize, iconSize/10);
 				g.drawImage(srcImage, position[0], position[1], position[2], position[3], null);  //将原始图片 按固定大小绘制到image中
 			}
 			if(memberIcons==null || memberIcons.size()==0){
@@ -78,8 +77,8 @@ public class IconUtil {
 				
 			}
 //			ImageIO.write(image, "jpeg", new File("C:\\Users\\Administrator\\Desktop\\aaa.jpg"));  //写入磁盘
-			ImageIO.write(image, "jpeg", new File(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename));  //写入磁盘
-			System.out.println("输入绘制头像："+new File(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename).getAbsolutePath());
+			ImageIO.write(image, "jpeg", new File(ImageUtils.getImagePath(filename)));  //写入磁盘
+			System.out.println("输入绘制头像："+new File(ImageUtils.getImagePath(filename)).getAbsolutePath());
 			return filename;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -95,6 +94,8 @@ public class IconUtil {
 		int line3Top=0;
 	    switch (totalCount) {
 	        case 1:
+	        	//一个人时调整一下padiing
+	        	padding=size/5;
 	            picSize = size - padding * 2;
 	            return new int[]{padding, padding, picSize, picSize};
 	        case 2:

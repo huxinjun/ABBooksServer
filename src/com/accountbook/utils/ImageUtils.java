@@ -17,6 +17,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 import com.accountbook.globle.Constants;
 
+
 /**
  * 下载图片的工具类
  * @author XINJUN
@@ -30,6 +31,15 @@ public class ImageUtils {
 		System.out.println(download);
 	}
 	
+	/**
+	 * 获取图像在服务器上的路径
+	 * @param filename 数据库中存储的文件名
+	 * @return
+	 */
+	public static String getImagePath(String filename){
+		return Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+(TextUtils.isEmpty(filename)?"":filename);
+	}
+	
 	
 	/**
 	 * 下载别人的图片
@@ -39,7 +49,7 @@ public class ImageUtils {
 	 */
 	public static String download(String imgUrl) {
 		String filename=UUID.randomUUID().toString();
-		String filePath=Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename;
+		String filePath=ImageUtils.getImagePath(filename);
 		try {  
 			  
 			// 创建SSLContext对象，并使用我们指定的信任管理器初始化 

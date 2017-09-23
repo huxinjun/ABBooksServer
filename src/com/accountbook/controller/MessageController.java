@@ -69,7 +69,7 @@ public class MessageController {
     		msgResult.put("nickname",findUser.nickname);
     		msgResult.put("msg",msg.content);
     		msgResult.put("time",dateStr);
-    		msgResult.put("status",msg.status);
+    		msgResult.put("state",msg.state);
     		
     		resultMsgs.add(msgResult);
     	}
@@ -112,7 +112,7 @@ public class MessageController {
 
 		Result result=new Result();
 		Message message = mMsgService.findMessage(msgId);
-		if(message.status==Message.STATUS_INVITE_ACCEPT ||message.status==Message.STATUS_INVITE_REFUSE){
+		if(message.state==Message.STATUS_INVITE_ACCEPT ||message.state==Message.STATUS_INVITE_REFUSE){
 			return result.put(Result.RESULT_COMMAND_INVALID, "重复操作!");
 		}
 		
@@ -129,7 +129,7 @@ public class MessageController {
 
 		Result result=new Result();
 		Message message = mMsgService.findMessage(msgId);
-		if(message.status==Message.STATUS_DELETE){
+		if(message.state==Message.STATUS_DELETE){
 			return result.put(Result.RESULT_COMMAND_INVALID, "重复操作!");
 		}
 		

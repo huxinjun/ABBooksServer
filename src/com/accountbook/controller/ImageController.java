@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import com.accountbook.globle.Constants;
 import com.accountbook.modle.result.Result;
 import com.accountbook.utils.FileUtils;
 import com.accountbook.utils.ImageUtils;
@@ -31,7 +30,7 @@ public class ImageController {
 	@RequestMapping(value="/upload",method=RequestMethod.POST)
 	public Object upload(@RequestParam("image")CommonsMultipartFile file,HttpServletRequest request,HttpServletResponse response) throws IOException{
 		System.out.println("文件来了");
-		File serverFile=FileUtils.saveUploadFile(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD, file);
+		File serverFile=FileUtils.saveUploadFile(ImageUtils.getImagePath(null),file);
 		return new Result(Result.RESULT_OK,serverFile.getName());
 	}
 
@@ -43,7 +42,7 @@ public class ImageController {
 		if(filename==null || "".equals(filename) || "null".equals(filename))
 			return;
 		try {
-			ImageUtils.send(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename, response.getOutputStream());
+			ImageUtils.send(ImageUtils.getImagePath(filename), response.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -51,7 +50,7 @@ public class ImageController {
 	
 	@RequestMapping(value="/delete/{filename}",method=RequestMethod.GET)
 	public void deleteImage(@PathVariable String filename,HttpServletResponse response){
-		File file=new File(Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename);
+		File file=new File(ImageUtils.getImagePath(filename));
 		if(file.exists())
 			file.delete();
 	}

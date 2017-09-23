@@ -8,11 +8,11 @@
     <result column="type" property="type" jdbcType="TINYINT" />
     <result column="content" property="content" jdbcType="VARCHAR" />
     <result column="time" property="timeMiles" jdbcType="INTEGER" />
-    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="state" property="state" jdbcType="TINYINT" />
   </resultMap>
   
   <sql id="colums" >
-    id,invite_id,accept_id,type,content,time,status
+    id,invite_id,accept_id,type,content,time,state
   </sql>
 	<select id="query" parameterType="integer" resultMap="map">
 		SELECT * FROM message WHERE id = #{id};
@@ -21,33 +21,33 @@
 		SELECT * FROM message WHERE accept_id = #{acceptId};
 	</select>
 	<select id="queryInviteMsgById" parameterType="String" resultMap="map">
-		SELECT * FROM message WHERE accept_id = #{0,jdbcType=VARCHAR} and type=#{1,jdbcType=TINYINT} and status!=2;
+		SELECT * FROM message WHERE accept_id = #{0,jdbcType=VARCHAR} and type=#{1,jdbcType=TINYINT} and state!=2;
 	</select>
 	
 	<select id="querySystemMsgById" parameterType="String" resultMap="map">
-		SELECT * FROM message WHERE accept_id = #{acceptId} and type=0 and status!=2;
+		SELECT * FROM message WHERE accept_id = #{acceptId} and type=0 and state!=2;
 	</select>
 	
 	<select id="queryUnreadCount" parameterType="String" resultType="integer">
-		SELECT * FROM message WHERE accept_id = #{acceptId} and status=0;
+		SELECT * FROM message WHERE accept_id = #{acceptId} and state=0;
 	</select>
 	
 	<select id="queryInviteUnreadCount" parameterType="String" resultType="integer">
-		SELECT * FROM message WHERE accept_id = #{acceptId} and type=1 and status=0;
+		SELECT * FROM message WHERE accept_id = #{acceptId} and type=1 and state=0;
 	</select>
 	
 	<select id="querySystemUnreadCount" parameterType="String" resultType="integer">
-		SELECT * FROM message WHERE accept_id = #{acceptId} and type=0 and status=0;
+		SELECT * FROM message WHERE accept_id = #{acceptId} and type=0 and state=0;
 	</select>
 	
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.modle.Message">
 		insert into message(<include refid="colums"></include>)
-		values(null,#{inviteId},#{acceptId},#{type},#{content},#{timeMiles},#{status})
+		values(null,#{inviteId},#{acceptId},#{type},#{content},#{timeMiles},#{state})
 	</insert>
 	
 	<!-- 更新 -->
 	<update id="updateStatus" parameterType="java.lang.Integer">
-		update message set status=#{1} where id=#{0}
+		update message set state=#{1} where id=#{0}
 	</update>
 </mapper>

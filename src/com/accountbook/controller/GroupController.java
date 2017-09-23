@@ -1,5 +1,6 @@
 package com.accountbook.controller;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.accountbook.globle.Constants;
 import com.accountbook.modle.Group;
 import com.accountbook.modle.Message;
 import com.accountbook.modle.UserInfo;
@@ -27,6 +27,7 @@ import com.accountbook.service.IUserService;
 import com.accountbook.utils.IDUtil;
 import com.accountbook.utils.IconUtil;
 import com.accountbook.utils.ImageUtils;
+import com.accountbook.utils.TextUtils;
 import com.accountbook.utils.WxUtil;
 
 
@@ -86,11 +87,23 @@ public class GroupController {
 		System.out.println("查询的组:"+group);
 		System.out.println("查询的组用户数:"+userCount);
 		
+		
+		
 		if(!group.adminId.equals(findId)){
 			return result.put(Result.RESULT_COMMAND_INVALID, "没有权限!");
 		}
 		
 		if(userCount==0 && !group.name.equals(name)){
+			
+			if(TextUtils.isNotEmpty(group.icon)){
+				File oldFile=new File(ImageUtils.getImagePath(group.icon));
+				if(oldFile.exists()){
+					System.out.println("updateGroupIcon.删除旧图(无成员):"+oldFile.getAbsolutePath());
+					oldFile.delete();
+				}
+			}
+			
+			
 			group.icon=IconUtil.createIcon(name, null);
 			System.out.println("更新头像(无成员):"+group);
 		}
@@ -103,6 +116,32 @@ public class GroupController {
 		return result.put(Result.RESULT_OK, "更新成功!");
 	}
 	
+	
+	
+	/**
+	 * 查询分组简单信息
+	 */
+	@ResponseBody
+	@RequestMapping("/getSimple")
+    public Object getSimpleGroupInfo(ServletRequest req,String groupId){
+//		String findId=req.getAttribute("userid").toString();
+		
+		
+		Result result=new Result();
+		
+		Group groupInfo = groupService.queryGroupInfo(groupId);
+		
+		
+		if(groupInfo!=null)
+			return result.put(Result.RESULT_OK, "查询分组信息成功!").put(groupInfo);
+		else
+			return result.put(Result.RESULT_FAILD, "未查询到任何分组!");
+		
+	}
+	
+	/**
+	 * 查询分组详细信息
+	 */
 	@ResponseBody
 	@RequestMapping("/get")
     public Object getGroupInfo(ServletRequest req,String groupId){
@@ -167,16 +206,23 @@ public class GroupController {
 		Group group=groupService.queryGroupInfo(groupId);
 		List<UserInfo> users = groupService.findUsersByGroupId(groupId);
 		
+		if(TextUtils.isNotEmpty(group.icon)){
+			File oldFile=new File(ImageUtils.getImagePath(group.icon));
+			if(oldFile.exists()){
+				System.out.println("updateGroupIcon.删除旧图:"+oldFile.getAbsolutePath());
+				oldFile.delete();
+			}
+		}
 		
 		List<String> icons=new ArrayList<>();
 		for(UserInfo user:users){
-			String iconPath=Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+user.icon;
+			String iconPath = ImageUtils.getImagePath(user.icon);
 			icons.add(iconPath);
 		}
 		
 		group.icon=IconUtil.createIcon(group.name, icons);
 		
-		System.out.println("更新头像:"+group);
+		System.out.println("updateGroupIcon.更新头像:"+group);
 		
 		groupService.updateGroupInfo(group);
 	}
@@ -215,7 +261,7 @@ public class GroupController {
 		try {
 			//存储到服务器
 			String filename=UUID.randomUUID().toString();
-			String filePath=Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename;
+			String filePath=ImageUtils.getImagePath(filename);
 			
 			ImageUtils.send(image, new FileOutputStream(filePath));
 			
@@ -260,7 +306,7 @@ public class GroupController {
 		msg.type=Message.MESSAGE_TYPE_INVITE_GROUP;
 		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",加入分组["+groupInfo.name+"]一起记账哦^~^";
 		msg.timeMiles=System.currentTimeMillis();
-		msg.status=Message.STATUS_UNREAD;
+		msg.state=Message.STATUS_UNREAD;
 		msgService.newMessage(msg);
 		
 		

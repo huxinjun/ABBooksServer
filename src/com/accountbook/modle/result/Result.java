@@ -24,10 +24,10 @@ public class Result extends HashMap<String,Object>{
 	
 	public static final int RESULT_FAILD=99;
 	
-	{
-		put("status",RESULT_NOT_INIT);
-		put("msg","");
-	}
+//	{
+//		put("status",RESULT_NOT_INIT);
+//		put("msg","");
+//	}
 	
 	public Result(){
 	}

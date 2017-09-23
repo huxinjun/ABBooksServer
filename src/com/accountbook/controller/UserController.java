@@ -13,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.accountbook.globle.Constants;
 import com.accountbook.modle.Message;
 import com.accountbook.modle.UserInfo;
 import com.accountbook.modle.result.Result;
@@ -55,7 +54,7 @@ public class UserController {
 		Result result=new Result();
 		
 		UserInfo userinfo=userService.findUser(userId);
-		return result.put(Result.RESULT_OK, "更新用户信息成功!").put("userinfo", userinfo);
+		return result.put(Result.RESULT_OK, "查询用户信息成功!").put(userinfo);
 	}
 	
     
@@ -119,7 +118,7 @@ public class UserController {
 		try {
 			//存储到服务器
 			String filename=UUID.randomUUID().toString();
-			String filePath=Constants.EXTERN_FILE_DIR+Constants.PATH_IMAGE_UPLOAD+filename;
+			String filePath=ImageUtils.getImagePath(filename);
 			
 			ImageUtils.send(image, new FileOutputStream(filePath));
 			
@@ -162,7 +161,7 @@ public class UserController {
 		msg.type=Message.MESSAGE_TYPE_INVITE_USER;
 		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",我们一起记账吧^~^";
 		msg.timeMiles=System.currentTimeMillis();
-		msg.status=Message.STATUS_UNREAD;
+		msg.state=Message.STATUS_UNREAD;
 		msgService.newMessage(msg);
 		
 		
