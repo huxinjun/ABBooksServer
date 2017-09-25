@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.accountbook.dao.AccountDao" >
+  <resultMap id="membersMap" type="com.accountbook.modle.Member" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
+    <result column="is_group" property="isGroup" jdbcType="BOOLEAN" />
+  </resultMap>
+
+  
+  
+	<select id="queryMembers" parameterType="String" resultMap="membersMap">
+		SELECT id,NAME,icon,TRUE is_group FROM group_ WHERE admin_id=#{userId} OR id IN 
+		(SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN (
+		SELECT account_id FROM account_member WHERE member_id=#{userId} OR 
+		member_id IN (SELECT group_id FROM group_user WHERE user_id=#{userId} UNION 
+		SELECT id FROM group_ WHERE admin_id=#{userId})))
+		
+		UNION
+		
+		SELECT id,nickname AS NAME,icon,FALSE is_group FROM USER WHERE id IN(
+		SELECT accept_id AS id FROM friend WHERE invite_id=#{userId}
+		UNION
+		SELECT invite_id AS id FROM friend WHERE accept_id=#{userId})
+	</select>
+	
+	
+</mapper>

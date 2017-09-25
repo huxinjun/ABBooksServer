@@ -12,10 +12,48 @@ CREATE OR REPLACE VIEW `temp_me_account` AS
 SELECT DISTINCT account_id FROM account_member WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR 
 member_id IN (SELECT group_id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' UNION 
 SELECT id FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ');
+#查询自己创建的组和账单中与自己相关的组的简要信息
+SELECT id,NAME,icon,TRUE is_group FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR id IN (SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN (SELECT account_id FROM temp_me_account))
 
-SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN(SELECT account_id FROM temp_me_account)
+#---------------------------------------------------------------------------------
+#查询自己的帐友id
+SELECT accept_id AS id FROM friend WHERE invite_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+UNION
+SELECT invite_id AS id FROM friend WHERE accept_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+
+#查询自己的帐友简要信息
+SELECT id,nickname AS NAME,icon,FALSE is_group FROM USER WHERE id IN(
+SELECT accept_id AS id FROM friend WHERE invite_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+UNION
+SELECT invite_id AS id FROM friend WHERE accept_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')
+#---------------------------------------------------------------------------------
 
 
 
-#使列的数据支持emoji表情
-ALTER TABLE  group_ CHANGE  `name`  `name` VARCHAR( 100 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL
+#查询所有和我有关系的组和用户,记账时可选的成员
+CREATE OR REPLACE VIEW temp_me_account AS
+SELECT DISTINCT account_id FROM account_member WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR 
+member_id IN (SELECT group_id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' UNION 
+SELECT id FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ');
+#查询自己创建的组和账单中与自己相关的组
+SELECT id,NAME,icon,TRUE is_group FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR id IN (SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN (SELECT account_id FROM temp_me_account))
+UNION
+SELECT id,nickname AS NAME,icon,FALSE is_group FROM USER WHERE id IN(
+SELECT accept_id AS id FROM friend WHERE invite_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+UNION
+SELECT invite_id AS id FROM friend WHERE accept_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')
+
+#不使用视图
+#查询自己创建的组和账单中与自己相关的组
+SELECT id,NAME,icon,TRUE is_group FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR 
+id IN (
+SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN (
+SELECT account_id FROM account_member WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR 
+member_id IN (SELECT group_id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' UNION 
+SELECT id FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')))
+UNION
+#查询所有帐友
+SELECT id,nickname AS NAME,icon,FALSE is_group FROM USER WHERE id IN(
+SELECT accept_id AS id FROM friend WHERE invite_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+UNION
+SELECT invite_id AS id FROM friend WHERE accept_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')

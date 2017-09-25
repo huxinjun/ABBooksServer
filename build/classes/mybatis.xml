@@ -19,6 +19,7 @@
 		<mapper resource="com/accountbook/mapping/msgMapping.xml"/>
 		<mapper resource="com/accountbook/mapping/friendMapping.xml"/>
 		<mapper resource="com/accountbook/mapping/groupMapping.xml"/>
+		<mapper resource="com/accountbook/mapping/accountMapping.xml"/>
 		</mappers>
 
 

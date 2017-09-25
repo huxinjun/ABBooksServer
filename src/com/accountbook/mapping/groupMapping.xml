@@ -25,22 +25,26 @@
   </resultMap>
   
   <select id="queryById" parameterType="String" resultMap="map">
-		SELECT * FROM group_ WHERE id=#{id};
+		SELECT * FROM group_ WHERE id=#{groupId};
 	</select>
   
   
   <select id="queryUsers" parameterType="String" resultMap="usermap">
 		SELECT * FROM group_user LEFT JOIN user ON group_user.user_id = user.id 
-		WHERE group_id=#{id};
+		WHERE group_id=#{groupId};
   </select>
   
   <select id="queryUsersCount" parameterType="String" resultType="Integer">
 		SELECT COUNT(*) FROM group_user LEFT JOIN user ON group_user.user_id = user.id 
-		WHERE group_id=#{id};
+		WHERE group_id=#{groupId};
   </select>
   
 	<select id="queryGroups" parameterType="String" resultMap="map">
-		SELECT * FROM group_user LEFT JOIN group_ ON group_user.group_id=group_.id WHERE user_id==#{userId};
+		SELECT id,NAME,icon,TRUE is_group FROM group_ WHERE admin_id=#{userId} OR id IN 
+		(SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN (
+		SELECT account_id FROM account_member WHERE member_id=#{userId} OR 
+		member_id IN (SELECT group_id FROM group_user WHERE user_id=#{userId} UNION 
+		SELECT id FROM group_ WHERE admin_id=#{userId})))
 	</select>
 	
 	<!-- 插入组 -->
