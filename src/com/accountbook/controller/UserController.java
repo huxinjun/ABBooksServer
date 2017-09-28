@@ -48,13 +48,32 @@ public class UserController {
 	@ResponseBody
     @RequestMapping("/get")
     public Object findUser(HttpServletRequest request,String userId){
-//		String findId=request.getAttribute("userid").toString();
 		
 		
 		Result result=new Result();
 		
 		UserInfo userinfo=userService.findUser(userId);
 		return result.put(Result.RESULT_OK, "查询用户信息成功!").put(userinfo);
+	}
+	
+	
+	/**
+	 * 根据token查询用户的简要信息
+	 */
+	@ResponseBody
+    @RequestMapping("/getSelfSimple")
+    public Object findUser(HttpServletRequest request){
+		String findId=request.getAttribute("userid").toString();
+		
+		
+		Result result=new Result();
+		
+		UserInfo userinfo=userService.findUser(findId);
+		
+		return result.put(Result.RESULT_OK, "查询自己用户信息成功!")
+				.put("id",userinfo.id)
+				.put("icon",userinfo.icon)
+				.put("name",userinfo.nickname);
 	}
 	
     
