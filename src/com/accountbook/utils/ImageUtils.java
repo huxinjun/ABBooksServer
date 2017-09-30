@@ -48,7 +48,7 @@ public class ImageUtils {
 	 * @return
 	 */
 	public static String download(String imgUrl) {
-		String filename=UUID.randomUUID().toString();
+		String filename = "IMG" + UUID.randomUUID().toString();
 		String filePath=ImageUtils.getImagePath(filename);
 		try {  
 			  

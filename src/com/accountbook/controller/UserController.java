@@ -136,7 +136,7 @@ public class UserController {
 		
 		try {
 			//存储到服务器
-			String filename=UUID.randomUUID().toString();
+			String filename="IMG"+UUID.randomUUID().toString();
 			String filePath=ImageUtils.getImagePath(filename);
 			
 			ImageUtils.send(image, new FileOutputStream(filePath));

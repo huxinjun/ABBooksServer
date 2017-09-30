@@ -20,7 +20,7 @@ public class FileUtils {
     	InputStream is;
 		try {
 			is = file.getInputStream();
-			String fileName=UUID.randomUUID().toString();//.split("\\.")[0]
+			String fileName="IMG"+UUID.randomUUID().toString();//.split("\\.")[0]
 			String savePath=dir+""+fileName;
 			File serverFile = save(is,savePath);
 			System.out.println("存储文件:"+serverFile.getPath());

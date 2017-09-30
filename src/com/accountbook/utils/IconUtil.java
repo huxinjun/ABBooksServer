@@ -50,7 +50,7 @@ public class IconUtil {
 		g.fillRect(0, 0, iconSize, iconSize);
 		
 		
-		String filename=UUID.randomUUID().toString();
+		String filename="IMG"+UUID.randomUUID().toString();
 		try {
 			for(int i=0;memberIcons!=null && i<memberIcons.size();i++){
 				if(i>8)
