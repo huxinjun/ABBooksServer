@@ -1,12 +1,9 @@
 package com.accountbook.controller;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
-
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,9 +21,9 @@ import com.accountbook.service.IGroupService;
 import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
+import com.accountbook.utils.FileUtils;
 import com.accountbook.utils.IDUtil;
 import com.accountbook.utils.IconUtil;
-import com.accountbook.utils.ImageUtils;
 import com.accountbook.utils.TextUtils;
 import com.accountbook.utils.WxUtil;
 
@@ -64,7 +61,7 @@ public class GroupController {
 		group.id=IDUtil.generateNewId();
 		group.name=name;
 		group.category=category;
-		group.icon=IconUtil.createIcon(name, null);
+		group.icon=IconUtil.createIcon(group, null);
 		group.adminId=findId;
 		group.time=System.currentTimeMillis();
 		
@@ -96,7 +93,7 @@ public class GroupController {
 		if(userCount==0 && !group.name.equals(name)){
 			
 			if(TextUtils.isNotEmpty(group.icon)){
-				File oldFile=new File(ImageUtils.getImagePath(group.icon));
+				File oldFile=new File(FileUtils.getImageAbsolutePath(group.icon));
 				if(oldFile.exists()){
 					System.out.println("updateGroupIcon.删除旧图(无成员):"+oldFile.getAbsolutePath());
 					oldFile.delete();
@@ -104,7 +101,7 @@ public class GroupController {
 			}
 			
 			
-			group.icon=IconUtil.createIcon(name, null);
+			group.icon=IconUtil.createIcon(group, null);
 			System.out.println("更新头像(无成员):"+group);
 		}
 		
@@ -209,7 +206,7 @@ public class GroupController {
 		List<UserInfo> users = groupService.findUsersByGroupId(groupId);
 		
 		if(TextUtils.isNotEmpty(group.icon)){
-			File oldFile=new File(ImageUtils.getImagePath(group.icon));
+			File oldFile=new File(FileUtils.getImageAbsolutePath(group.icon));
 			if(oldFile.exists()){
 				System.out.println("updateGroupIcon.删除旧图:"+oldFile.getAbsolutePath());
 				oldFile.delete();
@@ -218,11 +215,11 @@ public class GroupController {
 		
 		List<String> icons=new ArrayList<>();
 		for(UserInfo user:users){
-			String iconPath = ImageUtils.getImagePath(user.icon);
+			String iconPath = FileUtils.getImageAbsolutePath(user.icon);
 			icons.add(iconPath);
 		}
 		
-		group.icon=IconUtil.createIcon(group.name, icons);
+		group.icon=IconUtil.createIcon(group, icons);
 		
 		System.out.println("updateGroupIcon.更新头像:"+group);
 		
@@ -261,18 +258,14 @@ public class GroupController {
 		});
 		
 		try {
-			//存储到服务器
-			String filename="IMG"+UUID.randomUUID().toString();
-			String filePath=ImageUtils.getImagePath(filename);
-			
-			ImageUtils.send(image, new FileOutputStream(filePath));
+			String filePath=FileUtils.saveFile(image, groupId);
 			
 			Group group=new Group();
 			group.id=groupId;
-			group.qr=filename;
+			group.qr=filePath;
 			groupService.updateGroupInfo(group);
 			
-			result.put(Result.RESULT_OK, filename);
+			result.put(Result.RESULT_OK, filePath);
 		} catch (Exception e) {
 			result.put(Result.RESULT_FILE_SAVE_ERROR, "二维码文件存储失败!");
 			e.printStackTrace();

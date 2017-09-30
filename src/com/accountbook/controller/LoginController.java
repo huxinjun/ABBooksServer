@@ -30,6 +30,14 @@ public class LoginController {
 	@Autowired
 	ITokenService tokenService;
 	
+	
+	@ResponseBody
+    @RequestMapping("/checkLogin")
+    public Result checkLogin(){
+		return new Result(Result.RESULT_OK,"登录状态");
+	}
+	
+	
     
 	@ResponseBody
     @RequestMapping("/fromWX")

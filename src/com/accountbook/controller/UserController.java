@@ -1,10 +1,7 @@
 package com.accountbook.controller;
 
-import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,6 +17,7 @@ import com.accountbook.service.IFriendService;
 import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
+import com.accountbook.utils.FileUtils;
 import com.accountbook.utils.ImageUtils;
 import com.accountbook.utils.WxUtil;
 import com.alibaba.fastjson.JSON;
@@ -93,7 +91,7 @@ public class UserController {
 		userinfo.id=findId;
 		
 		//更新信息的时候下载微信头像到服务器
-		String iconName = ImageUtils.download(userinfo.avatarUrl);
+		String iconName = ImageUtils.download(userinfo.avatarUrl,findId);
 		if(iconName!=null)
 			userinfo.icon=iconName;
 		
@@ -135,18 +133,14 @@ public class UserController {
 		});
 		
 		try {
-			//存储到服务器
-			String filename="IMG"+UUID.randomUUID().toString();
-			String filePath=ImageUtils.getImagePath(filename);
-			
-			ImageUtils.send(image, new FileOutputStream(filePath));
+			String filePath=FileUtils.saveFile(image, findId);
 			
 			UserInfo user=new UserInfo();
 			user.id=findId;
-			user.qr=filename;
+			user.qr=filePath;
 			userService.updateUser(user);
 			
-			result.put(Result.RESULT_OK, filename);
+			result.put(Result.RESULT_OK, filePath);
 		} catch (Exception e) {
 			result.put(Result.RESULT_FILE_SAVE_ERROR, "二维码文件存储失败!");
 			e.printStackTrace();

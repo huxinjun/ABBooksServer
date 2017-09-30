@@ -31,7 +31,7 @@ public class TokenFilter implements Filter {
 	public static List<String> C=new ArrayList<String>(){
 		{
 			add("");
-			add("image");
+			
 		}
 	};
 	/**
@@ -51,6 +51,8 @@ public class TokenFilter implements Filter {
 	public static List<String> CM=new ArrayList<String>(){
 		{
 			add("group/qr");
+			add("image/get");
+			add("image/delete");
 		}
 	};
 	

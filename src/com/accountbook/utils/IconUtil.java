@@ -12,6 +12,8 @@ import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
+import com.accountbook.modle.Group;
+
 
 /**
  * 创建分组头像的工具
@@ -21,26 +23,17 @@ import javax.imageio.ImageIO;
 public class IconUtil {
 	
 	public static void main(String[] args){
-//		try {
-//			BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB );
-//			Graphics g= image.getGraphics();
-//			Image srcImage = ImageIO.read(new File("C:\\Users\\XINJUN\\Desktop\\aaa.jpg")); //读取图片文件
-//			g.setColor(Color.gray);
-//			g.fillRect(0, 0, 100, 100);
-//			g.drawImage(srcImage, 0, 0, 30, 30, null);  //将原始图片 按固定大小绘制到image中
-//			ImageIO.write(image, "jpeg", new File("C:\\Users\\XINJUN\\Desktop\\bbb.jpg"));  //写入磁盘
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		createIcon("AB", null);
+		Group g=new Group();
+		g.id="测试";
+		g.name="AAA";
+		createIcon(g, null);
 	}
 	
 	/**
 	 * 绘制分组的icon
 	 * @throws IOException 
 	 */
-	public static String createIcon(String groupName,List<String> memberIcons){
+	public static String createIcon(Group group,List<String> memberIcons){
 	    
 	    int iconSize=500;
 	    
@@ -50,7 +43,7 @@ public class IconUtil {
 		g.fillRect(0, 0, iconSize, iconSize);
 		
 		
-		String filename="IMG"+UUID.randomUUID().toString();
+		String filename=UUID.randomUUID().toString();
 		try {
 			for(int i=0;memberIcons!=null && i<memberIcons.size();i++){
 				if(i>8)
@@ -67,8 +60,8 @@ public class IconUtil {
 				System.out.println("字体大小："+fontSize);
 				g.setFont(new Font("微软雅黑",Font.BOLD,fontSize));
 				g.setColor(Color.black);
-				if(groupName!=null && groupName.length()>0){
-					char charAt=groupName.charAt(0);
+				if(group.name!=null && group.name.length()>0){
+					char charAt=group.name.charAt(0);
 					int charWidth = g.getFontMetrics().stringWidth(String.valueOf(charAt));
 					System.out.println("char0:"+String.valueOf(charAt));
 					System.out.println("charWidth:"+charWidth);
@@ -76,9 +69,9 @@ public class IconUtil {
 				}
 				
 			}
-//			ImageIO.write(image, "jpeg", new File("C:\\Users\\Administrator\\Desktop\\aaa.jpg"));  //写入磁盘
-			ImageIO.write(image, "jpeg", new File(ImageUtils.getImagePath(filename)));  //写入磁盘
-			System.out.println("输入绘制头像："+new File(ImageUtils.getImagePath(filename)).getAbsolutePath());
+			File outputFile=new File(FileUtils.getImageAbsolutePath(FileUtils.genarateFileRelativePath(group.id)));
+			ImageIO.write(image, "jpeg", outputFile);  //写入磁盘
+			System.out.println("输入绘制头像："+outputFile.getAbsolutePath());
 			return filename;
 		} catch (IOException e) {
 			e.printStackTrace();
