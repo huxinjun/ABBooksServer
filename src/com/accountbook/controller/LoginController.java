@@ -34,7 +34,7 @@ public class LoginController {
 	@ResponseBody
     @RequestMapping("/checkLogin")
     public Result checkLogin(){
-		return new Result(Result.RESULT_OK,"登录状态");
+		return new Result(Result.RESULT_OK,"已登录");
 	}
 	
 	
