@@ -24,6 +24,23 @@ public class AccountController {
 	@Autowired
 	IAccountService accountService;
 	
+	
+	
+	
+	/**
+	 * 记账
+	 */
+	@ResponseBody
+	@RequestMapping("/add")
+    public Object newAccount(ServletRequest req,String content){
+		String findId=req.getAttribute("userid").toString();
+		System.out.println("AccountController.newAccount");
+		System.out.println(content);
+		
+		return new Result(Result.RESULT_OK, "记录账单成功!");
+	}
+	
+	
 
 	/**
 	 * 查询帐友和所有相关的分组

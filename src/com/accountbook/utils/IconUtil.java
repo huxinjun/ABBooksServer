@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
@@ -43,7 +42,6 @@ public class IconUtil {
 		g.fillRect(0, 0, iconSize, iconSize);
 		
 		
-		String filename=UUID.randomUUID().toString();
 		try {
 			for(int i=0;memberIcons!=null && i<memberIcons.size();i++){
 				if(i>8)
@@ -69,10 +67,12 @@ public class IconUtil {
 				}
 				
 			}
-			File outputFile=new File(FileUtils.getImageAbsolutePath(FileUtils.genarateFileRelativePath(group.id)));
+			String relativePath=FileUtils.genarateFileRelativePath(group.id);
+			String absolutePath=FileUtils.getImageAbsolutePath(relativePath);
+			File outputFile=new File(absolutePath);
 			ImageIO.write(image, "jpeg", outputFile);  //写入磁盘
 			System.out.println("输入绘制头像："+outputFile.getAbsolutePath());
-			return filename;
+			return relativePath;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
