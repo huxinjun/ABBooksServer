@@ -1,48 +1,47 @@
 {
-  "paid_in": 1000.0,
-  "name": "购物",
-  "description": "",
-    "icons": [
+    "paid_in":1000.0,
+    "name":"购物",
+    "description":"",
+    "icons":[
         "oCBrx0FreB-L8pIQM5_RYDGoWOKQ/0xVQrG7BKWmRU5tlC+YDoQ==XzBB"
     ],
-   "date": "2017-10-05",
-  "address_info": {
-        "errMsg": "chooseLocation:ok",
-        "name": "东城区北京市经济委员会",
-        "address": "北京市东城区正义路2号",
-        "latitude": 39.90403,
-        "longitude": 116.407526
-   },
-  "members": [
+    "date":"2017-10-05",
+    "address_info":{
+        "errMsg":"chooseLocation:ok",
+        "name":"东城区北京市经济委员会",
+        "address":"北京市东城区正义路2号",
+        "latitude":39.90403,
+        "longitude":116.407526
+    },
+    "members":[
         {
-              "id":"abc",
-              "name": "小卡",
-              "icon": "7jjn17xgz48fR+_9BZRqpg==/9+Wv3ONwi4mA9gjnxc2nYw==XzBB",
-              "isGroup": true,
-              "paid_in": 0.0,   //实付
-              "pay_rule": {
-                    "type": 0,
-                    //-1:实行AA 0:基于总支出的百分比的值  1:缴费为一个固定值
-                    "num": 0.2,
-                    //给自己买东西的钱,其他人不会AA支付这个数额
-              },
-              "money_for_self":0.0
-              "shoud_pay": 0.0, //应付
-              "calcData":0.0
+            "id":"abc",
+            "name":"小卡",
+            "icon":"7jjn17xgz48fR+_9BZRqpg==/9+Wv3ONwi4mA9gjnxc2nYw==XzBB",
+            "isGroup":true,
+            "paid_in":0.0,	//实付
+            "pay_rule":{	//0:基于总支出的百分比的值1:缴费为一个固定值
+                "type":0,
+                "num":0.2
+            },	
+            //给自己买东西的钱,其他人不会AA支付这个数额
+            "money_for_self":0.0,
+            "shoud_pay":0.0,	//应付
+            "calcData":0.0	//计算时的临时数据
         }
-  ],
-  "pay_result":[
+    ],
+    "pay_result":[
         {
-              "pay_target": [//付账计算结果
-                    {
-                      //谁支付
-                      "pay_member": "aaa",
-                      //给谁支付
-                      "receipt_member": "bbb",
-                      //支付多少
-                      "money": 100.0
-                    }
-              ]
+            "pay_target":[	//付账计算结果
+                {
+                	//谁支付
+                    "pay_member":"aaa",	
+                    //给谁支付
+                    "receipt_member":"bbb",	
+                    //支付多少
+                    "money":100.0
+                }
+            ]
         }
-  ]
+    ]
 }
