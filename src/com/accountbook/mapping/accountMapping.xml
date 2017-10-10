@@ -1,12 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.accountbook.dao.AccountDao" >
+
+   <resultMap id="accountMap" type="com.accountbook.modle.Account" >
+	    <id column="id" property="id" jdbcType="VARCHAR" />
+	    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+	    <result column="book_id" property="bookId" jdbcType="VARCHAR" />
+	    <result column="pay_id" property="payId" jdbcType="VARCHAR" />
+	    <result column="type" property="type" jdbcType="VARCHAR" />
+	    
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="description" property="description" jdbcType="VARCHAR" />
+	    <result column="icons" property="icons" jdbcType="VARCHAR" />
+	    
+	    <result column="date_timestamp" property="dateTimestamp" jdbcType="TIMESTAMP" javaType="java.sql.Timestamp"/>
+	    <result column="create_timestamp" property="createTimestamp" jdbcType="TIMESTAMP" javaType="java.sql.Timestamp"/>
+	    
+	    <result column="addr_name" property="addrName" jdbcType="VARCHAR" />
+	    <result column="addr" property="addr" jdbcType="VARCHAR" />
+	    <result column="addr_lat" property="addrLat" jdbcType="DOUBLE" />
+	    <result column="addr_lon" property="addrLon" jdbcType="DOUBLE" />
+	    
+   </resultMap>
+
   <resultMap id="membersMap" type="com.accountbook.modle.Member" >
-    <id column="id" property="id" jdbcType="VARCHAR" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="icon" property="icon" jdbcType="VARCHAR" />
-    <result column="is_group" property="isGroup" jdbcType="BOOLEAN" />
+	    <id column="id" property="id" jdbcType="VARCHAR" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="icon" property="icon" jdbcType="VARCHAR" />
+	    <result column="is_group" property="isGroup" jdbcType="BOOLEAN" />
   </resultMap>
+
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.accountbook.modle.Account">
+		insert into account values(null,#{userId},#{bookId},#{payId},#{type},#{name},#{description},
+		#{icons},#{dateTimestamp,jdbcType=TIMESTAMP},#{createTimestamp,jdbcType=TIMESTAMP},#{addrName},#{addr},#{addrLat},#{addrLon})
+	</insert>
 
   
   

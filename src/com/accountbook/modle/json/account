@@ -1,18 +1,28 @@
 {
-    "paid_in":1000.0,
+	"id":"aaa",
+	"user_id":"aaa",
+	"book_id":"aaa",
+	"pay_id":"aaa",
+    "type":1,
+	
     "name":"购物",
     "description":"",
-    "icons":[
-        "oCBrx0FreB-L8pIQM5_RYDGoWOKQ/0xVQrG7BKWmRU5tlC+YDoQ==XzBB"
-    ],
+    "icons":"",
+    
     "date":"2017-10-05",
-    "address_info":{
-        "errMsg":"chooseLocation:ok",
-        "name":"东城区北京市经济委员会",
-        "address":"北京市东城区正义路2号",
-        "latitude":39.90403,
-        "longitude":116.407526
-    },
+    "date_timestamp":"",
+    "create_timestamp":"",
+    
+    
+    "addr_name":"东城区北京市经济委员会",
+    "addr":"北京市东城区正义路2号",
+    "addr_lat":39.90403,
+    "addr_lon":116.407526,
+    
+    
+    "paid_in":1000.0,
+    
+    
     "members":[
         {
             "id":"abc",
@@ -30,6 +40,8 @@
             "calcData":0.0	//计算时的临时数据
         }
     ],
+    
+    
     "pay_result":[
         {
             "pay_target":[	//付账计算结果

@@ -1,5 +1,9 @@
 package com.accountbook.controller;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.servlet.ServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.accountbook.modle.Account;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
+import com.easyjson.EasyJson;
 
 /**
  * 账单
@@ -33,9 +39,18 @@ public class AccountController {
 	@ResponseBody
 	@RequestMapping("/add")
     public Object newAccount(ServletRequest req,String content){
-		String findId=req.getAttribute("userid").toString();
+//		String findId=req.getAttribute("userid").toString();
+		
 		System.out.println("AccountController.newAccount");
 		System.out.println(content);
+		
+		Account account = EasyJson.getJavaBean(content, Account.class);
+		
+		account.setDateTimestamp(Timestamp.valueOf(account.getDate()+" 00:00:00"));
+		account.setCreateTimestamp(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date())));
+		
+		System.out.println(account);
+		accountService.addNewAccount(account);
 		
 		return new Result(Result.RESULT_OK, "记录账单成功!");
 	}
