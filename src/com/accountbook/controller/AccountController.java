@@ -3,15 +3,21 @@ package com.accountbook.controller;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.accountbook.core.AccountCalculator;
+import com.accountbook.core.AccountCalculator.CalculatorException;
 import com.accountbook.modle.Account;
+import com.accountbook.modle.Account.PayResult;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
 import com.easyjson.EasyJson;
@@ -36,6 +42,7 @@ public class AccountController {
 	/**
 	 * 记账
 	 */
+	@Transactional(propagation = Propagation.REQUIRED,rollbackFor={Exception.class, RuntimeException.class})
 	@ResponseBody
 	@RequestMapping("/add")
     public Object newAccount(ServletRequest req,String content){
@@ -51,6 +58,17 @@ public class AccountController {
 		
 		System.out.println(account);
 		accountService.addNewAccount(account);
+		
+		if(account.getMembers().size()>1){
+			AccountCalculator calculator=new AccountCalculator(account);
+			try {
+				List<PayResult> result = calculator.calc();
+				System.out.println(result);
+			} catch (CalculatorException e) {
+				e.printStackTrace();
+			}
+			
+		}
 		
 		return new Result(Result.RESULT_OK, "记录账单成功!");
 	}

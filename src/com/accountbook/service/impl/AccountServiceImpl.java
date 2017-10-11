@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.accountbook.dao.AccountDao;
 import com.accountbook.modle.Account;
 import com.accountbook.modle.Member;
@@ -21,9 +20,10 @@ public class AccountServiceImpl implements IAccountService {
 		return dao.queryMembers(userId);
 	}
 
+	
 	@Override
 	public void addNewAccount(Account account) {
-		dao.insert(account);;
+		dao.insert(account);
 	}
 
 }
