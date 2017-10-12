@@ -25,15 +25,14 @@
     
     "members":[
         {
-            "id":"abc",
-            "name":"小卡",
-            "icon":"7jjn17xgz48fR+_9BZRqpg==/9+Wv3ONwi4mA9gjnxc2nYw==XzBB",
-            "isGroup":true,
+        	"account_id":"xxx",
+            "member_id":"abc",
+            "member_name":"小卡",
+            "member_icon":"7jjn17xgz48fR+_9BZRqpg==/9+Wv3ONwi4mA9gjnxc2nYw==XzBB",
+            "is_group":true,
             "paid_in":0.0,	//实付
-            "pay_rule":{	//0:基于总支出的百分比的值1:缴费为一个固定值
-                "type":0,
-                "num":0.2
-            },	
+            "rule_type":0,//0:基于总支出的百分比的值1:缴费为一个固定值
+            "rule_num":0.2,
             //给自己买东西的钱,其他人不会AA支付这个数额
             "money_for_self":0.0,
             "shoud_pay":0.0,	//应付
@@ -46,14 +45,22 @@
         {
             "pay_target":[	//付账计算结果
                 {
+                    "account_id":"aaa",	
                 	//谁支付
-                    "pay_member":"aaa",	
+                    "paid_id":"aaa",	
                     //给谁支付
-                    "receipt_member":"bbb",	
+                    "receipt_id":"bbb",	
                     //支付多少
-                    "money":100.0
+                    "money":100.0,
+                    //是否已结清
+                    "settled":false
                 }
             ]
         }
     ]
+    
+    
+    //public static final int RULE_TYPE_NONE=0;
+	//public static final int RULE_TYPE_PERCENT=1;
+	//public static final int RULE_TYPE_NUMBER=2;
 }

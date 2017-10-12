@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.accountbook.dao.TestDao;
-import com.accountbook.modle.TestModel;
+import com.accountbook.model.TestModel;
 import com.accountbook.service.ITestService;
 
 @Service

@@ -2,8 +2,9 @@ package com.accountbook.service;
 
 import java.util.List;
 
-import com.accountbook.modle.Account;
-import com.accountbook.modle.Member;
+import com.accountbook.model.Account;
+import com.accountbook.model.Member;
+import com.accountbook.model.PayTarget;
 
 public interface IAccountService {
 	
@@ -12,6 +13,8 @@ public interface IAccountService {
 	 * @param account
 	 */
 	public void addNewAccount(Account account);
+	public void addMember(Member member);
+	public void addPayTarget(PayTarget target);
 	
 	public List<Member> findAllMembers(String userId);
 }

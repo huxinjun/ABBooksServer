@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.accountbook.dao.TokenDao;
-import com.accountbook.modle.TokenInfo;
+import com.accountbook.model.TokenInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.ITokenService;
 import com.accountbook.utils.IDUtil;

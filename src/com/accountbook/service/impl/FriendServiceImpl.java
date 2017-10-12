@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.accountbook.dao.FriendDao;
-import com.accountbook.modle.Friend;
+import com.accountbook.model.Friend;
 import com.accountbook.service.IFriendService;
 /**
  * 好友

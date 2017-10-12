@@ -2,7 +2,7 @@ package com.accountbook.service;
 
 import java.util.List;
 
-import com.accountbook.modle.Friend;
+import com.accountbook.model.Friend;
 /**
  * 好友
  * @author XINJUN

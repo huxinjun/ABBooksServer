@@ -3,7 +3,7 @@ package com.accountbook.dao;
 
 import java.util.List;
 
-import com.accountbook.modle.Friend;
+import com.accountbook.model.Friend;
 
 public interface FriendDao {
 	public void insert(Friend data);

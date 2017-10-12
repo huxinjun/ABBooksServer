@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.accountbook.dao.AccountDao" >
 
-   <resultMap id="accountMap" type="com.accountbook.modle.Account" >
+   <resultMap id="accountMap" type="com.accountbook.model.Account" >
 	    <id column="id" property="id" jdbcType="VARCHAR" />
 	    <result column="user_id" property="userId" jdbcType="VARCHAR" />
 	    <result column="book_id" property="bookId" jdbcType="VARCHAR" />
@@ -21,26 +21,49 @@
 	    <result column="addr_lat" property="addrLat" jdbcType="DOUBLE" />
 	    <result column="addr_lon" property="addrLon" jdbcType="DOUBLE" />
 	    
+	    <result column="paid_in" property="paidIn" jdbcType="DOUBLE" />
    </resultMap>
 
-  <resultMap id="membersMap" type="com.accountbook.modle.Member" >
-	    <id column="id" property="id" jdbcType="VARCHAR" />
-	    <result column="name" property="name" jdbcType="VARCHAR" />
-	    <result column="icon" property="icon" jdbcType="VARCHAR" />
+  <resultMap id="membersMap" type="com.accountbook.model.Member" >
+	    <result column="account_id" property="accountId" jdbcType="VARCHAR" />
 	    <result column="is_group" property="isGroup" jdbcType="BOOLEAN" />
+	    <result column="member_id" property="memberId" jdbcType="VARCHAR" />
+	    <result column="member_name" property="memberName" jdbcType="VARCHAR" />
+	    <result column="member_icon" property="memberIcon" jdbcType="VARCHAR" />
+	    <result column="rule_type" property="ruleType" jdbcType="INTEGER" />
+	    <result column="rule_num" property="ruleNum" jdbcType="DOUBLE" />
+	    <result column="money_for_self" property="moneyForSelf" jdbcType="DOUBLE" />
+	    <result column="paid_in" property="paidIn" jdbcType="DOUBLE" />
+	    <result column="shoud_pay" property="shoudPay" jdbcType="DOUBLE" />
+  </resultMap>
+  
+  <resultMap id="targetsMap" type="com.accountbook.model.PayTarget" >
+	    <result column="account_id" property="accountId" jdbcType="VARCHAR" />
+	    <result column="paid_id" property="paidId" jdbcType="VARCHAR" />
+	    <result column="receipt_id" property="receiptId" jdbcType="VARCHAR" />
+	    <result column="money" property="money" jdbcType="DOUBLE" />
+	    <result column="settled" property="settled" jdbcType="BOOLEAN" />
   </resultMap>
 
 
 	<!-- 插入 -->
-	<insert id="insert" parameterType="com.accountbook.modle.Account">
-		insert into account values(null,#{userId},#{bookId},#{payId},#{type},#{name},#{description},
-		#{icons},#{dateTimestamp,jdbcType=TIMESTAMP},#{createTimestamp,jdbcType=TIMESTAMP},#{addrName},#{addr},#{addrLat},#{addrLon})
+	<insert id="insert" parameterType="com.accountbook.model.Account">
+		insert into account values(#{id},#{userId},#{bookId},#{payId},#{type},#{name},#{description},
+		#{icons},#{dateTimestamp,jdbcType=TIMESTAMP},#{createTimestamp,jdbcType=TIMESTAMP},#{addrName},#{addr},#{addrLat},#{addrLon},#{paidIn})
+	</insert>
+	
+	<insert id="insertMember" parameterType="com.accountbook.model.Member">
+		insert into account_member values(null,#{accountId},#{isGroup},#{memberId},#{memberName},#{memberIcon},#{ruleType},#{ruleNum},#{moneyForSelf},#{paidIn},#{shoudPay})
+	</insert>
+	
+	<insert id="insertPayTarget" parameterType="com.accountbook.model.PayTarget">
+		insert into account_pay values(null,#{accountId},#{paidId},#{receiptId},#{money},#{settled})
 	</insert>
 
   
   
 	<select id="queryMembers" parameterType="String" resultMap="membersMap">
-		SELECT id,NAME,icon,TRUE is_group FROM group_ WHERE admin_id=#{userId} OR id IN 
+		SELECT id as member_id,name AS member_name,icon as member_icon,TRUE is_group FROM group_ WHERE admin_id=#{userId} OR id IN 
 		(SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN (
 		SELECT account_id FROM account_member WHERE member_id=#{userId} OR 
 		member_id IN (SELECT group_id FROM group_user WHERE user_id=#{userId} UNION 
@@ -48,7 +71,7 @@
 		
 		UNION
 		
-		SELECT id,nickname AS NAME,icon,FALSE is_group FROM USER WHERE id IN(
+		SELECT id as member_id,nickname AS member_name,icon as member_icon,FALSE is_group FROM USER WHERE id IN(
 		SELECT accept_id AS id FROM friend WHERE invite_id=#{userId}
 		UNION
 		SELECT invite_id AS id FROM friend WHERE accept_id=#{userId})

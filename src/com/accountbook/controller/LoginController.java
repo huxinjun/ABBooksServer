@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.accountbook.globle.Constants;
-import com.accountbook.modle.UserInfo;
-import com.accountbook.modle.WxSession;
+import com.accountbook.model.UserInfo;
+import com.accountbook.model.WxSession;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;

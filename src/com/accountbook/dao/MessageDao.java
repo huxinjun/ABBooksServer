@@ -3,7 +3,7 @@ package com.accountbook.dao;
 
 import java.util.List;
 
-import com.accountbook.modle.Message;
+import com.accountbook.model.Message;
 
 /**
  * 消息dao

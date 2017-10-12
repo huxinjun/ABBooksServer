@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.accountbook.dao.UserDao" >
-  <resultMap id="map" type="com.accountbook.modle.UserInfo" >
+  <resultMap id="map" type="com.accountbook.model.UserInfo" >
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="nickname" property="nickname" jdbcType="VARCHAR" />
     <result column="icon" property="icon" jdbcType="VARCHAR" />
@@ -24,12 +24,12 @@
 	</select>
 	
 	<!-- 插入 -->
-	<insert id="insert" parameterType="com.accountbook.modle.UserInfo">
+	<insert id="insert" parameterType="com.accountbook.model.UserInfo">
 		insert into user values(#{id},#{nickname},#{icon},#{avatarUrl},#{qr},#{gender},#{country},#{city},#{province},#{language})
 	</insert>
 	
 	<!-- 更新 -->
-	<update id="update" parameterType="com.accountbook.modle.UserInfo">
+	<update id="update" parameterType="com.accountbook.model.UserInfo">
 		update user set 
 		<trim suffixOverrides=",">
 		<if test="nickname!=null and nickname.length()>0">

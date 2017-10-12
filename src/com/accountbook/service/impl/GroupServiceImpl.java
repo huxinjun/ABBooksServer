@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.accountbook.dao.GroupDao;
-import com.accountbook.modle.Group;
-import com.accountbook.modle.UserInfo;
+import com.accountbook.model.Group;
+import com.accountbook.model.UserInfo;
 import com.accountbook.service.IGroupService;
 /**
  * 分组

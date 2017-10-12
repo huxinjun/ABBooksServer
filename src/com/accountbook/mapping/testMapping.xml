@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.accountbook.dao.TestDao" >
-  <resultMap id="map" type="com.accountbook.modle.TestModel" >
+  <resultMap id="map" type="com.accountbook.model.TestModel" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="value" property="name" jdbcType="VARCHAR" />
   </resultMap>
@@ -10,7 +10,7 @@
     id,value
   </sql>
   	<!-- 插入 -->
-	<insert id="insert" parameterType="com.accountbook.modle.TestModel">
+	<insert id="insert" parameterType="com.accountbook.model.TestModel">
 	insert into ttt(<include refid="colums"></include>)
 	values(null,#{name})
 	</insert>
@@ -27,7 +27,7 @@
 	
 	
 	<!-- 更新 -->
-	<update id="update" parameterType="com.accountbook.modle.TestModel">
+	<update id="update" parameterType="com.accountbook.model.TestModel">
 		update ttt set 
 		value=#{name},
 	</update>

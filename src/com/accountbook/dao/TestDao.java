@@ -3,7 +3,7 @@ package com.accountbook.dao;
 
 import java.util.List;
 
-import com.accountbook.modle.TestModel;
+import com.accountbook.model.TestModel;
 
 public interface TestDao {
 	public void insert(TestModel model);

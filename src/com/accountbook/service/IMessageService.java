@@ -2,7 +2,7 @@ package com.accountbook.service;
 
 import java.util.List;
 
-import com.accountbook.modle.Message;
+import com.accountbook.model.Message;
 
 public interface IMessageService {
 	

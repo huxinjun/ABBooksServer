@@ -2,8 +2,8 @@ package com.accountbook.service;
 
 import java.util.List;
 
-import com.accountbook.modle.Group;
-import com.accountbook.modle.UserInfo;
+import com.accountbook.model.Group;
+import com.accountbook.model.UserInfo;
 
 public interface IGroupService {
 	

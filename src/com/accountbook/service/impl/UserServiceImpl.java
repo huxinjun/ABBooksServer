@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.accountbook.dao.UserDao;
-import com.accountbook.modle.UserInfo;
+import com.accountbook.model.UserInfo;
 import com.accountbook.service.IUserService;
 
 @Service

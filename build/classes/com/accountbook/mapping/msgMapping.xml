@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.accountbook.dao.MessageDao" >
-  <resultMap id="map" type="com.accountbook.modle.Message" >
+  <resultMap id="map" type="com.accountbook.model.Message" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="invite_id" property="inviteId" jdbcType="VARCHAR" />
     <result column="accept_id" property="acceptId" jdbcType="VARCHAR" />
@@ -41,7 +41,7 @@
 	</select>
 	
 	<!-- 插入 -->
-	<insert id="insert" parameterType="com.accountbook.modle.Message">
+	<insert id="insert" parameterType="com.accountbook.model.Message">
 		insert into message(<include refid="colums"></include>)
 		values(null,#{inviteId},#{acceptId},#{type},#{content},#{timeMiles},#{state})
 	</insert>

@@ -1,7 +1,7 @@
 package com.accountbook.dao;
 
 
-import com.accountbook.modle.TokenInfo;
+import com.accountbook.model.TokenInfo;
 
 public interface TokenDao {
 	public void insert(TokenInfo info);

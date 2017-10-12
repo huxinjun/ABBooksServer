@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.accountbook.dao.TokenDao" >
-  <resultMap id="map" type="com.accountbook.modle.TokenInfo" >
+  <resultMap id="map" type="com.accountbook.model.TokenInfo" >
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="token" property="token" jdbcType="VARCHAR" />
     <result column="expire_time" property="expireTime" jdbcType="INTEGER" />
@@ -11,7 +11,7 @@
     id,token,expire_time
   </sql>
   	<!-- 插入 -->
-	<insert id="insert" parameterType="com.accountbook.modle.TokenInfo">
+	<insert id="insert" parameterType="com.accountbook.model.TokenInfo">
 	insert into token(<include refid="colums"></include>)
 	values(#{id},#{token},#{expireTime})
 	</insert>
@@ -28,7 +28,7 @@
 	
 	
 	<!-- 更新 -->
-	<update id="update" parameterType="com.accountbook.modle.TokenInfo">
+	<update id="update" parameterType="com.accountbook.model.TokenInfo">
 		update token set 
 		token=#{token},
 		expire_time=#{expireTime} where id=#{id}

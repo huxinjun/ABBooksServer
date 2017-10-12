@@ -4,8 +4,8 @@ package com.accountbook.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.accountbook.modle.Group;
-import com.accountbook.modle.UserInfo;
+import com.accountbook.model.Group;
+import com.accountbook.model.UserInfo;
 
 public interface GroupDao {
 	

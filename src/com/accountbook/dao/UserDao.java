@@ -3,7 +3,7 @@ package com.accountbook.dao;
 
 import java.util.List;
 
-import com.accountbook.modle.UserInfo;
+import com.accountbook.model.UserInfo;
 
 public interface UserDao {
 	public List<UserInfo> queryByName(String nickname);

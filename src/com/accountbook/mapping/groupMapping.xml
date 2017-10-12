@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.accountbook.dao.GroupDao" >
-  <resultMap id="map" type="com.accountbook.modle.Group" >
+  <resultMap id="map" type="com.accountbook.model.Group" >
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="admin_id" property="adminId" jdbcType="VARCHAR" />
@@ -12,7 +12,7 @@
   </resultMap>
 
   
-  <resultMap id="usermap" type="com.accountbook.modle.UserInfo" >
+  <resultMap id="usermap" type="com.accountbook.model.UserInfo" >
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="nickname" property="nickname" jdbcType="VARCHAR" />
     <result column="avatarUrl" property="avatarUrl" jdbcType="VARCHAR" />
@@ -48,7 +48,7 @@
 	</select>
 	
 	<!-- 插入组 -->
-	<insert id="insert" parameterType="com.accountbook.modle.Group">
+	<insert id="insert" parameterType="com.accountbook.model.Group">
 		insert into group_ values(#{id},#{name},#{adminId},#{time},#{icon},#{qr},#{category})
 	</insert>
 	
@@ -66,7 +66,7 @@
 	
 	
 	<!-- 更新 -->
-	<update id="update" parameterType="com.accountbook.modle.Group">
+	<update id="update" parameterType="com.accountbook.model.Group">
 		update group_ set 
 		<trim suffixOverrides=",">
 			<if test="name!=null and name.length()>0">

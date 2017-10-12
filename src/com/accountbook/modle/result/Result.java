@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
-import com.accountbook.modle.Message;
+import com.accountbook.model.Message;
 
 /**
  * 通用的结果对象

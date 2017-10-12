@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.accountbook.core.AccountCalculator;
 import com.accountbook.core.AccountCalculator.CalculatorException;
-import com.accountbook.modle.Account;
-import com.accountbook.modle.Account.PayResult;
+import com.accountbook.model.Account;
+import com.accountbook.model.Member;
+import com.accountbook.model.PayResult;
+import com.accountbook.model.PayTarget;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
+import com.accountbook.utils.IDUtil;
 import com.easyjson.EasyJson;
 
 /**
@@ -53,17 +56,33 @@ public class AccountController {
 		
 		Account account = EasyJson.getJavaBean(content, Account.class);
 		
+		account.setId(IDUtil.generateNewId());
 		account.setDateTimestamp(Timestamp.valueOf(account.getDate()+" 00:00:00"));
 		account.setCreateTimestamp(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date())));
 		
 		System.out.println(account);
+		//记录账单
 		accountService.addNewAccount(account);
+		
+		//记录成员
+		for(Member member:account.getMembers()){
+			member.setAccountId(account.getId());
+			accountService.addMember(member);
+		}
 		
 		if(account.getMembers().size()>1){
 			AccountCalculator calculator=new AccountCalculator(account);
 			try {
 				List<PayResult> result = calculator.calc();
 				System.out.println(result);
+				//记录支付方案(目前只选择第一种方案)
+				if(result!=null && result.size()>0 && result.get(0)!=null && result.get(0).getPayTarget()!=null)
+					for(PayTarget target:result.get(0).getPayTarget()){
+						target.setAccountId(account.getId());
+						accountService.addPayTarget(target);
+					}
+						
+				
 			} catch (CalculatorException e) {
 				e.printStackTrace();
 			}

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.accountbook.modle.Message;
-import com.accountbook.modle.UserInfo;
+import com.accountbook.model.Message;
+import com.accountbook.model.UserInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IFriendService;
 import com.accountbook.service.IMessageService;

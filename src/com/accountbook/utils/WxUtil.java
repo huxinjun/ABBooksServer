@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.accountbook.globle.Constants;
-import com.accountbook.modle.WxAccessToken;
-import com.accountbook.modle.WxTemplateInvite;
-import com.accountbook.modle.WxTemplateInvite.KeyWord;
+import com.accountbook.model.WxAccessToken;
+import com.accountbook.model.WxTemplateInvite;
+import com.accountbook.model.WxTemplateInvite.KeyWord;
 import com.alibaba.fastjson.JSON;
 
 /**

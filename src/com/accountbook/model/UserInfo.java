@@ -1,4 +1,4 @@
-package com.accountbook.modle;
+package com.accountbook.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
