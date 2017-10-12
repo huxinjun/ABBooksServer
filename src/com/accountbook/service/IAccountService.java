@@ -17,4 +17,7 @@ public interface IAccountService {
 	public void addPayTarget(PayTarget target);
 	
 	public List<Member> findAllMembers(String userId);
+	public List<Account> findAccounts(String userId);
+	public List<Account> findAccounts(String userId,String bookId);
+	
 }

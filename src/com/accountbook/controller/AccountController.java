@@ -23,6 +23,7 @@ import com.accountbook.model.PayTarget;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
 import com.accountbook.utils.IDUtil;
+import com.accountbook.utils.TextUtils;
 import com.easyjson.EasyJson;
 
 /**
@@ -106,6 +107,20 @@ public class AccountController {
 	}
 	
 	
-	
+	/**
+	 * 查询一个用户的所有账单
+	 */
+	@ResponseBody
+	@RequestMapping("/get")
+    public Object findAccounts(ServletRequest req,String bookId){
+//		String findId=req.getAttribute("userid").toString();
+		String findId="oCBrx0FreB-L8pIQM5_RYDGoWOKQ";
+		Result result = new Result();
+		if(TextUtils.isEmpty(bookId))
+			result.put("accounts", accountService.findAccounts(findId));
+		else
+			result.put("accounts", accountService.findAccounts(findId,bookId));
+		return result.put(Result.RESULT_OK, "查询账单成功!");
+	}
 	
 }

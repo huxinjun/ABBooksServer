@@ -6,7 +6,6 @@
 	    <id column="id" property="id" jdbcType="VARCHAR" />
 	    <result column="user_id" property="userId" jdbcType="VARCHAR" />
 	    <result column="book_id" property="bookId" jdbcType="VARCHAR" />
-	    <result column="pay_id" property="payId" jdbcType="VARCHAR" />
 	    <result column="type" property="type" jdbcType="VARCHAR" />
 	    
 	    <result column="name" property="name" jdbcType="VARCHAR" />
@@ -48,7 +47,7 @@
 
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.model.Account">
-		insert into account values(#{id},#{userId},#{bookId},#{payId},#{type},#{name},#{description},
+		insert into account values(#{id},#{userId},#{bookId},#{type},#{name},#{description},
 		#{icons},#{dateTimestamp,jdbcType=TIMESTAMP},#{createTimestamp,jdbcType=TIMESTAMP},#{addrName},#{addr},#{addrLat},#{addrLon},#{paidIn})
 	</insert>
 	
@@ -59,6 +58,26 @@
 	<insert id="insertPayTarget" parameterType="com.accountbook.model.PayTarget">
 		insert into account_pay values(null,#{accountId},#{paidId},#{receiptId},#{money},#{settled})
 	</insert>
+	
+	
+	
+	
+	
+	
+	
+	
+	<select id="queryAccountsByUserIdAndBookId" parameterType="String" resultMap="accountMap">
+		select * from account where user_id=#{userId} and book_id=#{bookId}
+	</select>
+	<select id="queryMembersByAccountId" parameterType="String" resultMap="membersMap">
+		select * from account_member where account_id=#{accountId}
+	</select>
+	<select id="queryPayTargetByAccountId" parameterType="String" resultMap="targetsMap">
+		select * from account_pay where account_id=#{accountId}
+	</select>
+	
+	
+	
 
   
   

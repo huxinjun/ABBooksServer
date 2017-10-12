@@ -94,11 +94,6 @@ public class Account implements Serializable{
 	/**
 	 * 
 	 */
-	@JSONField("pay_id")
-	private String payId;
-	/**
-	 * 
-	 */
 	private String addr;
 
 
@@ -194,12 +189,6 @@ public class Account implements Serializable{
 	public void setId(String id){
 		this.id=id;
 	}
-	public String getPayId(){
-		return this.payId;
-	}
-	public void setPayId(String payId){
-		this.payId=payId;
-	}
 	public Timestamp getDateTimestamp(){
 		return this.dateTimestamp;
 	}
@@ -225,7 +214,7 @@ public class Account implements Serializable{
 				+ ", bookId=" + bookId + ", createTimestamp=" + createTimestamp
 				+ ", paidIn=" + paidIn + ", members=" + members
 				+ ", name=" + name + ", addrLat=" + addrLat
-				+ ", id=" + id + ", payId=" + payId
+				+ ", id=" + id
 				+ ", dateTimestamp=" + dateTimestamp + ", addr=" + addr
 				+ "]";
 	}
@@ -308,11 +297,6 @@ public class Account implements Serializable{
 			if (other.id != null)
 				return false;
 		} else if (!id.equals(other.id))
-			return false;
-		if (payId == null) {
-			if (other.payId != null)
-				return false;
-		} else if (!payId.equals(other.payId))
 			return false;
 		if (dateTimestamp == null) {
 			if (other.dateTimestamp != null)
