@@ -2,6 +2,7 @@ package com.accountbook.controller;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -116,10 +117,25 @@ public class AccountController {
 //		String findId=req.getAttribute("userid").toString();
 		String findId="oCBrx0FreB-L8pIQM5_RYDGoWOKQ";
 		Result result = new Result();
+		List<Account> results;
 		if(TextUtils.isEmpty(bookId))
-			result.put("accounts", accountService.findAccounts(findId));
+			results=accountService.findAccounts(findId);
 		else
-			result.put("accounts", accountService.findAccounts(findId,bookId));
+			results=accountService.findAccounts(findId,bookId);
+		
+		//将字符串的icons替换为数组形式
+		List<Result> resultsWapper = new ArrayList<>();
+		for(Account account:results){
+			Result put = new Result().put(account);
+			put.remove("imgs");
+			put.put("imgs", account.getImgs().split(","));
+			resultsWapper.add(put);
+		}
+		
+		result.put("accounts",resultsWapper);
+		
+		
+		
 		return result.put(Result.RESULT_OK, "查询账单成功!");
 	}
 	

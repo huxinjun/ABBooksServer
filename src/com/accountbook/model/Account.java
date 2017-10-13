@@ -16,11 +16,15 @@ public class Account implements Serializable{
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = -4982920337145285586L;
+	private static final long serialVersionUID = 5019469001983731187L;
 	/**
 	 * 
 	 */
 	private String date;
+	/**
+	 * 
+	 */
+	private String imgs;
 	/**
 	 * 
 	 */
@@ -44,10 +48,6 @@ public class Account implements Serializable{
 	 * 
 	 */
 	private int type;
-	/**
-	 * 
-	 */
-	private String icons;
 	/**
 	 * 
 	 */
@@ -105,6 +105,12 @@ public class Account implements Serializable{
 	public void setDate(String date){
 		this.date=date;
 	}
+	public String getImgs(){
+		return this.imgs;
+	}
+	public void setImgs(String imgs){
+		this.imgs=imgs;
+	}
 	public ArrayList<PayResult> getPayResult(){
 		return this.payResult;
 	}
@@ -122,12 +128,6 @@ public class Account implements Serializable{
 	}
 	public void setType(int type){
 		this.type=type;
-	}
-	public String getIcons(){
-		return this.icons;
-	}
-	public void setIcons(String icons){
-		this.icons=icons;
 	}
 	public float getAddrLon(){
 		return this.addrLon;
@@ -207,16 +207,15 @@ public class Account implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Account [date=" + date + ", payResult=" + payResult
-				+ ", description=" + description + ", type=" + type
-				+ ", icons=" + icons + ", addrLon=" + addrLon
+		return "Account [date=" + date + ", imgs=" + imgs
+				+ ", payResult=" + payResult + ", description=" + description
+				+ ", type=" + type + ", addrLon=" + addrLon
 				+ ", addrName=" + addrName + ", userId=" + userId
 				+ ", bookId=" + bookId + ", createTimestamp=" + createTimestamp
 				+ ", paidIn=" + paidIn + ", members=" + members
 				+ ", name=" + name + ", addrLat=" + addrLat
-				+ ", id=" + id
-				+ ", dateTimestamp=" + dateTimestamp + ", addr=" + addr
-				+ "]";
+				+ ", id=" + id + ", dateTimestamp=" + dateTimestamp
+				+ ", addr=" + addr + "]";
 	}
 
 
@@ -234,6 +233,11 @@ public class Account implements Serializable{
 				return false;
 		} else if (!date.equals(other.date))
 			return false;
+		if (imgs == null) {
+			if (other.imgs != null)
+				return false;
+		} else if (!imgs.equals(other.imgs))
+			return false;
 		if (payResult == null) {
 			if (other.payResult != null && other.payResult.size()!=0)
 				return false;
@@ -248,11 +252,6 @@ public class Account implements Serializable{
 		} else if (!description.equals(other.description))
 			return false;
 		if (type != other.type)
-			return false;
-		if (icons == null) {
-			if (other.icons != null)
-				return false;
-		} else if (!icons.equals(other.icons))
 			return false;
 		if (addrLon != other.addrLon)
 			return false;

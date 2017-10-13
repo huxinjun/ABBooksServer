@@ -19,7 +19,7 @@ public class Member implements Serializable{
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = -4986225303578653842L;
+	private static final long serialVersionUID = 5042603779902210868L;
 	/**
 	 * 
 	 */
