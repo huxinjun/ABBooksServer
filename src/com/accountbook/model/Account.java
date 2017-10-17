@@ -16,7 +16,7 @@ public class Account implements Serializable{
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = 5019469001983731187L;
+	private static final long serialVersionUID = 1662158319218167068L;
 	/**
 	 * 
 	 */

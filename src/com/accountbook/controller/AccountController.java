@@ -66,11 +66,6 @@ public class AccountController {
 		//记录账单
 		accountService.addNewAccount(account);
 		
-		//记录成员
-		for(Member member:account.getMembers()){
-			member.setAccountId(account.getId());
-			accountService.addMember(member);
-		}
 		
 		if(account.getMembers().size()>1){
 			AccountCalculator calculator=new AccountCalculator(account);
@@ -89,6 +84,11 @@ public class AccountController {
 				e.printStackTrace();
 			}
 			
+		}
+		//记录成员
+		for(Member member:account.getMembers()){
+			member.setAccountId(account.getId());
+			accountService.addMember(member);
 		}
 		
 		return new Result(Result.RESULT_OK, "记录账单成功!");
@@ -123,12 +123,15 @@ public class AccountController {
 		else
 			results=accountService.findAccounts(findId,bookId);
 		
+		
+		
 		//将字符串的icons替换为数组形式
 		List<Result> resultsWapper = new ArrayList<>();
 		for(Account account:results){
 			Result put = new Result().put(account);
 			put.remove("imgs");
 			put.put("imgs", account.getImgs().split(","));
+			put.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date(account.getDateTimestamp().getTime())));
 			resultsWapper.add(put);
 		}
 		

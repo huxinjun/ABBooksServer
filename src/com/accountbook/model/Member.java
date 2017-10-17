@@ -19,7 +19,7 @@ public class Member implements Serializable{
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = 5042603779902210868L;
+	private static final long serialVersionUID = 1601016410136083259L;
 	/**
 	 * 
 	 */
@@ -30,11 +30,6 @@ public class Member implements Serializable{
 	 */
 	private float calcData;
 	/**
-	 * 应付
-	 */
-	@JSONField("shoud_pay")
-	private float shoudPay;
-	/**
 	 * 
 	 */
 	@JSONField("account_id")
@@ -44,6 +39,11 @@ public class Member implements Serializable{
 	 */
 	@JSONField("rule_type")
 	private int ruleType;
+	/**
+	 * 应付
+	 */
+	@JSONField("should_pay")
+	private float shouldPay;
 	/**
 	 * 
 	 */
@@ -102,11 +102,11 @@ public class Member implements Serializable{
 	public void setRuleNum(float ruleNum){
 		this.ruleNum=ruleNum;
 	}
-	public float getShoudPay(){
-		return this.shoudPay;
+	public float getShouldPay(){
+		return this.shouldPay;
 	}
-	public void setShoudPay(float shoudPay){
-		this.shoudPay=shoudPay;
+	public void setShouldPay(float shouldPay){
+		this.shouldPay=shouldPay;
 	}
 	public int getRuleType(){
 		return this.ruleType;
@@ -152,7 +152,7 @@ public class Member implements Serializable{
 	public String toString() {
 		return "Member [calcData=" + calcData + ", moneyForSelf=" + moneyForSelf
 				+ ", accountId=" + accountId + ", ruleNum=" + ruleNum
-				+ ", shoudPay=" + shoudPay + ", ruleType=" + ruleType
+				+ ", shouldPay=" + shouldPay + ", ruleType=" + ruleType
 				+ ", paidIn=" + paidIn + ", memberIcon=" + memberIcon
 				+ ", memberName=" + memberName + ", isGroup=" + isGroup
 				+ ", memberId=" + memberId + "]";
@@ -179,7 +179,7 @@ public class Member implements Serializable{
 			return false;
 		if (ruleNum != other.ruleNum)
 			return false;
-		if (shoudPay != other.shoudPay)
+		if (shouldPay != other.shouldPay)
 			return false;
 		if (ruleType != other.ruleType)
 			return false;

@@ -34,7 +34,7 @@
             "rule_num":0.2,
             //给自己买东西的钱,其他人不会AA支付这个数额
             "money_for_self":0.0,
-            "shoud_pay":0.0,	//应付
+            "should_pay":0.0,	//应付
             "calcData":0.0	//计算时的临时数据
         }
     ],

@@ -50,7 +50,7 @@ public class AccountCalculator {
             if(p.getRuleType()==0) {
                 noRulePersonCount++;
                 //排除总金额中有些人给自己花了一部分钱,别人无需AA支付这个钱
-                p.setShoudPay(p.getMoneyForSelf());
+                p.setShouldPay(p.getMoneyForSelf());
                 hasRuleMoney+=p.getMoneyForSelf();
                 continue;
             }
@@ -60,15 +60,15 @@ public class AccountCalculator {
                     if(p.getRuleNum()>1)
                         throw new CalculatorException("您为"+p.getMemberName()+"设置的支付类型是基于总支出百分比的值,取值范围[0~1]!");
                     //应缴金额
-                    p.setShoudPay(mAccount.getPaidIn()*p.getRuleNum());
+                    p.setShouldPay(mAccount.getPaidIn()*p.getRuleNum());
                     break;
                 case Member.RULE_TYPE_NUMBER:
                     if(p.getRuleNum()>mAccount.getPaidIn())
                         throw new CalculatorException(p.getMemberName()+"支付的金额超过总支出!");
-                    p.setShoudPay(p.getRuleNum());
+                    p.setShouldPay(p.getRuleNum());
                     break;
             }
-            hasRuleMoney+=p.getShoudPay();
+            hasRuleMoney+=p.getShouldPay();
         }
 
         //======================step2=========================
@@ -76,7 +76,7 @@ public class AccountCalculator {
         for (Member p:mAccount.getMembers()) {
             if(p.getRuleType()==0) {
                 //没有设置规则用户需要支付的金额
-                p.setShoudPay(averageMoney+p.getShoudPay());
+                p.setShouldPay(averageMoney+p.getShouldPay());
             }
         }
 
@@ -125,7 +125,7 @@ public class AccountCalculator {
             Member IN_P = IN.get(i);
             int n=0;
             //确定付款人的位置,n之前的人都已经付过了
-            while (n<OUT.size() && OUT.get(n).getCalcData()>=OUT.get(n).getShoudPay())
+            while (n<OUT.size() && OUT.get(n).getCalcData()>=OUT.get(n).getShouldPay())
                 n++;
             Member OUT_P;
             while (n<OUT.size()){
@@ -135,17 +135,17 @@ public class AccountCalculator {
                 payTarget.setPaidId(OUT_P.getMemberId());
                 payTarget.setReceiptId(IN_P.getMemberId());
 
-                double needMoney=IN_P.getPaidIn()-(IN_P.getShoudPay()+IN_P.getCalcData());//还需收的钱.
+                double needMoney=IN_P.getPaidIn()-(IN_P.getShouldPay()+IN_P.getCalcData());//还需收的钱.
                 if(needMoney<0.001)
                     break;
-                if(needMoney>=OUT_P.getShoudPay()-(OUT_P.getPaidIn()+OUT_P.getCalcData())){
+                if(needMoney>=OUT_P.getShouldPay()-(OUT_P.getPaidIn()+OUT_P.getCalcData())){
                     //收钱的人多付的钱大于付钱的人还需付的钱,把付钱人还需付的钱全部收来
-                    double pay=OUT_P.getShoudPay()-(OUT_P.getPaidIn()+OUT_P.getCalcData());
-                    OUT_P.setCalcData(OUT_P.getShoudPay());
+                    double pay=OUT_P.getShouldPay()-(OUT_P.getPaidIn()+OUT_P.getCalcData());
+                    OUT_P.setCalcData(OUT_P.getShouldPay());
                     IN_P.setCalcData((float) (IN_P.getCalcData()+pay));
                     payTarget.setMoney((float) round(pay));
 
-                }else if(needMoney<OUT_P.getShoudPay()-(OUT_P.getPaidIn()+OUT_P.getCalcData())){
+                }else if(needMoney<OUT_P.getShouldPay()-(OUT_P.getPaidIn()+OUT_P.getCalcData())){
                     //收钱人多付的钱少于付钱人还需付的钱,向付钱人收自己多付的那部分
                     double pay=needMoney;
                     OUT_P.setCalcData((float) (OUT_P.getCalcData()+pay));

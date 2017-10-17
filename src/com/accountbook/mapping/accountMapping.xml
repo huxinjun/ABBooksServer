@@ -33,7 +33,7 @@
 	    <result column="rule_num" property="ruleNum" jdbcType="DOUBLE" />
 	    <result column="money_for_self" property="moneyForSelf" jdbcType="DOUBLE" />
 	    <result column="paid_in" property="paidIn" jdbcType="DOUBLE" />
-	    <result column="shoud_pay" property="shoudPay" jdbcType="DOUBLE" />
+	    <result column="should_pay" property="shouldPay" jdbcType="DOUBLE" />
   </resultMap>
   
   <resultMap id="targetsMap" type="com.accountbook.model.PayTarget" >
@@ -52,7 +52,7 @@
 	</insert>
 	
 	<insert id="insertMember" parameterType="com.accountbook.model.Member">
-		insert into account_member values(null,#{accountId},#{isGroup},#{memberId},#{memberName},#{memberIcon},#{ruleType},#{ruleNum},#{moneyForSelf},#{paidIn},#{shoudPay})
+		insert into account_member values(null,#{accountId},#{isGroup},#{memberId},#{memberName},#{memberIcon},#{ruleType},#{ruleNum},#{moneyForSelf},#{paidIn},#{shouldPay})
 	</insert>
 	
 	<insert id="insertPayTarget" parameterType="com.accountbook.model.PayTarget">
