@@ -130,7 +130,10 @@ public class AccountController {
 		for(Account account:results){
 			Result put = new Result().put(account);
 			put.remove("imgs");
-			put.put("imgs", account.getImgs().split(","));
+			if(put.get("imgs")==null ||"".equals(put.get("imgs")))
+				put.put("imgs", null);
+			else
+				put.put("imgs", account.getImgs().split(","));
 			put.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date(account.getDateTimestamp().getTime())));
 			resultsWapper.add(put);
 		}
