@@ -12,14 +12,14 @@ import com.easyjson.annotation.JSONField;
 @JSONClass("members")
 public class Member implements Serializable{
 	
-    public static final int RULE_TYPE_NONE=0;
+	public static final int RULE_TYPE_NONE=0;
 	public static final int RULE_TYPE_PERCENT=1;
 	public static final int RULE_TYPE_NUMBER=2;
 
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = 1601016410136083259L;
+	private static final long serialVersionUID = 3272915123884393152L;
 	/**
 	 * 
 	 */

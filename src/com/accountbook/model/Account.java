@@ -16,7 +16,7 @@ public class Account implements Serializable{
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = 1662158319218167068L;
+	private static final long serialVersionUID = 3353886835861653794L;
 	/**
 	 * 
 	 */
@@ -78,6 +78,11 @@ public class Account implements Serializable{
 	 */
 	@JSONField("user_id")
 	private String userId;
+	/**
+	 * 
+	 */
+	@JSONField("parent_account_id")
+	private String parentAccountId;
 	/**
 	 * 
 	 */
@@ -159,6 +164,12 @@ public class Account implements Serializable{
 	public void setCreateTimestamp(Timestamp createTimestamp){
 		this.createTimestamp=createTimestamp;
 	}
+	public String getParentAccountId(){
+		return this.parentAccountId;
+	}
+	public void setParentAccountId(String parentAccountId){
+		this.parentAccountId=parentAccountId;
+	}
 	public float getPaidIn(){
 		return this.paidIn;
 	}
@@ -212,10 +223,11 @@ public class Account implements Serializable{
 				+ ", type=" + type + ", addrLon=" + addrLon
 				+ ", addrName=" + addrName + ", userId=" + userId
 				+ ", bookId=" + bookId + ", createTimestamp=" + createTimestamp
-				+ ", paidIn=" + paidIn + ", members=" + members
-				+ ", name=" + name + ", addrLat=" + addrLat
-				+ ", id=" + id + ", dateTimestamp=" + dateTimestamp
-				+ ", addr=" + addr + "]";
+				+ ", parentAccountId=" + parentAccountId + ", paidIn=" + paidIn
+				+ ", members=" + members + ", name=" + name
+				+ ", addrLat=" + addrLat + ", id=" + id
+				+ ", dateTimestamp=" + dateTimestamp + ", addr=" + addr
+				+ "]";
 	}
 
 
@@ -274,6 +286,11 @@ public class Account implements Serializable{
 			if (other.createTimestamp != null)
 				return false;
 		} else if (!createTimestamp.equals(other.createTimestamp))
+			return false;
+		if (parentAccountId == null) {
+			if (other.parentAccountId != null)
+				return false;
+		} else if (!parentAccountId.equals(other.parentAccountId))
 			return false;
 		if (paidIn != other.paidIn)
 			return false;

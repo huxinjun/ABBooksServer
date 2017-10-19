@@ -21,6 +21,8 @@
 	    <result column="addr_lon" property="addrLon" jdbcType="DOUBLE" />
 	    
 	    <result column="paid_in" property="paidIn" jdbcType="DOUBLE" />
+	    
+	    <result column="parent_account_id" property="parentAccountId" jdbcType="VARCHAR" />
    </resultMap>
 
   <resultMap id="membersMap" type="com.accountbook.model.Member" >
@@ -48,7 +50,7 @@
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.model.Account">
 		insert into account values(#{id},#{userId},#{bookId},#{type},#{name},#{description},
-		#{imgs},#{dateTimestamp,jdbcType=TIMESTAMP},#{createTimestamp,jdbcType=TIMESTAMP},#{addrName},#{addr},#{addrLat},#{addrLon},#{paidIn})
+		#{imgs},#{dateTimestamp,jdbcType=TIMESTAMP},#{createTimestamp,jdbcType=TIMESTAMP},#{addrName},#{addr},#{addrLat},#{addrLon},#{paidIn},null)
 	</insert>
 	
 	<insert id="insertMember" parameterType="com.accountbook.model.Member">
@@ -67,7 +69,7 @@
 	
 	
 	<select id="queryAccountsByUserIdAndBookId" parameterType="String" resultMap="accountMap">
-		select * from account where user_id=#{userId} and book_id=#{bookId}
+		select * from account where user_id=#{userId} and book_id=#{bookId} ORDER BY date_timestamp desc,create_timestamp desc
 	</select>
 	<select id="queryMembersByAccountId" parameterType="String" resultMap="membersMap">
 		select * from account_member where account_id=#{accountId}

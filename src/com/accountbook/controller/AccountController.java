@@ -21,8 +21,11 @@ import com.accountbook.model.Account;
 import com.accountbook.model.Member;
 import com.accountbook.model.PayResult;
 import com.accountbook.model.PayTarget;
+import com.accountbook.model.UserInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
+import com.accountbook.service.IUserService;
+import com.accountbook.utils.CommonUtils;
 import com.accountbook.utils.IDUtil;
 import com.accountbook.utils.TextUtils;
 import com.easyjson.EasyJson;
@@ -41,7 +44,8 @@ public class AccountController {
 	@Autowired
 	IAccountService accountService;
 	
-	
+	@Autowired
+	IUserService userService;
 	
 	
 	/**
@@ -123,6 +127,7 @@ public class AccountController {
 		else
 			results=accountService.findAccounts(findId,bookId);
 		
+		UserInfo findUser = userService.findUser(findId);
 		
 		
 		//将字符串的icons替换为数组形式
@@ -130,11 +135,14 @@ public class AccountController {
 		for(Account account:results){
 			Result put = new Result().put(account);
 			put.remove("imgs");
-			if(put.get("imgs")==null ||"".equals(put.get("imgs")))
+			if(account.getImgs()==null ||"".equals(account.getImgs()))
 				put.put("imgs", null);
 			else
 				put.put("imgs", account.getImgs().split(","));
-			put.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date(account.getDateTimestamp().getTime())));
+			
+			put.put("user_icon", findUser.icon);
+			put.put("date", new SimpleDateFormat("yyyy年MM月dd日").format(new Date(account.getDateTimestamp().getTime())));
+			put.put("dateDis", CommonUtils.getSinceTimeString(account.getCreateTimestamp()));
 			resultsWapper.add(put);
 		}
 		
