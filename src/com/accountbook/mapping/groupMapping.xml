@@ -30,7 +30,7 @@
   
   
   <select id="queryUsers" parameterType="String" resultMap="usermap">
-		SELECT * FROM group_user LEFT JOIN user ON group_user.user_id = user.id 
+		SELECT user_id as id,nickname,icon as avatarUrl FROM group_user LEFT JOIN user ON group_user.user_id = user.id 
 		WHERE group_id=#{groupId};
   </select>
   

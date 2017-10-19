@@ -40,6 +40,8 @@ public class AccountServiceImpl implements IAccountService {
 		});
 		for(Account account:accounts){
 			account.setMembers((ArrayList<Member>) dao.queryMembersByAccountId(account.getId()));
+			
+			
 			List<PayTarget> payTargets = dao.queryPayTargetByAccountId(account.getId());
 			if(payTargets!=null && payTargets.size()>0){
 				account.setPayResult(new ArrayList<PayResult>());

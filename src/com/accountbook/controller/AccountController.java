@@ -24,6 +24,7 @@ import com.accountbook.model.PayTarget;
 import com.accountbook.model.UserInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
+import com.accountbook.service.IGroupService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.CommonUtils;
 import com.accountbook.utils.IDUtil;
@@ -47,6 +48,9 @@ public class AccountController {
 	@Autowired
 	IUserService userService;
 	
+	@Autowired
+	IGroupService groupService;
+	
 	
 	/**
 	 * 记账
@@ -55,7 +59,7 @@ public class AccountController {
 	@ResponseBody
 	@RequestMapping("/add")
     public Object newAccount(ServletRequest req,String content){
-//		String findId=req.getAttribute("userid").toString();
+		String findId=req.getAttribute("userid").toString();
 		
 		System.out.println("AccountController.newAccount");
 		System.out.println(content);
@@ -89,6 +93,9 @@ public class AccountController {
 			}
 			
 		}
+		//只有一个成员而且是记录账单者自己时不需要在数据库中添加成员
+		if(account.getMembers().size()==1 && account.getMembers().get(0).getMemberId().equals(findId))
+			return new Result(Result.RESULT_OK, "记录账单成功!");
 		//记录成员
 		for(Member member:account.getMembers()){
 			member.setAccountId(account.getId());
@@ -143,6 +150,18 @@ public class AccountController {
 			put.put("user_icon", findUser.icon);
 			put.put("date", new SimpleDateFormat("yyyy年MM月dd日").format(new Date(account.getDateTimestamp().getTime())));
 			put.put("dateDis", CommonUtils.getSinceTimeString(account.getCreateTimestamp()));
+			
+			
+			//成员为组时查找当前用户是否在改组内
+			if(account.getMembers()!=null && account.getMembers().size()>0){
+				for(Member member:account.getMembers()){
+					if(member.getIsGroup()){
+						boolean isMember=groupService.isGroupMember(findId, member.getMemberId());
+						member.setIsMember(isMember);
+					}
+				}
+			}
+			
 			resultsWapper.add(put);
 		}
 		

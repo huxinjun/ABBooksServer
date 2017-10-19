@@ -74,6 +74,17 @@ public class GroupServiceImpl implements IGroupService {
 	public void updateGroupInfo(Group data) {
 		dao.update(data);
 	}
+	
+	@Override
+	public boolean isGroupMember(String userId, String groupId) {
+		List<UserInfo> users = dao.queryUsers(groupId);
+		if(users!=null)
+			for(UserInfo user:users)
+				if(user.id.equals(userId))
+					return true;
+				
+		return false;
+	}
 
 	
 

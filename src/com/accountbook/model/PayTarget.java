@@ -15,7 +15,7 @@ public class PayTarget implements Serializable{
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = 3277872577829412832L;
+	private static final long serialVersionUID = 5438936334749897067L;
 	/**
 	 * 
 	 */

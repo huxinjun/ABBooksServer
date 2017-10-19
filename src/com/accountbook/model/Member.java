@@ -12,14 +12,14 @@ import com.easyjson.annotation.JSONField;
 @JSONClass("members")
 public class Member implements Serializable{
 	
-	public static final int RULE_TYPE_NONE=0;
+    public static final int RULE_TYPE_NONE=0;
 	public static final int RULE_TYPE_PERCENT=1;
 	public static final int RULE_TYPE_NUMBER=2;
 
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = 3272915123884393152L;
+	private static final long serialVersionUID = 5430673918666476427L;
 	/**
 	 * 
 	 */
@@ -54,6 +54,10 @@ public class Member implements Serializable{
 	 */
 	@JSONField("member_icon")
 	private String memberIcon;
+	/**
+	 * 当成员为组时,这个字段标识当前用户是否是组内的成员
+	 */
+	private boolean isMember;
 	/**
 	 * 
 	 */
@@ -132,6 +136,12 @@ public class Member implements Serializable{
 	public void setMemberName(String memberName){
 		this.memberName=memberName;
 	}
+	public boolean getIsMember(){
+		return this.isMember;
+	}
+	public void setIsMember(boolean isMember){
+		this.isMember=isMember;
+	}
 	public boolean getIsGroup(){
 		return this.isGroup;
 	}
@@ -154,8 +164,9 @@ public class Member implements Serializable{
 				+ ", accountId=" + accountId + ", ruleNum=" + ruleNum
 				+ ", shouldPay=" + shouldPay + ", ruleType=" + ruleType
 				+ ", paidIn=" + paidIn + ", memberIcon=" + memberIcon
-				+ ", memberName=" + memberName + ", isGroup=" + isGroup
-				+ ", memberId=" + memberId + "]";
+				+ ", memberName=" + memberName + ", isMember=" + isMember
+				+ ", isGroup=" + isGroup + ", memberId=" + memberId
+				+ "]";
 	}
 
 
@@ -194,6 +205,8 @@ public class Member implements Serializable{
 			if (other.memberName != null)
 				return false;
 		} else if (!memberName.equals(other.memberName))
+			return false;
+		if (isMember != other.isMember)
 			return false;
 		if (isGroup != other.isGroup)
 			return false;

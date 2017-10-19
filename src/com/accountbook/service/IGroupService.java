@@ -12,6 +12,8 @@ public interface IGroupService {
 	/**查询组成员个数*/
 	public int findUsersCountByGroupId(String groupId);
 	
+	/**是否加入了某个组*/
+	public boolean isGroupMember(String userId,String groupId);
 	/**加入的组*/
 	public List<Group> findJoinGroups(String userId);
 	/**组中加入用户*/
