@@ -19,6 +19,7 @@ public interface AccountDao {
 	
 	
 	
+	public Account queryAccount(String accountId);
 	/**
 	 * 查询一个用户的所有
 	 * map中填写两个参数:

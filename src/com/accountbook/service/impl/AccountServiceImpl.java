@@ -24,6 +24,20 @@ public class AccountServiceImpl implements IAccountService {
 		return dao.queryMembers(userId);
 	}
 	
+	@Override
+	public Account findAccount(String accountId) {
+		Account account = dao.queryAccount(accountId);
+		account.setMembers((ArrayList<Member>) dao.queryMembersByAccountId(account.getId()));
+		
+		List<PayTarget> payTargets = dao.queryPayTargetByAccountId(account.getId());
+		if(payTargets!=null && payTargets.size()>0){
+			account.setPayResult(new ArrayList<PayResult>());
+			account.getPayResult().add(new PayResult());
+			account.getPayResult().get(0).setPayTarget((ArrayList<PayTarget>) payTargets);
+		}
+		return account;
+	}
+	
 	public List<Account> findAccounts(String userId) {
 		return findAccounts(userId, null);
 	}
@@ -73,5 +87,7 @@ public class AccountServiceImpl implements IAccountService {
 	public void addPayTarget(PayTarget target) {
 		dao.insertPayTarget(target);
 	}
+
+	
 
 }

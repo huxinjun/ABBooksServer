@@ -66,6 +66,9 @@
 	
 	
 	
+	<select id="queryAccount" parameterType="String" resultMap="accountMap">
+		select * from account where id=#{accountId}
+	</select>
 	
 	
 	<select id="queryAccountsByUserIdAndBookId" parameterType="String" resultMap="accountMap">

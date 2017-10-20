@@ -102,6 +102,18 @@ public class AccountController {
 			accountService.addMember(member);
 		}
 		
+		
+		/**
+		 * 最后需要完成一步重要的操作:自动完善子账单
+		 * 需要遍历所有的PayTarget,如果PayTarget中的支付方或者收款方有一方是组或者是两个组
+		 * 那么就需要对是组的成员做如下判断:
+		 * 组中几个人?
+		 * 没有人:不自动完善子账单
+		 * 一个人:自动完善
+		 * 两个或以上:手动完善
+		 * 
+		 */
+		
 		return new Result(Result.RESULT_OK, "记录账单成功!");
 	}
 	
@@ -120,10 +132,41 @@ public class AccountController {
 	
 	
 	/**
-	 * 查询一个用户的所有账单
+	 * 根据id查询账单
 	 */
 	@ResponseBody
 	@RequestMapping("/get")
+    public Object findAccount(ServletRequest req,String accountId){
+		String findId=req.getAttribute("userid").toString();
+		Result result = new Result();
+		Account findAccount = accountService.findAccount(accountId);
+		result.put(findAccount);
+		result.remove("imgs");
+		if(findAccount.getImgs()==null ||"".equals(findAccount.getImgs()))
+			result.put("imgs", null);
+		else
+			result.put("imgs", findAccount.getImgs().split(","));
+		
+		
+		//成员为组时查找当前用户是否在改组内
+		if(findAccount.getMembers()!=null && findAccount.getMembers().size()>0){
+			for(Member member:findAccount.getMembers()){
+				if(member.getIsGroup()){
+					boolean isMember=groupService.isGroupMember(findId, member.getMemberId());
+					member.setIsMember(isMember);
+				}
+			}
+		}
+		
+		return result.put(Result.RESULT_OK, "查询成功").put("date", new SimpleDateFormat("yyyy年MM月dd日").format(new Date(findAccount.getDateTimestamp().getTime())));
+	}
+	
+	
+	/**
+	 * 查询一个用户的所有账单
+	 */
+	@ResponseBody
+	@RequestMapping("/getAll")
     public Object findAccounts(ServletRequest req,String bookId){
 //		String findId=req.getAttribute("userid").toString();
 		String findId="oCBrx0FreB-L8pIQM5_RYDGoWOKQ";

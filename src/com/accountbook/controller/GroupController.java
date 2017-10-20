@@ -114,6 +114,23 @@ public class GroupController {
 	}
 	
 	
+	/**
+	 * 查询分组简单信息
+	 */
+	@ResponseBody
+	@RequestMapping("/getMembers")
+    public Object getGroupMembers(ServletRequest req,String groupId){
+		Result result=new Result();
+		
+		List<UserInfo> findUsersByGroupId = groupService.findUsersByGroupId(groupId);
+		List<Result> listResult=new ArrayList<>();
+		for(UserInfo info:findUsersByGroupId)
+			listResult.add(new Result().put("memberId", info.id).put("memberName", info.nickname).put("memberIcon", info.avatarUrl));
+		
+		return result.put(Result.RESULT_OK, "查询分组成员成功!").put("members",listResult);
+		
+	}
+	
 	
 	/**
 	 * 查询分组简单信息
