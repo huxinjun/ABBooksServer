@@ -84,6 +84,7 @@ public class AccountController {
 				if(result!=null && result.size()>0 && result.get(0)!=null && result.get(0).getPayTarget()!=null)
 					for(PayTarget target:result.get(0).getPayTarget()){
 						target.setAccountId(account.getId());
+						target.setId(IDUtil.generateNewId());
 						accountService.addPayTarget(target);
 					}
 						
@@ -98,24 +99,142 @@ public class AccountController {
 			return new Result(Result.RESULT_OK, "记录账单成功!");
 		//记录成员
 		for(Member member:account.getMembers()){
+			member.setId(IDUtil.generateNewId());
 			member.setAccountId(account.getId());
+			member.setParentMemberId(null);
 			accountService.addMember(member);
+			//添加组中的成员
+			if(member.getIsGroup()){
+				List<UserInfo> users = groupService.findUsersByGroupId(member.getMemberId());
+				if(users!=null && users.size()>0){
+					for (UserInfo user:users) {
+						Member innerMember =new Member();
+						innerMember.setId(IDUtil.generateNewId());
+						innerMember.setAccountId(account.getId());
+						innerMember.setMemberId(user.id);
+						innerMember.setMemberName(user.nickname);
+						innerMember.setMemberIcon(user.avatarUrl);
+						innerMember.setParentMemberId(member.getId());
+						accountService.addMember(innerMember);
+					}
+				}
+			}
 		}
 		
 		
 		/**
-		 * 最后需要完成一步重要的操作:自动完善子账单
+		 * 最后一步重要的操作:自动完善组内的支付方案
 		 * 需要遍历所有的PayTarget,如果PayTarget中的支付方或者收款方有一方是组或者是两个组
 		 * 那么就需要对是组的成员做如下判断:
 		 * 组中几个人?
-		 * 没有人:不自动完善子账单
+		 * 没有人:不需要完善子账单(如果双方都是租,并且没有人,那么设置支付状态为已支付)
 		 * 一个人:自动完善
 		 * 两个或以上:手动完善
 		 * 
+		 * 支付者的状态(为组时有效)0:无需完善子账单,1:需要手动完善,2:已经完善了子账单
 		 */
+		try{
+			ArrayList<PayTarget> targets = account.getPayResult().get(0).getPayTarget();
+			for(PayTarget target:targets){
+				boolean paidPersonIsGroup=isGroup(account.getMembers(), target.getPaidId());
+				boolean receiptPersonIsGroup=isGroup(account.getMembers(), target.getReceiptId());
+				int paidGroupPersonCount=paidPersonIsGroup?groupService.findUsersCountByGroupId(target.getPaidId()):-1;
+				int receiptGroupPersonCount=receiptPersonIsGroup?groupService.findUsersCountByGroupId(target.getReceiptId()):-1;
+				//-------------------------------------------------------------------------------
+				//两个组都没人
+				if(paidGroupPersonCount==0 && receiptGroupPersonCount==0){
+					target.setPaidStatus(PayTarget.STATUS_NOT_NEED);
+					target.setReceiptStatus(PayTarget.STATUS_NOT_NEED);
+					target.setSettled(true);//标记为已付
+				}
+				//-------------------------------------------------------------------------------
+				//支付组有人
+				if(paidGroupPersonCount>1){
+					//手动完善
+					target.setPaidStatus(PayTarget.STATUS_NEED);
+					accountService.updatePayTarget(target);
+				}else if(paidGroupPersonCount==1){
+					//自动完善,start
+					UserInfo user = groupService.findUsersByGroupId(target.getPaidId()).get(0);
+					PayTarget newTarget=new PayTarget();
+					newTarget.setId(IDUtil.generateNewId());
+					newTarget.setAccountId(account.getId());
+					newTarget.setPaidId(user.id);
+					newTarget.setReceiptId(target.getReceiptId());
+					newTarget.setParentPayId(target.getId());
+					newTarget.setMoney(target.getMoney());
+					accountService.addPayTarget(newTarget);
+					
+					target.setPaidStatus(PayTarget.STATUS_SUCCESS);
+					accountService.updatePayTarget(target);
+				}
+				//-------------------------------------------------------------------------------
+				//收款组有人
+				if(receiptGroupPersonCount>1){
+					//手动完善
+					target.setReceiptStatus(PayTarget.STATUS_NEED);
+					accountService.updatePayTarget(target);
+				}else if(receiptGroupPersonCount==1){
+					//自动完善,start
+					UserInfo user = groupService.findUsersByGroupId(target.getReceiptId()).get(0);
+					PayTarget newTarget=new PayTarget();
+					newTarget.setId(IDUtil.generateNewId());
+					newTarget.setAccountId(account.getId());
+					newTarget.setPaidId(target.getPaidId());
+					newTarget.setReceiptId(user.id);
+					newTarget.setParentPayId(target.getId());
+					newTarget.setMoney(target.getMoney());
+					accountService.addPayTarget(newTarget);
+					
+					target.setReceiptStatus(PayTarget.STATUS_SUCCESS);
+					accountService.updatePayTarget(target);
+				}
+				
+			}
+			
+		}catch(Exception ex){
+			
+		}
+		
+		
 		
 		return new Result(Result.RESULT_OK, "记录账单成功!");
 	}
+	
+	/**
+	 * 判断一个成员是不是个组
+	 * @param members
+	 * @param memberId
+	 * @return
+	 */
+	private boolean isGroup(List<Member> members,String memberId){
+		for(Member member:members)
+			if(member.getMemberId().equals(memberId))
+				if(member.getIsGroup())
+					return true;
+		return false;
+	}
+	
+	
+	
+	
+	/**
+	 * 完善组内账单(成员与支付方案)
+	 * @param accountId 父账单id
+	 * @param membersJson 子账单成员与支付规则和金额的json字符串
+	 */
+	@ResponseBody
+	@RequestMapping("/updateInnerAccount")
+    public Object updateInnerAccount(ServletRequest req,String accountId,String membersJson){
+		
+		
+		
+		return null;
+	}
+	
+	
+	
+	
 	
 	
 

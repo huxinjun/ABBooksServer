@@ -22,10 +22,10 @@
 	    
 	    <result column="paid_in" property="paidIn" jdbcType="DOUBLE" />
 	    
-	    <result column="parent_account_id" property="parentAccountId" jdbcType="VARCHAR" />
    </resultMap>
 
   <resultMap id="membersMap" type="com.accountbook.model.Member" >
+  		<id column="id" property="id" jdbcType="VARCHAR" />
 	    <result column="account_id" property="accountId" jdbcType="VARCHAR" />
 	    <result column="is_group" property="isGroup" jdbcType="BOOLEAN" />
 	    <result column="member_id" property="memberId" jdbcType="VARCHAR" />
@@ -36,32 +36,41 @@
 	    <result column="money_for_self" property="moneyForSelf" jdbcType="DOUBLE" />
 	    <result column="paid_in" property="paidIn" jdbcType="DOUBLE" />
 	    <result column="should_pay" property="shouldPay" jdbcType="DOUBLE" />
+	    <result column="parent_member_id" property="parentMemberId" jdbcType="DOUBLE" />
   </resultMap>
   
   <resultMap id="targetsMap" type="com.accountbook.model.PayTarget" >
+  		<id column="id" property="id" jdbcType="VARCHAR" />
 	    <result column="account_id" property="accountId" jdbcType="VARCHAR" />
 	    <result column="paid_id" property="paidId" jdbcType="VARCHAR" />
 	    <result column="receipt_id" property="receiptId" jdbcType="VARCHAR" />
 	    <result column="money" property="money" jdbcType="DOUBLE" />
 	    <result column="settled" property="settled" jdbcType="BOOLEAN" />
+	    <result column="paid_status" property="paidStatus" jdbcType="TINYINT" />
+	    <result column="receipt_status" property="receiptStatus" jdbcType="TINYINT" />
+	    <result column="parent_pay_id" property="parentPayId" jdbcType="VARCHAR" />
   </resultMap>
 
 
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.model.Account">
 		insert into account values(#{id},#{userId},#{bookId},#{type},#{name},#{description},
-		#{imgs},#{dateTimestamp,jdbcType=TIMESTAMP},#{createTimestamp,jdbcType=TIMESTAMP},#{addrName},#{addr},#{addrLat},#{addrLon},#{paidIn},null)
+		#{imgs},#{dateTimestamp,jdbcType=TIMESTAMP},#{createTimestamp,jdbcType=TIMESTAMP},#{addrName},#{addr},#{addrLat},#{addrLon},#{paidIn})
 	</insert>
 	
 	<insert id="insertMember" parameterType="com.accountbook.model.Member">
-		insert into account_member values(null,#{accountId},#{isGroup},#{memberId},#{memberName},#{memberIcon},#{ruleType},#{ruleNum},#{moneyForSelf},#{paidIn},#{shouldPay})
+		insert into account_member values(#{id},#{accountId},#{isGroup},#{memberId},#{memberName},#{memberIcon},#{ruleType},#{ruleNum},#{moneyForSelf},#{paidIn},#{shouldPay},#{parentMemberId})
 	</insert>
 	
 	<insert id="insertPayTarget" parameterType="com.accountbook.model.PayTarget">
-		insert into account_pay values(null,#{accountId},#{paidId},#{receiptId},#{money},#{settled})
+		insert into account_pay values(#{id},#{accountId},#{paidId},#{receiptId},#{money},#{settled},#{paidStatus},#{receiptStatus},#{parentPayId})
 	</insert>
 	
 	
+	<!-- 更新支付方案 -->
+	<update id="updatePayTarget" parameterType="com.accountbook.model.PayTarget">
+		update account_pay set settled=#{settled},paid_status=#{paidStatus},receipt_status=#{receiptStatus} where id=#{id}
+	</update>
 	
 	
 	

@@ -21,4 +21,7 @@ public interface IAccountService {
 	public List<Account> findAccounts(String userId);
 	public List<Account> findAccounts(String userId,String bookId);
 	
+	//更新支付方案中的状态
+	public void updatePayTarget(PayTarget target);
+	
 }

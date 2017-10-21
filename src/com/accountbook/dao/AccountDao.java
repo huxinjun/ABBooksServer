@@ -31,5 +31,11 @@ public interface AccountDao {
 	public List<PayTarget> queryPayTargetByAccountId(String accountId);
 	/**查询和userId相关的所有成员:分组和帐友*/
 	public List<Member> queryMembers(String userId);
+	
+	
+	
+	
+	//更新支付方案
+	public void updatePayTarget(PayTarget target);
 
 }

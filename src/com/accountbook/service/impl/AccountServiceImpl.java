@@ -88,6 +88,11 @@ public class AccountServiceImpl implements IAccountService {
 		dao.insertPayTarget(target);
 	}
 
+	@Override
+	public void updatePayTarget(PayTarget target) {
+		dao.updatePayTarget(target);
+	}
+
 	
 
 }
