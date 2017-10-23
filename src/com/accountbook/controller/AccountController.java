@@ -222,13 +222,38 @@ public class AccountController {
 	 * 完善组内账单(成员与支付方案)
 	 * @param accountId 父账单id
 	 * @param membersJson 子账单成员与支付规则和金额的json字符串
+	 * @throws CalculatorException 
 	 */
 	@ResponseBody
 	@RequestMapping("/updateInnerAccount")
-    public Object updateInnerAccount(ServletRequest req,String accountId,String membersJson){
+    public Object updateInnerAccount(ServletRequest req,String accountId,String memberId,String targetId,String membersJson) throws CalculatorException{
+		
+		Account findAccount = accountService.findAccount(accountId);
+		Account account = EasyJson.getJavaBean("{\"members\":"+membersJson+"}", Account.class);
+		//1.找出那个组成员
+		Member groupMember = null;
+		for(Member member:findAccount.getMembers())
+			if(member.getMemberId().equals(memberId)){
+				groupMember=member;
+				break;
+			}
+		//2.根据组成员的应付款,计算组内成员的应付款
+		AccountCalculator calculator=new AccountCalculator(account);
+		calculator.calcShouldPay(account.getMembers(), groupMember.getShouldPay());
 		
 		
+		//3.修改组内成员规则为:固定额度付款,值为其应付款,目的是为了和父成员一起计算各个成员的PayTarget
+		for(Member member:account.getMembers()){
+			member.setRuleType(Member.RULE_TYPE_NUMBER);
+			member.setRuleNum(member.getShouldPay());
+		}
+		findAccount.getMembers().remove(groupMember);
+		findAccount.getMembers().addAll(account.getMembers());
 		
+		calculator.setAccount(findAccount);
+		calculator.calc();
+		
+		System.out.println(findAccount.getPayResult());
 		return null;
 	}
 	

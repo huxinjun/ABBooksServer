@@ -20,6 +20,11 @@ public class AccountCalculator {
     public AccountCalculator(Account account) {
         this.mAccount=account;
     }
+    
+    public void setAccount(Account account){
+    	this.mAccount=account;
+    }
+    
 
     /**
      * 计算所有可能的支付结果
@@ -37,48 +42,11 @@ public class AccountCalculator {
          * 4.大于平均的向小于平均的收费,直到收到多余平均值得金额后换下一个大于平均值的参与者,直到所有大于平均值得参与者收到自己多交的那部分钱
          */
         //======================step0=========================
-        mAccount.setPaidIn(0);
-        for (Member p:mAccount.getMembers())
-            mAccount.setPaidIn(mAccount.getPaidIn()+p.getPaidIn());
-        System.out.println("总支付:"+mAccount.getPaidIn());
-
-
         //======================step1=========================
-        double hasRuleMoney=0;
-        int noRulePersonCount=0;
-        for (Member p:mAccount.getMembers()) {
-            if(p.getRuleType()==0) {
-                noRulePersonCount++;
-                //排除总金额中有些人给自己花了一部分钱,别人无需AA支付这个钱
-                p.setShouldPay(p.getMoneyForSelf());
-                hasRuleMoney+=p.getMoneyForSelf();
-                continue;
-            }
-            //number_type   0:基于总支出的百分比的值  1:缴费为一个固定值
-            switch (p.getRuleType()){
-                case Member.RULE_TYPE_PERCENT:
-                    if(p.getRuleNum()>1)
-                        throw new CalculatorException("您为"+p.getMemberName()+"设置的支付类型是基于总支出百分比的值,取值范围[0~1]!");
-                    //应缴金额
-                    p.setShouldPay(mAccount.getPaidIn()*p.getRuleNum());
-                    break;
-                case Member.RULE_TYPE_NUMBER:
-                    if(p.getRuleNum()>mAccount.getPaidIn())
-                        throw new CalculatorException(p.getMemberName()+"支付的金额超过总支出!");
-                    p.setShouldPay(p.getRuleNum());
-                    break;
-            }
-            hasRuleMoney+=p.getShouldPay();
-        }
+        float averageMoney=calcShouldPay(mAccount.getMembers(), 0);
 
-        //======================step2=========================
-        float averageMoney=(float) ((mAccount.getPaidIn()-hasRuleMoney)/noRulePersonCount);
-        for (Member p:mAccount.getMembers()) {
-            if(p.getRuleType()==0) {
-                //没有设置规则用户需要支付的金额
-                p.setShouldPay(averageMoney+p.getShouldPay());
-            }
-        }
+
+        
 
 
         //======================step3=========================
@@ -168,6 +136,60 @@ public class AccountCalculator {
         for (Member p:OUT)
             p.setCalcData(0);
     }
+    
+    
+    /**
+     * 计算每个人的应付款
+     * @param members 人
+     * @param paidIn 总花费
+     */
+    public float calcShouldPay(List<Member> members,float paidIn) throws CalculatorException{
+    	
+    	if(paidIn!=0)
+    		mAccount.setPaidIn(paidIn);
+        for (Member p:mAccount.getMembers())
+            mAccount.setPaidIn(mAccount.getPaidIn()+p.getPaidIn());
+        System.out.println("总支付:"+mAccount.getPaidIn());
+    	
+    	double hasRuleMoney=0;
+        int noRulePersonCount=0;
+        for (Member p:mAccount.getMembers()) {
+            if(p.getRuleType()==0) {
+                noRulePersonCount++;
+                //排除总金额中有些人给自己花了一部分钱,别人无需AA支付这个钱
+                p.setShouldPay(p.getMoneyForSelf());
+                hasRuleMoney+=p.getMoneyForSelf();
+                continue;
+            }
+            //number_type   0:基于总支出的百分比的值  1:缴费为一个固定值
+            switch (p.getRuleType()){
+                case Member.RULE_TYPE_PERCENT:
+                    if(p.getRuleNum()>1)
+                        throw new CalculatorException("您为"+p.getMemberName()+"设置的支付类型是基于总支出百分比的值,取值范围[0~1]!");
+                    //应缴金额
+                    p.setShouldPay(mAccount.getPaidIn()*p.getRuleNum());
+                    break;
+                case Member.RULE_TYPE_NUMBER:
+                    if(p.getRuleNum()>mAccount.getPaidIn())
+                        throw new CalculatorException(p.getMemberName()+"支付的金额超过总支出!");
+                    p.setShouldPay(p.getRuleNum());
+                    break;
+            }
+            hasRuleMoney+=p.getShouldPay();
+        }
+
+        //======================step2=========================
+        float averageMoney=(float) ((mAccount.getPaidIn()-hasRuleMoney)/noRulePersonCount);
+        for (Member p:mAccount.getMembers()) {
+            if(p.getRuleType()==0) {
+                //没有设置规则用户需要支付的金额
+                p.setShouldPay(averageMoney+p.getShouldPay());
+            }
+        }
+        return averageMoney;
+    }
+    
+    
 
     /**
      * 数组元素换位置
