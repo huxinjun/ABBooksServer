@@ -28,9 +28,10 @@ public class AccountCalculator {
 
     /**
      * 计算所有可能的支付结果
+     * @param allPaidIn 
      * @return
      */
-    public List<PayResult> calc() throws CalculatorException{
+    public List<PayResult> calc(float allPaidIn) throws CalculatorException{
 
         mAccount.setPayResult(new ArrayList<PayResult>());
 
@@ -43,7 +44,7 @@ public class AccountCalculator {
          */
         //======================step0=========================
         //======================step1=========================
-        float averageMoney=calcShouldPay(mAccount.getMembers(), 0);
+        float averageMoney=calcShouldPay(mAccount.getMembers(), allPaidIn);
 
 
         
@@ -147,9 +148,13 @@ public class AccountCalculator {
     	
     	if(paidIn!=0)
     		mAccount.setPaidIn(paidIn);
-        for (Member p:mAccount.getMembers())
-            mAccount.setPaidIn(mAccount.getPaidIn()+p.getPaidIn());
+    	else{
+    		float allPaidIn=0;
+	        for (Member p:mAccount.getMembers())
+	        	allPaidIn+=p.getPaidIn();
+	         mAccount.setPaidIn(allPaidIn);
         System.out.println("总支付:"+mAccount.getPaidIn());
+    	}
     	
     	double hasRuleMoney=0;
         int noRulePersonCount=0;

@@ -23,5 +23,7 @@ public interface IAccountService {
 	
 	//更新支付方案中的状态
 	public void updatePayTarget(PayTarget target);
+	public void deletePayTarget(String targetId);
+	public void deletePayTargets(String accountId);
 	
 }

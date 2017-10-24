@@ -48,7 +48,6 @@
 	    <result column="settled" property="settled" jdbcType="BOOLEAN" />
 	    <result column="paid_status" property="paidStatus" jdbcType="TINYINT" />
 	    <result column="receipt_status" property="receiptStatus" jdbcType="TINYINT" />
-	    <result column="parent_pay_id" property="parentPayId" jdbcType="VARCHAR" />
   </resultMap>
 
 
@@ -63,7 +62,7 @@
 	</insert>
 	
 	<insert id="insertPayTarget" parameterType="com.accountbook.model.PayTarget">
-		insert into account_pay values(#{id},#{accountId},#{paidId},#{receiptId},#{money},#{settled},#{paidStatus},#{receiptStatus},#{parentPayId})
+		insert into account_pay values(#{id},#{accountId},#{paidId},#{receiptId},#{money},#{settled},#{paidStatus},#{receiptStatus})
 	</insert>
 	
 	
@@ -71,6 +70,15 @@
 	<update id="updatePayTarget" parameterType="com.accountbook.model.PayTarget">
 		update account_pay set settled=#{settled},paid_status=#{paidStatus},receipt_status=#{receiptStatus} where id=#{id}
 	</update>
+	
+	<!-- 删除一个账单下的所有支付方案 -->
+	<delete id="deletePayTargets" parameterType="String">
+		delete from account_pay where account_id=#{accountId};
+	</delete>
+	<!-- 删除某个支付方案 -->
+	<delete id="deletePayTarget" parameterType="String">
+		delete from account_pay where id=#{targetId};
+	</delete>
 	
 	
 	

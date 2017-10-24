@@ -30,7 +30,7 @@
 	
 	<!-- 删除 -->
 	<delete id="delete" parameterType="Integer">
-		delete friend where id=#{id};
+		delete from friend where id=#{id};
 	</delete>
 	
 </mapper>

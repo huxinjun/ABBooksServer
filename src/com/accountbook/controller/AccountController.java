@@ -78,7 +78,7 @@ public class AccountController {
 		if(account.getMembers().size()>1){
 			AccountCalculator calculator=new AccountCalculator(account);
 			try {
-				List<PayResult> result = calculator.calc();
+				List<PayResult> result = calculator.calc(0);
 				System.out.println(result);
 				//记录支付方案(目前只选择第一种方案)
 				if(result!=null && result.size()>0 && result.get(0)!=null && result.get(0).getPayTarget()!=null)
@@ -104,21 +104,21 @@ public class AccountController {
 			member.setParentMemberId(null);
 			accountService.addMember(member);
 			//添加组中的成员
-			if(member.getIsGroup()){
-				List<UserInfo> users = groupService.findUsersByGroupId(member.getMemberId());
-				if(users!=null && users.size()>0){
-					for (UserInfo user:users) {
-						Member innerMember =new Member();
-						innerMember.setId(IDUtil.generateNewId());
-						innerMember.setAccountId(account.getId());
-						innerMember.setMemberId(user.id);
-						innerMember.setMemberName(user.nickname);
-						innerMember.setMemberIcon(user.avatarUrl);
-						innerMember.setParentMemberId(member.getId());
-						accountService.addMember(innerMember);
-					}
-				}
-			}
+//			if(member.getIsGroup()){
+//				List<UserInfo> users = groupService.findUsersByGroupId(member.getMemberId());
+//				if(users!=null && users.size()>0){
+//					for (UserInfo user:users) {
+//						Member innerMember =new Member();
+//						innerMember.setId(IDUtil.generateNewId());
+//						innerMember.setAccountId(account.getId());
+//						innerMember.setMemberId(user.id);
+//						innerMember.setMemberName(user.nickname);
+//						innerMember.setMemberIcon(user.avatarUrl);
+//						innerMember.setParentMemberId(member.getId());
+//						accountService.addMember(innerMember);
+//					}
+//				}
+//			}
 		}
 		
 		
@@ -161,12 +161,10 @@ public class AccountController {
 					newTarget.setAccountId(account.getId());
 					newTarget.setPaidId(user.id);
 					newTarget.setReceiptId(target.getReceiptId());
-					newTarget.setParentPayId(target.getId());
 					newTarget.setMoney(target.getMoney());
 					accountService.addPayTarget(newTarget);
 					
-					target.setPaidStatus(PayTarget.STATUS_SUCCESS);
-					accountService.updatePayTarget(target);
+					accountService.deletePayTarget(target.getId());
 				}
 				//-------------------------------------------------------------------------------
 				//收款组有人
@@ -182,12 +180,10 @@ public class AccountController {
 					newTarget.setAccountId(account.getId());
 					newTarget.setPaidId(target.getPaidId());
 					newTarget.setReceiptId(user.id);
-					newTarget.setParentPayId(target.getId());
 					newTarget.setMoney(target.getMoney());
 					accountService.addPayTarget(newTarget);
 					
-					target.setReceiptStatus(PayTarget.STATUS_SUCCESS);
-					accountService.updatePayTarget(target);
+					accountService.deletePayTarget(target.getId());
 				}
 				
 			}
@@ -224,12 +220,16 @@ public class AccountController {
 	 * @param membersJson 子账单成员与支付规则和金额的json字符串
 	 * @throws CalculatorException 
 	 */
+	@Transactional(propagation = Propagation.REQUIRED,rollbackFor={Exception.class, RuntimeException.class})
 	@ResponseBody
 	@RequestMapping("/updateInnerAccount")
-    public Object updateInnerAccount(ServletRequest req,String accountId,String memberId,String targetId,String membersJson) throws CalculatorException{
+    public Object updateInnerAccount(ServletRequest req,String accountId,String memberId,String membersJson) throws CalculatorException{
 		
 		Account findAccount = accountService.findAccount(accountId);
 		Account account = EasyJson.getJavaBean("{\"members\":"+membersJson+"}", Account.class);
+		account.setId(accountId);
+		
+		
 		//1.找出那个组成员
 		Member groupMember = null;
 		for(Member member:findAccount.getMembers())
@@ -246,14 +246,33 @@ public class AccountController {
 		for(Member member:account.getMembers()){
 			member.setRuleType(Member.RULE_TYPE_NUMBER);
 			member.setRuleNum(member.getShouldPay());
+			member.setId(IDUtil.generateNewId());
+			member.setAccountId(account.getId());
+			member.setParentMemberId(memberId);
+			accountService.addMember(member);
 		}
+		
+		//4.将组替换为组内成员
 		findAccount.getMembers().remove(groupMember);
 		findAccount.getMembers().addAll(account.getMembers());
 		
 		calculator.setAccount(findAccount);
-		calculator.calc();
+		calculator.calc(findAccount.getPaidIn());
 		
-		System.out.println(findAccount.getPayResult());
+		//将新的支付方案存入数据库(删除旧的支付方案)
+		accountService.deletePayTargets(accountId);
+		//记录新的支付方案(目前只选择第一种方案)
+		List<PayResult> result = calculator.calc(0);
+		if(result!=null && result.size()>0 && result.get(0)!=null && result.get(0).getPayTarget()!=null)
+			for(PayTarget target:result.get(0).getPayTarget()){
+				target.setAccountId(account.getId());
+				target.setId(IDUtil.generateNewId());
+				accountService.addPayTarget(target);
+			}
+		
+//		System.out.println(findAccount.getMembers());
+//		System.out.println("----------------------------------");
+//		System.out.println(findAccount.getPayResult());
 		return null;
 	}
 	

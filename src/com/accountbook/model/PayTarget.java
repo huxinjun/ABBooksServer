@@ -6,24 +6,23 @@ import com.easyjson.annotation.JSONField;
 
 /**
  *
+ * publicstaticfinalintSTATUS_NOT_NEED=0;无需完善<br>
  * @author EasyJson By xinjun
  *
  */
 @JSONClass("pay_target")
 public class PayTarget implements Serializable{
 	
-	
-	
-	public static final int STATUS_NOT_NEED=0;//无需完善组内账单
-	public static final int STATUS_NEED=1;//需要手动完善
-	public static final int STATUS_SUCCESS=2;//已经完成
+	public static final int STATUS_NOT_NEED=0;//无需完善
+	public static final int STATUS_NEED=1;//需要手动完善组内账单
+	public static final int STATUS_COMPLETED=2;//已经完善账单
 
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = -5458542787310028971L;
+	private static final long serialVersionUID = -1182512269534249348L;
 	/**
-	 * 收款者状态
+	 * 
 	 */
 	@JSONField("receipt_status")
 	private int receiptStatus;
@@ -33,7 +32,7 @@ public class PayTarget implements Serializable{
 	@JSONField("account_id")
 	private String accountId;
 	/**
-	 * 支付者状态
+	 * 
 	 */
 	@JSONField("paid_status")
 	private int paidStatus;
@@ -59,10 +58,6 @@ public class PayTarget implements Serializable{
 	 * 
 	 */
 	private String id;
-	/**
-	 * 如果此支付方案是针对一个组下成员的,那么这个属性标识所属的父支付方案id
-	 */
-	private String parentPayId;
 
 
 	//**********************************************Getter and Setter************************************************
@@ -115,12 +110,6 @@ public class PayTarget implements Serializable{
 	public void setReceiptStatus(int receiptStatus){
 		this.receiptStatus=receiptStatus;
 	}
-	public String getParentPayId(){
-		return this.parentPayId;
-	}
-	public void setParentPayId(String parentPayId){
-		this.parentPayId=parentPayId;
-	}
 
 
 	//**************************************************toString******************************************************
@@ -131,7 +120,7 @@ public class PayTarget implements Serializable{
 				+ ", paidStatus=" + paidStatus + ", money=" + money
 				+ ", settled=" + settled + ", id=" + id
 				+ ", receiptId=" + receiptId + ", receiptStatus=" + receiptStatus
-				+ ", parentPayId=" + parentPayId + "]";
+				+ "]";
 	}
 
 
@@ -171,11 +160,6 @@ public class PayTarget implements Serializable{
 		} else if (!receiptId.equals(other.receiptId))
 			return false;
 		if (receiptStatus != other.receiptStatus)
-			return false;
-		if (parentPayId == null) {
-			if (other.parentPayId != null)
-				return false;
-		} else if (!parentPayId.equals(other.parentPayId))
 			return false;
 		return true;
 	}

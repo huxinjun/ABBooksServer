@@ -93,6 +93,16 @@ public class AccountServiceImpl implements IAccountService {
 		dao.updatePayTarget(target);
 	}
 
+	@Override
+	public void deletePayTargets(String accountId) {
+		dao.deletePayTargets(accountId);
+	}
+
+	@Override
+	public void deletePayTarget(String targetId) {
+		dao.deletePayTarget(targetId);
+	}
+
 	
 
 }

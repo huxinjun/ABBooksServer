@@ -6,19 +6,21 @@ import com.easyjson.annotation.JSONField;
 
 /**
  *
+ * publicstaticfinalintRULE_TYPE_NONE=0;没有特殊规则<br>
  * @author EasyJson By xinjun
  *
  */
 @JSONClass("members")
 public class Member implements Serializable{
-    public static final int RULE_TYPE_NONE=0;
-	public static final int RULE_TYPE_PERCENT=1;
-	public static final int RULE_TYPE_NUMBER=2;
+	
+	public static final int RULE_TYPE_NONE=0;//没有特殊规则
+	public static final int RULE_TYPE_PERCENT=1;//按百分比
+	public static final int RULE_TYPE_NUMBER=2;//固定数额
 
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = -5461847758038364523L;
+	private static final long serialVersionUID = -1137895205503908706L;
 	/**
 	 * 
 	 */

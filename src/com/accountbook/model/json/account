@@ -56,9 +56,9 @@
             "pay_target":[	//付账计算结果
                 {
                 
-                //public static final int STATUS_NOT_NEED=0;//无需完善组内账单
-				//public static final int STATUS_NEED=1;//需要手动完善
-				//public static final int STATUS_SUCCESS=2;//已经完成
+	//public static final int STATUS_NOT_NEED=0;//无需完善
+	//public static final int STATUS_NEED=1;//需要手动完善组内账单
+	//public static final int STATUS_COMPLETED=2;//已经完善账单
                 
                 	"id":"aaa",
                     "account_id":"aaa",	
@@ -68,14 +68,12 @@
                     "receipt_id":"bbb",	
                     //支付多少
                     "money":100.0,
-                    //是否已结清
+                    //是否结清
                     "settled":false,
-                    
-                    "paid_status":0,	//支付者状态
-                    
-                    "receipt_status":0,	//收款者状态
-                    
-                    "parentPayId":"aaa"	//如果此支付方案是针对一个组下成员的,那么这个属性标识所属的父支付方案id
+                    //支付者状态
+                    "paid_status":0,
+                    //收款者状态
+                    "receipt_status":0
                 }
             ]
         }
