@@ -254,60 +254,71 @@ public class AccountController {
 
 				}
 			}
-		try {
-			// 1.找出那个组成员
-			Member groupMember = null;
-			for (Member member : findAccount.getMembers())
-				if (member.getMemberId().equals(memberId)) {
-					groupMember = member;
-					break;
-				}
-			// 2.根据组成员的应付款,计算组内成员的应付款
-			AccountCalculator calculator = new AccountCalculator(account);
-			calculator.calcShouldPay(account.getMembers(), groupMember.getShouldPay());
-
-			// 3.修改组内成员规则为:固定额度付款,值为其应付款,目的是为了和父成员一起计算各个成员的PayTarget
-			for (Member member : account.getMembers()) {
-				member.setRuleType(Member.RULE_TYPE_NUMBER);
-				member.setRuleNum(member.getShouldPay());
-				member.setId(IDUtil.generateNewId());
-				member.setAccountId(account.getId());
-				member.setParentMemberId(memberId);
-				accountService.addMember(member);
+		// 1.找出那个组成员
+		Member groupMember = null;
+		for (Member member : findAccount.getMembers())
+			if (member.getMemberId().equals(memberId)) {
+				groupMember = member;
+				break;
 			}
+		// 2.看这个组需要付款还是需要收款,收款和付款完善账单时的逻辑不一样
+		boolean needPay=(groupMember.getPaidIn()-groupMember.getShouldPay())<0;
+		if(needPay){
+			//下面是付款逻辑------------------------------------------------------------------------------------------------------------
+			//
+			
+			return new Result(Result.RESULT_OK, "完善账单成功!");
+		}else{
+			//下面是收款逻辑------------------------------------------------------------------------------------------------------------
+			try {
+				
+				// 1.根据组成员的应付款,计算组内成员的应付款
+				AccountCalculator calculator = new AccountCalculator(account);
+				calculator.calcShouldPay(account.getMembers(), groupMember.getShouldPay());
 
-			// 4.将组替换为组内成员
-			findAccount.getMembers().remove(groupMember);
-			findAccount.getMembers().addAll(account.getMembers());
-
-			calculator.setAccount(findAccount);
-			calculator.calc(findAccount.getPaidIn());
-
-			// 将新的支付方案存入数据库(删除旧的支付方案)
-			accountService.deletePayTargets(accountId);
-			// 记录新的支付方案(目前只选择第一种方案)
-			List<PayResult> result = findAccount.getPayResult();
-			if (result != null && result.size() > 0 && result.get(0) != null && result.get(0).getPayTarget() != null)
-				for (PayTarget target : result.get(0).getPayTarget()) {
-					target.setAccountId(account.getId());
-					target.setId(IDUtil.generateNewId());
-					// 恢复支付状态
-					if (settleMembers.contains(target.getPaidId())
-							&& isContains(account.getMembers(), target.getReceiptId()))
-						target.setSettled(true);
-					if (settleMembers.contains(target.getReceiptId())
-							&& isContains(account.getMembers(), target.getPaidId()))
-						target.setSettled(true);
-
-					accountService.addPayTarget(target);
+				// 2.修改组内成员规则为:固定额度付款,值为其应付款,目的是为了和父成员一起计算各个成员的PayTarget
+				for (Member member : account.getMembers()) {
+					member.setRuleType(Member.RULE_TYPE_NUMBER);
+					member.setRuleNum(member.getShouldPay());
+					member.setId(IDUtil.generateNewId());
+					member.setAccountId(account.getId());
+					member.setParentMemberId(memberId);
+					accountService.addMember(member);
 				}
-		} catch (CalculatorException e) {
-			return new Result(Result.RESULT_FAILD, e.getMessage());
+
+				// 3.将组替换为组内成员
+				findAccount.getMembers().remove(groupMember);
+				findAccount.getMembers().addAll(account.getMembers());
+
+				calculator.setAccount(findAccount);
+				calculator.calc(findAccount.getPaidIn());
+
+				// 4.将新的支付方案存入数据库(删除旧的支付方案)
+				accountService.deletePayTargets(accountId);
+				// 5.记录新的支付方案(目前只选择第一种方案)
+				List<PayResult> result = findAccount.getPayResult();
+				if (result != null && result.size() > 0 && result.get(0) != null && result.get(0).getPayTarget() != null)
+					for (PayTarget target : result.get(0).getPayTarget()) {
+						target.setAccountId(account.getId());
+						target.setId(IDUtil.generateNewId());
+						// 恢复支付状态
+						if (settleMembers.contains(target.getPaidId())
+								&& isContains(account.getMembers(), target.getReceiptId()))
+							target.setSettled(true);
+						if (settleMembers.contains(target.getReceiptId())
+								&& isContains(account.getMembers(), target.getPaidId()))
+							target.setSettled(true);
+
+						accountService.addPayTarget(target);
+					}
+			} catch (CalculatorException e) {
+				return new Result(Result.RESULT_FAILD, e.getMessage());
+			}
+			System.out.println("----------------------------------");
+			System.out.println(findAccount.getMembers());
+			System.out.println(findAccount.getPayResult());
+			return new Result(Result.RESULT_OK, "完善账单成功!");
 		}
-		System.out.println("----------------------------------");
-		System.out.println(findAccount.getMembers());
-		System.out.println(findAccount.getPayResult());
-		return new Result(Result.RESULT_OK, "完善账单成功!");
 	}
 
 	/**
