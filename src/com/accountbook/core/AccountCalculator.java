@@ -32,7 +32,6 @@ public class AccountCalculator {
      * @return
      */
     public List<PayResult> calc(float allPaidIn) throws CalculatorException{
-
         mAccount.setPayResult(new ArrayList<PayResult>());
 
         /**
@@ -44,10 +43,7 @@ public class AccountCalculator {
          */
         //======================step0=========================
         //======================step1=========================
-        float averageMoney=calcShouldPay(mAccount.getMembers(), allPaidIn);
-
-
-        
+        calcShouldPay(mAccount.getMembers(), allPaidIn);
 
 
         //======================step3=========================
@@ -56,16 +52,15 @@ public class AccountCalculator {
 
         for (Member p:mAccount.getMembers()) {
             //实际支持少余平均值,需要付钱
-            if(p.getPaidIn()<averageMoney)
+            if(p.getPaidIn()<p.getShouldPay())
                 OUT.add(p);
             //实际支持多余平均值,需要收钱
-            else if(p.getPaidIn()>averageMoney)
+            else if(p.getPaidIn()>p.getShouldPay())
                 IN.add(p);
         }
 
         System.out.println("IN:"+IN.toString());
         System.out.println("OUT:"+OUT.toString());
-
 
         //======================step4=========================
         //换位置后再计算结果
@@ -73,12 +68,11 @@ public class AccountCalculator {
             for(int n=m;n<OUT.size();n++){
                 transposition(OUT,n,m);
                 calcResult(IN,OUT);
+                System.out.println("调换位置");
             }
         if(mAccount.getPayResult().size()==0)
             calcResult(IN,OUT);
-
         //======================done===========================
-        System.out.println(mAccount);
         return mAccount.getPayResult();
     }
 
@@ -144,8 +138,7 @@ public class AccountCalculator {
      * @param members 人
      * @param paidIn 总花费
      */
-    public float calcShouldPay(List<Member> members,float paidIn) throws CalculatorException{
-    	
+    public void calcShouldPay(List<Member> members,float paidIn) throws CalculatorException{
     	if(paidIn!=0)
     		mAccount.setPaidIn(paidIn);
     	else{
@@ -153,8 +146,8 @@ public class AccountCalculator {
 	        for (Member p:mAccount.getMembers())
 	        	allPaidIn+=p.getPaidIn();
 	         mAccount.setPaidIn(allPaidIn);
-        System.out.println("总支付:"+mAccount.getPaidIn());
     	}
+    	System.out.println("总支付:"+mAccount.getPaidIn());
     	
     	double hasRuleMoney=0;
         int noRulePersonCount=0;
@@ -191,7 +184,6 @@ public class AccountCalculator {
                 p.setShouldPay(averageMoney+p.getShouldPay());
             }
         }
-        return averageMoney;
     }
     
     
