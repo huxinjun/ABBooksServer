@@ -67,11 +67,14 @@ public class AccountCalculator {
         for(int m=0;m<OUT.size()-1;m++)
             for(int n=m;n<OUT.size();n++){
                 transposition(OUT,n,m);
-                calcResult(IN,OUT);
+                PayResult calcResult = calcResult(IN,OUT);
+                mAccount.getPayResult().add(calcResult);
                 System.out.println("调换位置");
             }
-        if(mAccount.getPayResult().size()==0)
-            calcResult(IN,OUT);
+        if(mAccount.getPayResult().size()==0){
+        	PayResult calcResult = calcResult(IN,OUT);
+        	mAccount.getPayResult().add(calcResult);
+        }
         //======================done===========================
         return mAccount.getPayResult();
     }
@@ -81,7 +84,7 @@ public class AccountCalculator {
      * @param IN 收款者
      * @param OUT 付款者
      */
-    private void calcResult(List<Member> IN,List<Member> OUT){
+    public PayResult calcResult(List<Member> IN,List<Member> OUT){
         PayResult result=new PayResult();
         for(int i=0;i<IN.size();i++){
             //当前收钱的人
@@ -118,18 +121,14 @@ public class AccountCalculator {
                 if(result.getPayTarget()==null)
                 	result.setPayTarget(new ArrayList<PayTarget>());
                 result.getPayTarget().add(payTarget);
-
-
-
-
             }
         }
-        mAccount.getPayResult().add(result);
         //初始化
         for (Member p:IN)
             p.setCalcData(0);
         for (Member p:OUT)
             p.setCalcData(0);
+        return result;
     }
     
     

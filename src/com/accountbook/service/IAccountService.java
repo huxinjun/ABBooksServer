@@ -26,4 +26,7 @@ public interface IAccountService {
 	public void deletePayTarget(String targetId);
 	public void deletePayTargets(String accountId);
 	
+	
+	public void deleteMember(String id);
+	
 }

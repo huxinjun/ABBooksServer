@@ -80,6 +80,11 @@
 		delete from account_pay where id=#{targetId};
 	</delete>
 	
+	<!-- 删除某个成员 -->
+	<delete id="deleteMember" parameterType="String">
+		delete from account_member where id=#{id};
+	</delete>
+	
 	
 	
 	
