@@ -57,3 +57,42 @@ SELECT id,nickname AS NAME,icon,FALSE is_group FROM USER WHERE id IN(
 SELECT accept_id AS id FROM friend WHERE invite_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
 UNION
 SELECT invite_id AS id FROM friend WHERE accept_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#-------------------------------------------------------------------------------------------------------------
+
+#查询当月总支出
+SELECT 'month_paidin' NAME,SUM(money) AS money FROM (
+SELECT SUM(paid_in) AS money FROM account WHERE is_private=1 AND user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+UNION
+SELECT SUM(a.should_pay) AS money FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(b.date_timestamp,'%Y-%m'))AS total
+
+UNION
+
+#查询全部待付款
+SELECT 'wait_paid' NAME,SUM(money) FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+
+UNION
+
+#查询全部待收款
+SELECT 'wait_receipt' NAME,SUM(money) FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+#-------------------------------------------------------------------------------------------------------------

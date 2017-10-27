@@ -7,6 +7,7 @@ import java.util.Map;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
 import com.accountbook.model.PayTarget;
+import com.accountbook.model.SummaryInfo;
 
 public interface AccountDao {
 	
@@ -31,6 +32,8 @@ public interface AccountDao {
 	public List<PayTarget> queryPayTargetByAccountId(String accountId);
 	/**查询和userId相关的所有成员:分组和帐友*/
 	public List<Member> queryMembers(String userId);
+	/**查询userId本月支出,待付款,代收款等信息*/
+	public List<SummaryInfo> queryAccountSummarySimple(String userId);
 	
 	
 	

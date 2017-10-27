@@ -50,6 +50,12 @@
 	    <result column="paid_status" property="paidStatus" jdbcType="TINYINT" />
 	    <result column="receipt_status" property="receiptStatus" jdbcType="TINYINT" />
   </resultMap>
+  
+  
+  <resultMap id="summaryMap" type="com.accountbook.model.SummaryInfo" >
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="money" property="money" jdbcType="DOUBLE" />
+  </resultMap>
 
 
 	<!-- 插入 -->
@@ -125,6 +131,27 @@
 		UNION
 		SELECT invite_id AS id FROM friend WHERE accept_id=#{userId})
 	</select>
+	
+	
+	<select id="queryAccountSummarySimple" parameterType="String" resultMap="summaryMap">
+		#查询当月总支出
+		SELECT 'month_paidin' name,SUM(money) AS money FROM (
+		SELECT SUM(paid_in) AS money FROM account WHERE is_private=1 AND user_id=#{userId} AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+		UNION
+		SELECT SUM(a.should_pay) AS money FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id WHERE member_id=#{userId} AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(b.date_timestamp,'%Y-%m'))AS total
+		
+		UNION
+		
+		#查询所有待付款
+		SELECT 'wait_paid' name,SUM(money) FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.paid_id=#{userId}
+		
+		UNION
+		
+		#查询所有待收款
+		SELECT 'wait_receipt' name,SUM(money) FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.receipt_id=#{userId}
+	</select>
+	
+	
 	
 	
 </mapper>

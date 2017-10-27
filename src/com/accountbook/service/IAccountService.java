@@ -5,6 +5,7 @@ import java.util.List;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
 import com.accountbook.model.PayTarget;
+import com.accountbook.model.SummaryInfo;
 
 public interface IAccountService {
 	
@@ -20,6 +21,8 @@ public interface IAccountService {
 	public Account findAccount(String accountId);
 	public List<Account> findAccounts(String userId);
 	public List<Account> findAccounts(String userId,String bookId);
+	
+	public List<SummaryInfo> getSummarySimpleInfo(String userId);
 	
 	//更新支付方案中的状态
 	public void updatePayTarget(PayTarget target);

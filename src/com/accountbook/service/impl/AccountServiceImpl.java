@@ -11,6 +11,7 @@ import com.accountbook.model.Account;
 import com.accountbook.model.Member;
 import com.accountbook.model.PayResult;
 import com.accountbook.model.PayTarget;
+import com.accountbook.model.SummaryInfo;
 import com.accountbook.service.IAccountService;
 
 @Service
@@ -106,6 +107,11 @@ public class AccountServiceImpl implements IAccountService {
 	@Override
 	public void deleteMember(String id) {
 		dao.deleteMember(id);
+	}
+
+	@Override
+	public List<SummaryInfo> getSummarySimpleInfo(String userId) {
+		return dao.queryAccountSummarySimple(userId);
 	}
 
 	

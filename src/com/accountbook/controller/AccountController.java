@@ -21,6 +21,7 @@ import com.accountbook.model.Account;
 import com.accountbook.model.Member;
 import com.accountbook.model.PayResult;
 import com.accountbook.model.PayTarget;
+import com.accountbook.model.SummaryInfo;
 import com.accountbook.model.UserInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
@@ -531,6 +532,23 @@ public class AccountController {
 		result.put("accounts", resultsWapper);
 
 		return result.put(Result.RESULT_OK, "查询账单成功!");
+	}
+	
+	
+	
+	/**
+	 * 统计一个用户的账本简要信息
+	 */
+	@ResponseBody
+	@RequestMapping("/getSummarySimpleInfo")
+	public Object getSummarySimpleInfo(ServletRequest req) {
+		String findId=req.getAttribute("userid").toString();
+		Result result=new Result();
+		List<SummaryInfo> simpleInfo = accountService.getSummarySimpleInfo(findId);
+		System.out.println(simpleInfo);
+		for(SummaryInfo info:simpleInfo)
+			result.put(info.getName(),info.getMoney());
+		return result.put(Result.RESULT_OK, "查询成功");
 	}
 
 }
