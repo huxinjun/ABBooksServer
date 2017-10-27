@@ -97,10 +97,12 @@
 		select * from account where user_id=#{userId} and book_id=#{bookId} ORDER BY date_timestamp desc,create_timestamp desc
 	</select>
 	<select id="queryMembersByAccountId" parameterType="String" resultMap="membersMap">
-		select * from account_member where account_id=#{accountId}
+		SELECT * FROM account_member WHERE account_id=#{accountId} ORDER BY CONVERT(member_name USING gbk) ASC
 	</select>
 	<select id="queryPayTargetByAccountId" parameterType="String" resultMap="targetsMap">
-		select * from account_pay where account_id=#{accountId}
+		SELECT a.id,account_id,paid_id,receipt_id,money,settled,paid_status,receipt_status,CONCAT(IFNULL(c.nickname,''),'',IFNULL(b.name,''))  AS member_name FROM account_pay AS a 
+		LEFT JOIN group_ AS b ON a.paid_id=b.id    
+		LEFT JOIN USER AS c ON a.paid_id=c.id WHERE a.account_id=#{accountId} ORDER BY CONVERT(member_name USING gbk) asc
 	</select>
 	
 	
