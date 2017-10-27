@@ -21,6 +21,7 @@
 	    <result column="addr_lon" property="addrLon" jdbcType="DOUBLE" />
 	    
 	    <result column="paid_in" property="paidIn" jdbcType="DOUBLE" />
+	    <result column="is_private" property="isPrivate" jdbcType="BOOLEAN" />
 	    
    </resultMap>
 
@@ -54,7 +55,7 @@
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.model.Account">
 		insert into account values(#{id},#{userId},#{bookId},#{type},#{name},#{description},
-		#{imgs},#{dateTimestamp,jdbcType=TIMESTAMP},#{createTimestamp,jdbcType=TIMESTAMP},#{addrName},#{addr},#{addrLat},#{addrLon},#{paidIn})
+		#{imgs},#{dateTimestamp,jdbcType=TIMESTAMP},#{createTimestamp,jdbcType=TIMESTAMP},#{addrName},#{addr},#{addrLat},#{addrLon},#{paidIn},#{isPrivate})
 	</insert>
 	
 	<insert id="insertMember" parameterType="com.accountbook.model.Member">

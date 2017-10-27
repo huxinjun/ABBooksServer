@@ -20,6 +20,7 @@
     
     
     "paid_in":1000.0,
+    "is_private":false,
     
     
     

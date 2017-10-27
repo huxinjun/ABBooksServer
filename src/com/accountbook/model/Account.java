@@ -16,11 +16,16 @@ public class Account implements Serializable{
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = -1172597370234144579L;
+	private static final long serialVersionUID = 4141825816553944756L;
 	/**
 	 * 
 	 */
 	private String date;
+	/**
+	 * 
+	 */
+	@JSONField("is_private")
+	private boolean isPrivate;
 	/**
 	 * 
 	 */
@@ -123,6 +128,12 @@ public class Account implements Serializable{
 	public void setDescription(String description){
 		this.description=description;
 	}
+	public boolean getIsPrivate(){
+		return this.isPrivate;
+	}
+	public void setIsPrivate(boolean isPrivate){
+		this.isPrivate=isPrivate;
+	}
 	public int getType(){
 		return this.type;
 	}
@@ -209,13 +220,14 @@ public class Account implements Serializable{
 	public String toString() {
 		return "Account [date=" + date + ", imgs=" + imgs
 				+ ", payResult=" + payResult + ", description=" + description
-				+ ", type=" + type + ", addrLon=" + addrLon
-				+ ", addrName=" + addrName + ", userId=" + userId
-				+ ", bookId=" + bookId + ", createTimestamp=" + createTimestamp
-				+ ", paidIn=" + paidIn + ", members=" + members
-				+ ", name=" + name + ", addrLat=" + addrLat
-				+ ", id=" + id + ", dateTimestamp=" + dateTimestamp
-				+ ", addr=" + addr + "]";
+				+ ", isPrivate=" + isPrivate + ", type=" + type
+				+ ", addrLon=" + addrLon + ", addrName=" + addrName
+				+ ", userId=" + userId + ", bookId=" + bookId
+				+ ", createTimestamp=" + createTimestamp + ", paidIn=" + paidIn
+				+ ", members=" + members + ", name=" + name
+				+ ", addrLat=" + addrLat + ", id=" + id
+				+ ", dateTimestamp=" + dateTimestamp + ", addr=" + addr
+				+ "]";
 	}
 
 
@@ -250,6 +262,8 @@ public class Account implements Serializable{
 			if (other.description != null)
 				return false;
 		} else if (!description.equals(other.description))
+			return false;
+		if (isPrivate != other.isPrivate)
 			return false;
 		if (type != other.type)
 			return false;

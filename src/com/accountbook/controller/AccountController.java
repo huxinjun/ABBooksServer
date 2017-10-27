@@ -62,7 +62,8 @@ public class AccountController {
 		System.out.println(content);
 
 		Account account = EasyJson.getJavaBean(content, Account.class);
-
+		System.out.println("parse account:"+account);
+		
 		// 检查成员是否重复
 		List<Member> allMembers = new ArrayList<>();
 		for (Member member : account.getMembers()) {
@@ -90,10 +91,18 @@ public class AccountController {
 		account.setDateTimestamp(Timestamp.valueOf(account.getDate() + " 00:00:00"));
 		account.setCreateTimestamp(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
 
-		System.out.println(account);
-		// 记录账单
+		
+		
+		
+		
+		// 只有一个成员而且是记录账单者自己时不需要在数据库中添加成员
+		if (account.getMembers().size() == 1 && account.getMembers().get(0).getMemberId().equals(findId)){
+			account.setIsPrivate(true);
+			accountService.addNewAccount(account);
+			return new Result(Result.RESULT_OK, "记录账单成功!");
+		}
+		//多人账单
 		accountService.addNewAccount(account);
-
 		if (account.getMembers().size() > 1) {
 			AccountCalculator calculator = new AccountCalculator(account);
 			try {
@@ -113,9 +122,7 @@ public class AccountController {
 			}
 
 		}
-		// 只有一个成员而且是记录账单者自己时不需要在数据库中添加成员
-		if (account.getMembers().size() == 1 && account.getMembers().get(0).getMemberId().equals(findId))
-			return new Result(Result.RESULT_OK, "记录账单成功!");
+		
 
 		// 记录成员
 		for (Member member : account.getMembers()) {
