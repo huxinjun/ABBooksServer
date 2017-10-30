@@ -29,6 +29,7 @@ public interface AccountDao {
 	 */
 	public List<Account> queryAccountsByUserIdAndBookId(Map<String,String> map);
 	public List<Member> queryMembersByAccountId(String accountId);
+	public PayTarget queryPayTarget(String targetId);
 	public List<PayTarget> queryPayTargetByAccountId(String accountId);
 	/**查询和userId相关的所有成员:分组和帐友*/
 	public List<Member> queryMembers(String userId);

@@ -75,7 +75,7 @@
 	
 	<!-- 更新支付方案 -->
 	<update id="updatePayTarget" parameterType="com.accountbook.model.PayTarget">
-		update account_pay set settled=#{settled},paid_status=#{paidStatus},receipt_status=#{receiptStatus} where id=#{id}
+		update account_pay set settled=#{settled} where id=#{id}
 	</update>
 	
 	<!-- 删除一个账单下的所有支付方案 -->
@@ -105,6 +105,9 @@
 	</select>
 	<select id="queryMembersByAccountId" parameterType="String" resultMap="membersMap">
 		SELECT * FROM account_member WHERE account_id=#{accountId} ORDER BY CONVERT(member_name USING gbk) ASC
+	</select>
+	<select id="queryPayTarget" parameterType="String" resultMap="targetsMap">
+		SELECT * from account_pay where id=#{targetId}
 	</select>
 	<select id="queryPayTargetByAccountId" parameterType="String" resultMap="targetsMap">
 		SELECT a.id,account_id,paid_id,receipt_id,money,settled,paid_status,receipt_status,CONCAT(IFNULL(c.nickname,''),'',IFNULL(b.name,''))  AS member_name FROM account_pay AS a 

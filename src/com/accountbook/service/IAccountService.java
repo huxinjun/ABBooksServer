@@ -21,6 +21,7 @@ public interface IAccountService {
 	public Account findAccount(String accountId);
 	public List<Account> findAccounts(String userId);
 	public List<Account> findAccounts(String userId,String bookId);
+	public PayTarget findPayTarget(String targetId);
 	
 	public List<SummaryInfo> getSummarySimpleInfo(String userId);
 	

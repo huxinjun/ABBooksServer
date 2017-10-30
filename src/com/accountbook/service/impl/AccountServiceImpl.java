@@ -114,6 +114,11 @@ public class AccountServiceImpl implements IAccountService {
 		return dao.queryAccountSummarySimple(userId);
 	}
 
+	@Override
+	public PayTarget findPayTarget(String targetId) {
+		return dao.queryPayTarget(targetId);
+	}
+
 	
 
 }

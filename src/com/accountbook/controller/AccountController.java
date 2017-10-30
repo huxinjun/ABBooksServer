@@ -64,6 +64,16 @@ public class AccountController {
 
 		Account account = EasyJson.getJavaBean(content, Account.class);
 		System.out.println("parse account:"+account);
+		//如果是借款账单,需要处理借款人的规则
+		if(account.getType()==9){
+			for(Member member:account.getMembers())
+				if(member.getPaidIn()==0){
+					member.setRuleType(Member.RULE_TYPE_NUMBER);
+					member.setRuleNum(account.getPaidIn());
+				}
+					
+		}
+		
 		
 		// 检查成员是否重复
 		List<Member> allMembers = new ArrayList<>();
@@ -454,6 +464,24 @@ public class AccountController {
 
 		return new Result(Result.RESULT_OK, "查询分组信息成功!").put("members", accountService.findAllMembers(findId));
 	}
+	
+	
+	/**
+	 * 付款或者收款
+	 */
+	@ResponseBody
+	@RequestMapping("/settle")
+	public Object updatePayTargetSettle(ServletRequest req,String targetId) {
+//		String findId = req.getAttribute("userid").toString();
+		PayTarget findPayTarget = accountService.findPayTarget(targetId);
+		findPayTarget.setSettled(true);
+		accountService.updatePayTarget(findPayTarget);
+
+		return new Result(Result.RESULT_OK, "更新付款状态成功!");
+	}
+	
+	
+	
 
 	/**
 	 * 根据id查询账单
