@@ -133,6 +133,21 @@ public class GroupController {
 	
 	
 	/**
+	 * 查询用户创建和加入的分组
+	 */
+	@ResponseBody
+	@RequestMapping("/getAll")
+    public Object getAllJoinGroups(ServletRequest req){
+		String findId=req.getAttribute("userid").toString();
+		Result result=new Result();
+		return result.put(Result.RESULT_OK, "查询我的分组成功!").put("groups",groupService.findJoinGroups(findId));
+		
+	}
+	
+	
+	
+	
+	/**
 	 * 查询分组简单信息
 	 */
 	@ResponseBody

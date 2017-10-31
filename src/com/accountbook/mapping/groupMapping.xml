@@ -39,12 +39,11 @@
 		WHERE group_id=#{groupId};
   </select>
   
+  
 	<select id="queryGroups" parameterType="String" resultMap="map">
-		SELECT id,NAME,icon,TRUE is_group FROM group_ WHERE admin_id=#{userId} OR id IN 
-		(SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN (
-		SELECT account_id FROM account_member WHERE member_id=#{userId} OR 
-		member_id IN (SELECT group_id FROM group_user WHERE user_id=#{userId} UNION 
-		SELECT id FROM group_ WHERE admin_id=#{userId})))
+		SELECT * FROM group_ AS g LEFT JOIN group_user AS u ON g.id=u.group_id  
+		WHERE admin_id=#{userId} OR user_id=#{userId} 
+		ORDER BY CONVERT(category USING gbk),CONVERT(name USING gbk)
 	</select>
 	
 	<!-- 插入组 -->

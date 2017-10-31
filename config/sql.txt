@@ -1,4 +1,4 @@
-#自己加入或创建的组
+﻿#自己加入或创建的组
 SELECT group_id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' UNION #查询加入的组
 SELECT id FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' #查询自己为管理员的组
 
@@ -60,7 +60,8 @@ SELECT invite_id AS id FROM friend WHERE accept_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ
 
 
 
-
+查询加入的组或者创建的组
+SELECT * FROM group_ AS g LEFT JOIN group_user AS u ON g.id=u.group_id  WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' ORDER BY CONVERT(category USING gbk),CONVERT(NAME USING gbk)
 
 
 
@@ -96,3 +97,8 @@ UNION
 #查询全部待收款
 SELECT 'wait_receipt' NAME,SUM(money) FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
 #-------------------------------------------------------------------------------------------------------------
+
+
+
+
+

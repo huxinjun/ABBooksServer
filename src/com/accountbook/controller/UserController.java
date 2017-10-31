@@ -106,13 +106,16 @@ public class UserController {
 	 * 此接口获取token相关联id的二维码
 	 */
 	@SuppressWarnings("serial")
+	@ResponseBody
 	@RequestMapping("/qr")
-	public Object qr(HttpServletRequest request,HttpServletResponse response){
-		String findId=request.getAttribute("userid").toString();
+	public Object qr(HttpServletRequest request,HttpServletResponse response,String userId){
+//		String findId=request.getAttribute("userid").toString();
 		
 		
 		//已经生成过的直接取
-		UserInfo findUser = userService.findUser(findId);
+		UserInfo findUser = userService.findUser(userId);
+		
+		System.out.println("用户:"+findUser);
 		
 		if(findUser==null)
 			return new Result(Result.RESULT_FAILD,"未查询到用户");
@@ -128,15 +131,15 @@ public class UserController {
 		
 		byte[] image=WxUtil.getQrImage("pages/index/index",new HashMap<String,String>(){
 			{
-				put("friendId",findId);
+				put("friendId",userId);
 			}
 		});
 		
 		try {
-			String filePath=FileUtils.saveFile(image, findId);
+			String filePath=FileUtils.saveFile(image, userId);
 			
 			UserInfo user=new UserInfo();
-			user.id=findId;
+			user.id=userId;
 			user.qr=filePath;
 			userService.updateUser(user);
 			

@@ -37,7 +37,7 @@ public class FriendController {
 		Result result=new Result();
 		List<UserInfo> findAll = friendService.findAll(findId);
 		List<Result> convert = Result.convert(findAll);
-		return result.put(Result.RESULT_OK, "查询分组信息成功!").put("friends",convert);
+		return result.put(Result.RESULT_OK, "查询好友列表成功!").put("friends",convert);
 	}
 	
 }

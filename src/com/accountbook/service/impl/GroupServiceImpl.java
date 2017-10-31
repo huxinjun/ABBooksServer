@@ -33,8 +33,7 @@ public class GroupServiceImpl implements IGroupService {
 
 	@Override
 	public List<Group> findJoinGroups(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.queryGroups(userId);
 	}
 
 	@SuppressWarnings("serial")
