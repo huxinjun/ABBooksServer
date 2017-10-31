@@ -2,11 +2,13 @@ package com.accountbook.service.impl;
 
 import java.util.List;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.accountbook.dao.FriendDao;
 import com.accountbook.model.Friend;
+import com.accountbook.model.UserInfo;
 import com.accountbook.service.IFriendService;
 /**
  * 好友
@@ -20,7 +22,7 @@ public class FriendServiceImpl implements IFriendService {
 	FriendDao dao;
 
 	@Override
-	public List<Friend> findAll(String meId) {
+	public List<UserInfo> findAll(String meId) {
 		return dao.query(meId);
 	}
 

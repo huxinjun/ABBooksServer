@@ -519,8 +519,7 @@ public class AccountController {
 	@ResponseBody
 	@RequestMapping("/getAll")
 	public Object findAccounts(ServletRequest req, String bookId) {
-		// String findId=req.getAttribute("userid").toString();
-		String findId = "oCBrx0FreB-L8pIQM5_RYDGoWOKQ";
+		String findId=req.getAttribute("userid").toString();
 		Result result = new Result();
 		List<Account> results;
 		if (TextUtils.isEmpty(bookId))

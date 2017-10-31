@@ -95,6 +95,7 @@ public class TokenFilter implements Filter {
 			
 			//方便测试
 			if(request.getParameter("TEST")!=null){
+				request.setAttribute("userid", "oCBrx0FreB-L8pIQM5_RYDGoWOKQ");
 				chain.doFilter(request, response);
 				return;
 			}

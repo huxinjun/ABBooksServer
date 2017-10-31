@@ -2,7 +2,9 @@ package com.accountbook.modle.result;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.accountbook.model.Message;
 
@@ -64,8 +66,11 @@ public class Result extends HashMap<String,Object>{
 				field.setAccessible(true);
 				boolean isStatic = Modifier.isStatic(field.getModifiers());
 				try {
-					if(!isStatic)
-						super.put(field.getName(), field.get(value));
+					if(!isStatic){
+						Object v=field.get(value);
+						if(v!=null)
+							super.put(field.getName(),v);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -73,6 +78,20 @@ public class Result extends HashMap<String,Object>{
 			
 		}
 		return this;
+	}
+	
+	/**
+	 * 将对象列表转换为Result列表,目的为了去除空属性,而且可以动态删除或添加属性
+	 * @param list
+	 * @return
+	 */
+	public static List<Result> convert(List<? extends Object> list){
+		if(list==null)
+			return null;
+		List<Result> results=new ArrayList<>();
+		for(Object o:list)
+			results.add(new Result().put(o));
+		return results;
 	}
 	
 	
