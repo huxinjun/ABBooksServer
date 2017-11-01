@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.accountbook.dao.AccountDao;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
@@ -13,6 +14,8 @@ import com.accountbook.model.PayResult;
 import com.accountbook.model.PayTarget;
 import com.accountbook.model.SummaryInfo;
 import com.accountbook.service.IAccountService;
+import com.accountbook.utils.CommonUtils;
+import com.accountbook.utils.CommonUtils.Limit;
 
 @Service
 public class AccountServiceImpl implements IAccountService {
@@ -42,17 +45,12 @@ public class AccountServiceImpl implements IAccountService {
 	public List<Account> findAccounts(String userId) {
 		return findAccounts(userId, null);
 	}
-	@SuppressWarnings("serial")
 	public List<Account> findAccounts(String userId,String bookId) {
-		List<Account> accounts = dao.queryAccountsByUserIdAndBookId(new HashMap<String,String>(){
-			{
-				put("userId", userId);
-				if(bookId==null)
-					put("bookId", "");
-				else
-					put("bookId", bookId);
-			}
-		});
+		List<Account> accounts;
+		if(bookId==null)
+			accounts=dao.queryMyAccounts(userId);
+		else
+			accounts=dao.queryMyAccountsByBookId(userId,bookId);
 		for(Account account:accounts){
 			account.setMembers((ArrayList<Member>) dao.queryMembersByAccountId(account.getId()));
 			
@@ -117,6 +115,28 @@ public class AccountServiceImpl implements IAccountService {
 	@Override
 	public PayTarget findPayTarget(String targetId) {
 		return dao.queryPayTarget(targetId);
+	}
+
+	@Override
+	public List<Account> findAccounts2P(String user1Id, String user2Id,Integer pageIndex, Integer pageSize) {
+		
+		
+		Limit limit = CommonUtils.getLimit(pageIndex, pageSize);
+			
+		return dao.queryTwoPersonAccounts(new HashMap<String,Object>(){
+			private static final long serialVersionUID = 1L;
+			{
+				put("user1Id", user1Id);
+				put("user2Id", user2Id);
+				put("ls", limit.start);
+				put("le", limit.end);
+			}
+		});
+	}
+
+	@Override
+	public int findAccounts2PCount(String user1Id, String user2Id) {
+		return dao.queryTwoPersonAccountsCount(user1Id, user2Id);
 	}
 
 	

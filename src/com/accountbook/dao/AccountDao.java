@@ -21,13 +21,12 @@ public interface AccountDao {
 	
 	
 	public Account queryAccount(String accountId);
-	/**
-	 * 查询一个用户的所有
-	 * map中填写两个参数:
-	 * 1.userId
-	 * 2.bookId
-	 */
-	public List<Account> queryAccountsByUserIdAndBookId(Map<String,String> map);
+	public List<Account> queryMyAccounts(String userId);
+	public List<Account> queryMyAccountsByBookId(String userId,String bookId);
+	public List<Account> queryTwoPersonAccounts(Map<String,Object> map);
+	public int queryTwoPersonAccountsCount(String user1Id,String user2Id);
+	
+	
 	public List<Member> queryMembersByAccountId(String accountId);
 	public PayTarget queryPayTarget(String targetId);
 	public List<PayTarget> queryPayTargetByAccountId(String accountId);

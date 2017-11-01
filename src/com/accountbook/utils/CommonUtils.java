@@ -81,4 +81,33 @@ public class CommonUtils {
 		int minute=c.get(Calendar.MINUTE);
 		return getAllHour(c)*60+minute;
 	}
+	
+	public static class Limit{
+		public int start;
+		public int end;
+	}
+	/**
+	 * 获取分页其实结束
+	 * @param pageIndex
+	 * @param pageSize
+	 * @return
+	 */
+	public static Limit getLimit(Integer pageIndex, Integer pageSize){
+		if(pageIndex==null)
+			pageIndex=1;
+		if(pageSize==null)
+			pageSize=10;
+		
+		pageIndex=pageIndex<=0?1:pageIndex;
+		pageSize=pageSize<=0?10:pageSize;
+		
+		Limit limit=new Limit();
+		limit.end=pageIndex*pageSize;
+		limit.start=limit.end-pageSize;
+		
+		return limit;
+	}
+	
+	
+	
 }

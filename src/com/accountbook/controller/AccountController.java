@@ -562,6 +562,63 @@ public class AccountController {
 	}
 	
 	
+	/**
+	 * 查询两个用户的所有账单
+	 */
+	@ResponseBody
+	@RequestMapping("/getAll2P")
+	public Object findAccounts2P(ServletRequest req, String userId,Integer pageIndex,Integer pageSize) {
+		String findId=req.getAttribute("userid").toString();
+		Result result = new Result();
+		
+		List<Account> results=accountService.findAccounts2P(findId, userId,pageIndex,pageSize);
+
+		UserInfo findUser = userService.findUser(findId);
+
+		// 将字符串的icons替换为数组形式
+		List<Result> resultsWapper = new ArrayList<>();
+		for (Account account : results) {
+			Result put = new Result().put(account);
+			put.remove("imgs");
+			if (account.getImgs() == null || "".equals(account.getImgs()))
+				put.put("imgs", null);
+			else
+				put.put("imgs", account.getImgs().split(","));
+
+			put.put("user_icon", findUser.icon);
+			put.put("date", new SimpleDateFormat("yyyy年MM月dd日").format(new Date(account.getDateTimestamp().getTime())));
+			put.put("dateDis", CommonUtils.getSinceTimeString(account.getCreateTimestamp()));
+
+			// 成员为组时查找当前用户是否在改组内
+			if (account.getMembers() != null && account.getMembers().size() > 0) {
+				for (Member member : account.getMembers()) {
+					if (member.getIsGroup()) {
+						boolean isMember = groupService.isGroupMember(findId, member.getMemberId());
+						member.setIsMember(isMember);
+					}
+				}
+			}
+
+			resultsWapper.add(put);
+		}
+
+		result.put("accounts", resultsWapper);
+		result.put("count",accountService.findAccounts2PCount(findId, userId));
+
+		return result.put(Result.RESULT_OK, "查询账单成功!");
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * 统计一个用户的账本简要信息

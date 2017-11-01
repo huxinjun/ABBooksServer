@@ -100,9 +100,41 @@
 	</select>
 	
 	
-	<select id="queryAccountsByUserIdAndBookId" parameterType="String" resultMap="accountMap">
-		select * from account where user_id=#{userId} and book_id=#{bookId} ORDER BY date_timestamp desc,create_timestamp desc
+	<select id="queryMyAccounts" parameterType="String" resultMap="accountMap">
+	
+		#查询自己记录或者涉及到自己的账单(所有账本)
+		SELECT * FROM account WHERE 
+		id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id=#{userId}) 
+		OR user_id=#{userId} ORDER BY date_timestamp desc,create_timestamp desc
+		
 	</select>
+	<select id="queryMyAccountsByBookId" parameterType="String" resultMap="accountMap">
+	
+		#查询自己记录或者涉及到自己的账单(某个账本)
+		SELECT * FROM account WHERE book_id=#{1} AND (
+		id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id=#{0}) 
+		OR user_id=#{0} ) ORDER BY date_timestamp desc,create_timestamp desc
+	
+	</select>
+	
+	<select id="queryTwoPersonAccounts" parameterType="map" resultMap="accountMap">
+	
+		#查询两个人参与的账单
+		SELECT * FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE a.id IN(
+		SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE member_id =#{user1Id}
+		) AND member_id=#{user2Id} ORDER BY date_timestamp desc,create_timestamp desc limit #{ls},#{le}
+	
+	</select>
+	<select id="queryTwoPersonAccountsCount" parameterType="String" resultType="integer">
+	
+		#查询两个人参与的账单
+		SELECT count(*) FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE a.id IN(
+		SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE member_id =#{0}
+		) AND member_id=#{1} ORDER BY date_timestamp desc,create_timestamp desc 
+	
+	</select>
+	
+	
 	<select id="queryMembersByAccountId" parameterType="String" resultMap="membersMap">
 		SELECT * FROM account_member WHERE account_id=#{accountId} ORDER BY CONVERT(member_name USING gbk) ASC
 	</select>

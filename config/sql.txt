@@ -102,3 +102,24 @@ SELECT 'wait_receipt' NAME,SUM(money) FROM account_pay AS a LEFT JOIN account AS
 
 
 
+
+
+
+#查询自己记录或者涉及到自己的账单(所有账本)
+SELECT * FROM account WHERE 
+id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') 
+OR user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+
+
+#查询自己记录或者涉及到自己的账单(某个账本)
+SELECT * FROM account WHERE book_id='' AND (
+id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') 
+OR user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' )
+
+
+#查询两个人参与的账单
+SELECT * FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE a.id IN(
+SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE member_id ='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+) AND member_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ' ORDER BY date_timestamp DESC,create_timestamp DESC
+
+
