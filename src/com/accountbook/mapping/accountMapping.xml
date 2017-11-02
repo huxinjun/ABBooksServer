@@ -54,7 +54,7 @@
   
   <resultMap id="summaryMap" type="com.accountbook.model.SummaryInfo" >
 	    <result column="name" property="name" jdbcType="VARCHAR" />
-	    <result column="money" property="money" jdbcType="DOUBLE" />
+	    <result column="number" property="number" jdbcType="DOUBLE" />
   </resultMap>
 
 
@@ -100,20 +100,20 @@
 	</select>
 	
 	
-	<select id="queryMyAccounts" parameterType="String" resultMap="accountMap">
+	<select id="queryMyAccounts" parameterType="map" resultMap="accountMap">
 	
 		#查询自己记录或者涉及到自己的账单(所有账本)
 		SELECT * FROM account WHERE 
 		id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id=#{userId}) 
-		OR user_id=#{userId} ORDER BY date_timestamp desc,create_timestamp desc
+		OR user_id=#{userId} ORDER BY date_timestamp desc,create_timestamp desc limit #{ls},#{lc}
 		
 	</select>
-	<select id="queryMyAccountsByBookId" parameterType="String" resultMap="accountMap">
+	<select id="queryMyAccountsByBookId" parameterType="map" resultMap="accountMap">
 	
 		#查询自己记录或者涉及到自己的账单(某个账本)
-		SELECT * FROM account WHERE book_id=#{1} AND (
-		id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id=#{0}) 
-		OR user_id=#{0} ) ORDER BY date_timestamp desc,create_timestamp desc
+		SELECT * FROM account WHERE book_id=#{bookId} AND (
+		id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id=#{userId}) 
+		OR user_id=#{userId} ) ORDER BY date_timestamp desc,create_timestamp desc limit #{ls},#{lc}
 	
 	</select>
 	
@@ -122,15 +122,7 @@
 		#查询两个人参与的账单
 		SELECT * FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE a.id IN(
 		SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE member_id =#{user1Id}
-		) AND member_id=#{user2Id} ORDER BY date_timestamp desc,create_timestamp desc limit #{ls},#{le}
-	
-	</select>
-	<select id="queryTwoPersonAccountsCount" parameterType="String" resultType="integer">
-	
-		#查询两个人参与的账单
-		SELECT count(*) FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE a.id IN(
-		SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE member_id =#{0}
-		) AND member_id=#{1} ORDER BY date_timestamp desc,create_timestamp desc 
+		) AND member_id=#{user2Id} ORDER BY date_timestamp desc,create_timestamp desc limit #{ls},#{lc}
 	
 	</select>
 	
@@ -168,25 +160,65 @@
 	</select>
 	
 	
-	<select id="queryAccountSummarySimple" parameterType="String" resultMap="summaryMap">
+	<select id="queryAccountSummary" parameterType="String" resultMap="summaryMap">
+		
+		#查询所有待付款
+		SELECT 'wait_paid' name,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.paid_id=#{userId}
+		
+		UNION
+		
+		#查询所有待收款
+		SELECT 'wait_receipt' name,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.receipt_id=#{userId}
+	
+		UNION
+		
 		#查询当月总支出
-		SELECT 'month_paidin' name,SUM(money) AS money FROM (
+		SELECT 'month_paidin' name,SUM(money) AS number FROM (
 		SELECT SUM(paid_in) AS money FROM account WHERE is_private=1 AND user_id=#{userId} AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
 		UNION
 		SELECT SUM(a.should_pay) AS money FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id WHERE member_id=#{userId} AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(b.date_timestamp,'%Y-%m'))AS total
 		
 		UNION
-		
-		#查询所有待付款
-		SELECT 'wait_paid' name,SUM(money) FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.paid_id=#{userId}
-		
-		UNION
-		
-		#查询所有待收款
-		SELECT 'wait_receipt' name,SUM(money) FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.receipt_id=#{userId}
+	
+		#查询所有待完善的账单
+		SELECT 'wait_edit' name,COUNT(*) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+		WHERE (a.paid_id IN (SELECT group_id FROM group_user WHERE user_id=#{userId}) AND a.paid_status=1)
+		OR
+		(a.receipt_id IN (SELECT group_id FROM group_user WHERE user_id=#{userId}) AND a.receipt_status=1)
 	</select>
 	
 	
+	<select id="queryAccountSummary2P" parameterType="map" resultMap="summaryMap">
 	
+		#查询所有待付款(指定另一个人)
+		SELECT 'wait_paid' NAME, p.number-r.number AS number FROM(SELECT 0 id,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+		WHERE a.paid_id=#{user1Id} AND a.receipt_id=#{user2Id}) p LEFT JOIN 
+		(SELECT 0 id,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+		WHERE a.paid_id=#{user2Id} AND a.receipt_id=#{user1Id}) r ON p.id=r.id
+				
+		UNION		
+				
+				
+		#查询两个人的月支出(自己和一个朋友)
+		SELECT 'month_paidin' NAME,SUM(should_pay) AS number FROM account_member WHERE account_id IN
+		(
+		SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE a.id IN(
+		SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE member_id =#{user1Id}
+		) AND member_id=#{user2Id} AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(a.date_timestamp,'%Y-%m')
+		)
+		AND member_id IN(#{user1Id},#{user2Id})
+		
+		UNION
+		
+		#查询两个人的总支出(自己和一个朋友)
+		SELECT 'paidin' NAME,SUM(should_pay) AS number FROM account_member WHERE account_id IN
+		(
+		SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE a.id IN(
+		SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE member_id =#{user1Id}
+		) AND member_id=#{user2Id}
+		)
+		AND member_id IN(#{user1Id},#{user2Id})
+		
+	</select>
 	
 </mapper>

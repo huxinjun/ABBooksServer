@@ -12,11 +12,11 @@ public class SummaryInfo implements Serializable{
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = 5615160839572736007L;
+	private static final long serialVersionUID = 5023829368561440391L;
 	/**
 	 * 
 	 */
-	private float money;
+	private float number;
 	/**
 	 * 
 	 */
@@ -25,11 +25,11 @@ public class SummaryInfo implements Serializable{
 
 	//**********************************************Getter and Setter************************************************
 
-	public float getMoney(){
-		return this.money;
+	public float getNumber(){
+		return this.number;
 	}
-	public void setMoney(float money){
-		this.money=money;
+	public void setNumber(float number){
+		this.number=number;
 	}
 	public String getName(){
 		return this.name;
@@ -43,7 +43,7 @@ public class SummaryInfo implements Serializable{
 
 	@Override
 	public String toString() {
-		return "SummaryInfo [money=" + money + ", name=" + name
+		return "SummaryInfo [number=" + number + ", name=" + name
 				+ "]";
 	}
 
@@ -57,7 +57,7 @@ public class SummaryInfo implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		SummaryInfo other = (SummaryInfo) obj;
-		if (money != other.money)
+		if (number != other.number)
 			return false;
 		if (name == null) {
 			if (other.name != null)

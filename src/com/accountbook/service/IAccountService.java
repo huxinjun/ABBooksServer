@@ -18,15 +18,15 @@ public interface IAccountService {
 	public void addPayTarget(PayTarget target);
 	
 	public Account findAccount(String accountId);
-	public List<Account> findAccounts(String userId);
-	public List<Account> findAccounts(String userId,String bookId);
+	public List<Account> findAccounts(String userId,Integer pageIndex,Integer pageSize);
+	public List<Account> findAccounts(String userId,String bookId,Integer pageIndex,Integer pageSize);
 	public List<Account> findAccounts2P(String user1Id,String user2Id, Integer pageIndex, Integer pageSize);
-	public int findAccounts2PCount(String user1Id,String user2Id);
 	
 	public List<Member> findAllMembers(String userId);
 	public PayTarget findPayTarget(String targetId);
 	
-	public List<SummaryInfo> getSummarySimpleInfo(String userId);
+	public List<SummaryInfo> getSummaryInfo(String userId);
+	public List<SummaryInfo> getSummaryInfo(String user1Id,String user2Id);
 	
 	//更新支付方案中的状态
 	public void updatePayTarget(PayTarget target);

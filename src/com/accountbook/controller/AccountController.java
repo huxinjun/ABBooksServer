@@ -518,14 +518,18 @@ public class AccountController {
 	 */
 	@ResponseBody
 	@RequestMapping("/getAll")
-	public Object findAccounts(ServletRequest req, String bookId) {
+	public Object findAccounts(ServletRequest req, String bookId,String userId,Integer pageIndex,Integer pageSize) {
 		String findId=req.getAttribute("userid").toString();
 		Result result = new Result();
 		List<Account> results;
-		if (TextUtils.isEmpty(bookId))
-			results = accountService.findAccounts(findId);
-		else
-			results = accountService.findAccounts(findId, bookId);
+		if(!TextUtils.isEmpty(userId))
+			results=accountService.findAccounts2P(findId, userId,pageIndex,pageSize);
+		else{
+			if (TextUtils.isEmpty(bookId))
+				results = accountService.findAccounts(findId,pageIndex,pageSize);
+			else
+				results = accountService.findAccounts(findId, bookId,pageIndex,pageSize);
+		}
 
 		UserInfo findUser = userService.findUser(findId);
 
@@ -557,63 +561,12 @@ public class AccountController {
 		}
 
 		result.put("accounts", resultsWapper);
+		result.put("hasNextPage",results.size()==0?false:true);
+		result.put("pageIndex", pageIndex==null || pageIndex<=0 ? CommonUtils.PAGE_DEFAULT_INDEX : pageIndex);
+		result.put("pageSize", pageSize==null || pageSize<=0 ? CommonUtils.PAGE_DEFAULT_SIZE : pageSize);
 
 		return result.put(Result.RESULT_OK, "查询账单成功!");
 	}
-	
-	
-	/**
-	 * 查询两个用户的所有账单
-	 */
-	@ResponseBody
-	@RequestMapping("/getAll2P")
-	public Object findAccounts2P(ServletRequest req, String userId,Integer pageIndex,Integer pageSize) {
-		String findId=req.getAttribute("userid").toString();
-		Result result = new Result();
-		
-		List<Account> results=accountService.findAccounts2P(findId, userId,pageIndex,pageSize);
-
-		UserInfo findUser = userService.findUser(findId);
-
-		// 将字符串的icons替换为数组形式
-		List<Result> resultsWapper = new ArrayList<>();
-		for (Account account : results) {
-			Result put = new Result().put(account);
-			put.remove("imgs");
-			if (account.getImgs() == null || "".equals(account.getImgs()))
-				put.put("imgs", null);
-			else
-				put.put("imgs", account.getImgs().split(","));
-
-			put.put("user_icon", findUser.icon);
-			put.put("date", new SimpleDateFormat("yyyy年MM月dd日").format(new Date(account.getDateTimestamp().getTime())));
-			put.put("dateDis", CommonUtils.getSinceTimeString(account.getCreateTimestamp()));
-
-			// 成员为组时查找当前用户是否在改组内
-			if (account.getMembers() != null && account.getMembers().size() > 0) {
-				for (Member member : account.getMembers()) {
-					if (member.getIsGroup()) {
-						boolean isMember = groupService.isGroupMember(findId, member.getMemberId());
-						member.setIsMember(isMember);
-					}
-				}
-			}
-
-			resultsWapper.add(put);
-		}
-
-		result.put("accounts", resultsWapper);
-		result.put("count",accountService.findAccounts2PCount(findId, userId));
-
-		return result.put(Result.RESULT_OK, "查询账单成功!");
-	}
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -624,15 +577,16 @@ public class AccountController {
 	 * 统计一个用户的账本简要信息
 	 */
 	@ResponseBody
-	@RequestMapping("/getSummarySimpleInfo")
-	public Object getSummarySimpleInfo(ServletRequest req) {
+	@RequestMapping("/getSummaryInfo")
+	public Object getSummarySimpleInfo(ServletRequest req,String userId) {
 		String findId=req.getAttribute("userid").toString();
 		Result result=new Result();
-		List<SummaryInfo> simpleInfo = accountService.getSummarySimpleInfo(findId);
-		System.out.println(simpleInfo);
-		for(SummaryInfo info:simpleInfo)
-			result.put(info.getName(),info.getMoney());
-		return result.put(Result.RESULT_OK, "查询成功");
+		List<SummaryInfo> simpleInfo;
+		if(TextUtils.isEmpty(userId))
+			simpleInfo = accountService.getSummaryInfo(findId);
+		else
+			simpleInfo = accountService.getSummaryInfo(findId,userId);
+		return result.put(Result.RESULT_OK, "查询成功").put("infos",simpleInfo);
 	}
 
 }

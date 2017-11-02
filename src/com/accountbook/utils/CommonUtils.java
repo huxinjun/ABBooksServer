@@ -9,7 +9,8 @@ import java.util.Date;
  *
  */
 public class CommonUtils {
-
+	
+	
 	
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args){
@@ -82,9 +83,13 @@ public class CommonUtils {
 		return getAllHour(c)*60+minute;
 	}
 	
+	
+	public static final int PAGE_DEFAULT_SIZE=10;
+	public static final int PAGE_DEFAULT_INDEX=0;
+	
 	public static class Limit{
 		public int start;
-		public int end;
+		public int count;
 	}
 	/**
 	 * 获取分页其实结束
@@ -94,16 +99,16 @@ public class CommonUtils {
 	 */
 	public static Limit getLimit(Integer pageIndex, Integer pageSize){
 		if(pageIndex==null)
-			pageIndex=1;
+			pageIndex=PAGE_DEFAULT_INDEX;
 		if(pageSize==null)
-			pageSize=10;
+			pageSize=PAGE_DEFAULT_SIZE;
 		
-		pageIndex=pageIndex<=0?1:pageIndex;
-		pageSize=pageSize<=0?10:pageSize;
+		pageIndex=pageIndex<0?PAGE_DEFAULT_INDEX:pageIndex;
+		pageSize=pageSize<=0?PAGE_DEFAULT_SIZE:pageSize;
 		
 		Limit limit=new Limit();
-		limit.end=pageIndex*pageSize;
-		limit.start=limit.end-pageSize;
+		limit.start=pageIndex*pageSize;
+		limit.count=pageSize;
 		
 		return limit;
 	}

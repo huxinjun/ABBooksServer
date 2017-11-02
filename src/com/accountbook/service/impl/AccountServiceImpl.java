@@ -42,15 +42,31 @@ public class AccountServiceImpl implements IAccountService {
 		return account;
 	}
 	
-	public List<Account> findAccounts(String userId) {
-		return findAccounts(userId, null);
+	public List<Account> findAccounts(String userId,Integer pageIndex,Integer pageSize) {
+		return findAccounts(userId, null,pageIndex,pageSize);
 	}
-	public List<Account> findAccounts(String userId,String bookId) {
+	public List<Account> findAccounts(String userId,String bookId,Integer pageIndex,Integer pageSize) {
 		List<Account> accounts;
+		Limit limit = CommonUtils.getLimit(pageIndex, pageSize);
 		if(bookId==null)
-			accounts=dao.queryMyAccounts(userId);
+			accounts=dao.queryMyAccounts(new HashMap<String,Object>(){
+				private static final long serialVersionUID = 1L;
+				{
+					put("userId", userId);
+					put("ls", limit.start);
+					put("lc", limit.count);
+				}
+			});
 		else
-			accounts=dao.queryMyAccountsByBookId(userId,bookId);
+			accounts=dao.queryMyAccountsByBookId(new HashMap<String,Object>(){
+				private static final long serialVersionUID = 1L;
+				{
+					put("userId", userId);
+					put("bookId", bookId);
+					put("ls", limit.start);
+					put("lc", limit.count);
+				}
+			});
 		for(Account account:accounts){
 			account.setMembers((ArrayList<Member>) dao.queryMembersByAccountId(account.getId()));
 			
@@ -63,6 +79,35 @@ public class AccountServiceImpl implements IAccountService {
 			}
 		}
 		return accounts;
+	}
+	@Override
+	public List<Account> findAccounts2P(String user1Id, String user2Id,Integer pageIndex, Integer pageSize) {
+		
+		List<Account> accounts;
+		Limit limit = CommonUtils.getLimit(pageIndex, pageSize);
+		accounts=dao.queryTwoPersonAccounts(new HashMap<String,Object>(){
+			private static final long serialVersionUID = 1L;
+			{
+				put("user1Id", user1Id);
+				put("user2Id", user2Id);
+				put("ls", limit.start);
+				put("lc", limit.count);
+			}
+		});
+		for(Account account:accounts){
+			account.setMembers((ArrayList<Member>) dao.queryMembersByAccountId(account.getId()));
+			
+			
+			List<PayTarget> payTargets = dao.queryPayTargetByAccountId(account.getId());
+			if(payTargets!=null && payTargets.size()>0){
+				account.setPayResult(new ArrayList<PayResult>());
+				account.getPayResult().add(new PayResult());
+				account.getPayResult().get(0).setPayTarget((ArrayList<PayTarget>) payTargets);
+			}
+		}
+			
+		return accounts;
+		
 	}
 	
 	
@@ -108,36 +153,27 @@ public class AccountServiceImpl implements IAccountService {
 	}
 
 	@Override
-	public List<SummaryInfo> getSummarySimpleInfo(String userId) {
-		return dao.queryAccountSummarySimple(userId);
+	public List<SummaryInfo> getSummaryInfo(String userId) {
+		return dao.queryAccountSummary(userId);
 	}
 
+	@Override
+	public List<SummaryInfo> getSummaryInfo(String user1Id, String user2Id) {
+		return dao.queryAccountSummary2P(new HashMap<String,Object>(){
+			private static final long serialVersionUID = 1L;
+			{
+				put("user1Id", user1Id);
+				put("user2Id", user2Id);
+			}
+		});
+	}
 	@Override
 	public PayTarget findPayTarget(String targetId) {
 		return dao.queryPayTarget(targetId);
 	}
 
-	@Override
-	public List<Account> findAccounts2P(String user1Id, String user2Id,Integer pageIndex, Integer pageSize) {
-		
-		
-		Limit limit = CommonUtils.getLimit(pageIndex, pageSize);
-			
-		return dao.queryTwoPersonAccounts(new HashMap<String,Object>(){
-			private static final long serialVersionUID = 1L;
-			{
-				put("user1Id", user1Id);
-				put("user2Id", user2Id);
-				put("ls", limit.start);
-				put("le", limit.end);
-			}
-		});
-	}
+	
 
-	@Override
-	public int findAccounts2PCount(String user1Id, String user2Id) {
-		return dao.queryTwoPersonAccountsCount(user1Id, user2Id);
-	}
 
 	
 

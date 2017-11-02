@@ -21,10 +21,9 @@ public interface AccountDao {
 	
 	
 	public Account queryAccount(String accountId);
-	public List<Account> queryMyAccounts(String userId);
-	public List<Account> queryMyAccountsByBookId(String userId,String bookId);
+	public List<Account> queryMyAccounts(Map<String,Object> map);
+	public List<Account> queryMyAccountsByBookId(Map<String,Object> map);
 	public List<Account> queryTwoPersonAccounts(Map<String,Object> map);
-	public int queryTwoPersonAccountsCount(String user1Id,String user2Id);
 	
 	
 	public List<Member> queryMembersByAccountId(String accountId);
@@ -33,7 +32,8 @@ public interface AccountDao {
 	/**查询和userId相关的所有成员:分组和帐友*/
 	public List<Member> queryMembers(String userId);
 	/**查询userId本月支出,待付款,代收款等信息*/
-	public List<SummaryInfo> queryAccountSummarySimple(String userId);
+	public List<SummaryInfo> queryAccountSummary(String userId);
+	public List<SummaryInfo> queryAccountSummary2P(Map<String,Object> map);
 	
 	
 	
