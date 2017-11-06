@@ -19,6 +19,17 @@ public class MessageServiceImpl implements IMessageService{
 	public void newMessage(Message data) {
 		dao.insert(data);
 	}
+	@Override
+	public void newMessage(int type, String from, String to, String content) {
+		Message msg=new Message();
+		msg.fromId=from;
+		msg.toId=to;
+		msg.type=type;
+		msg.content=content;
+		msg.timeMiles=System.currentTimeMillis();
+		msg.state=Message.STATUS_UNREAD;
+		newMessage(msg);
+	}
 	
 	@Override
 	public Message findMessage(int id) {
@@ -69,6 +80,8 @@ public class MessageServiceImpl implements IMessageService{
 	public void makeRefused(int id) {
 		dao.updateStatus(id, Message.STATUS_INVITE_REFUSE);
 	}
+
+	
 
 	
 

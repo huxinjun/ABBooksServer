@@ -10,6 +10,7 @@ public class Message {
 	public static final int MESSAGE_TYPE_SYSTEM=0;
 	public static final int MESSAGE_TYPE_INVITE_USER=1;
 	public static final int MESSAGE_TYPE_INVITE_GROUP=2;
+	public static final int MESSAGE_TYPE_ACCOUNT=3;
 	public static final int MESSAGE_TYPE_OTHER=99;
 	
 	
@@ -19,10 +20,11 @@ public class Message {
 	
 	public static final int STATUS_INVITE_ACCEPT=11;
 	public static final int STATUS_INVITE_REFUSE=12;
+	
 
 	public int id;
-	public String inviteId;
-	public String acceptId;
+	public String fromId;
+	public String toId;
 	public int type;
 	public String content;
 	/**

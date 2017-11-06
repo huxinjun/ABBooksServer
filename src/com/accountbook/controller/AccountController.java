@@ -19,6 +19,7 @@ import com.accountbook.core.AccountCalculator;
 import com.accountbook.core.AccountCalculator.CalculatorException;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
+import com.accountbook.model.Message;
 import com.accountbook.model.PayResult;
 import com.accountbook.model.PayTarget;
 import com.accountbook.model.SummaryInfo;
@@ -26,10 +27,12 @@ import com.accountbook.model.UserInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
 import com.accountbook.service.IGroupService;
+import com.accountbook.service.IMessageService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.CommonUtils;
 import com.accountbook.utils.IDUtil;
 import com.accountbook.utils.TextUtils;
+import com.alibaba.fastjson.JSON;
 import com.easyjson.EasyJson;
 
 /**
@@ -49,6 +52,9 @@ public class AccountController {
 
 	@Autowired
 	IGroupService groupService;
+	
+	@Autowired
+	IMessageService msgService;
 
 	/**
 	 * 记账
@@ -77,6 +83,7 @@ public class AccountController {
 		
 		// 检查成员是否重复
 		List<Member> allMembers = new ArrayList<>();
+		List<Member> allUsers = new ArrayList<>();
 		for (Member member : account.getMembers()) {
 			if (isContains(allMembers, member.getMemberId()))
 				return new Result(Result.RESULT_FAILD, "有重复的成员!");
@@ -87,6 +94,7 @@ public class AccountController {
 				List<UserInfo> users = groupService.findUsersByGroupId(member.getMemberId());
 				if (users != null && users.size() > 0) {
 					for (UserInfo user : users) {
+						allUsers.add(CommonUtils.userToMember(user));
 						Member innerMember = new Member();
 						innerMember.setMemberId(user.id);
 						if (isContains(allMembers, innerMember.getMemberId()))
@@ -95,7 +103,8 @@ public class AccountController {
 							allMembers.add(innerMember);
 					}
 				}
-			}
+			}else
+				allUsers.add(member);
 		}
 
 		account.setId(IDUtil.generateNewId());
@@ -210,6 +219,10 @@ public class AccountController {
 		} catch (Exception ex) {
 
 		}
+		//最后给所有的用户发送消息
+		for(Member user:allUsers)
+			if(!user.getMemberId().equals(findId))
+				msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId, user.getMemberId(), "[Create]:"+JSON.toJSONString(account));
 
 		return new Result(Result.RESULT_OK, "记录账单成功!");
 	}
@@ -270,6 +283,7 @@ public class AccountController {
 	@ResponseBody
 	@RequestMapping("/updateInnerAccount")
 	public Object updateInnerAccount(ServletRequest req, String accountId, String memberId,String targetId, String membersJson) {
+		String findId = req.getAttribute("userid").toString();
 		Account findAccount = accountService.findAccount(accountId);
 		Account account = EasyJson.getJavaBean("{\"members\":" + membersJson + "}", Account.class);
 		account.setId(accountId);
@@ -294,6 +308,11 @@ public class AccountController {
 				break;
 			}
 		
+		List<UserInfo> allGroupUsers=groupService.findUsersByGroupId(groupMember.getMemberId());
+		//最后给组内所有的其他用户发送消息
+		for(UserInfo user:allGroupUsers)
+			if(!user.id.equals(findId))
+				msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId, user.id, "[CreateInner]:"+accountId);
 		
 		// 2.看这个组需要付款还是需要收款,收款和付款完善账单时的逻辑不一样
 		boolean groupNeedPay=(groupMember.getPaidIn()-groupMember.getShouldPay())<0;
@@ -452,6 +471,9 @@ public class AccountController {
 		} catch (CalculatorException e) {
 			return new Result(Result.RESULT_FAILD, e.getMessage());
 		}
+		
+		
+
 	}
 
 	/**
@@ -471,11 +493,14 @@ public class AccountController {
 	 */
 	@ResponseBody
 	@RequestMapping("/settle")
-	public Object updatePayTargetSettle(ServletRequest req,String targetId) {
-//		String findId = req.getAttribute("userid").toString();
+	public Object updatePayTargetSettle(ServletRequest req,String accountId,String targetId) {
+		String findId = req.getAttribute("userid").toString();
 		PayTarget findPayTarget = accountService.findPayTarget(targetId);
 		findPayTarget.setSettled(true);
 		accountService.updatePayTarget(findPayTarget);
+		
+		msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId,targetId, "[Settle]:"+accountId+":"+targetId);
+		
 
 		return new Result(Result.RESULT_OK, "更新付款状态成功!");
 	}

@@ -172,8 +172,8 @@ public class UserController {
 		
 		//数据库中加入邀请信息
 		Message msg=new Message();
-		msg.inviteId=me.id;
-		msg.acceptId=openid;
+		msg.fromId=me.id;
+		msg.toId=openid;
 		msg.type=Message.MESSAGE_TYPE_INVITE_USER;
 		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",我们一起记账吧^~^";
 		msg.timeMiles=System.currentTimeMillis();

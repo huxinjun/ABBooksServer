@@ -3,6 +3,9 @@ package com.accountbook.utils;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.accountbook.model.Member;
+import com.accountbook.model.UserInfo;
+
 /**
  * 乱七八糟的工具类
  * @author xinjun
@@ -114,5 +117,12 @@ public class CommonUtils {
 	}
 	
 	
+	public static Member userToMember(UserInfo user){
+		Member member=new Member();
+		member.setMemberId(user.id);
+		member.setMemberIcon(user.icon);
+		member.setMemberName(user.nickname);
+		return member;
+	}
 	
 }

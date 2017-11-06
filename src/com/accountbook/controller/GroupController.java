@@ -328,8 +328,8 @@ public class GroupController {
 		
 		//数据库中加入邀请信息
 		Message msg=new Message();
-		msg.inviteId=me.id;
-		msg.acceptId=openid;
+		msg.fromId=me.id;
+		msg.toId=openid;
 		msg.type=Message.MESSAGE_TYPE_INVITE_GROUP;
 		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",加入分组["+groupInfo.name+"]一起记账哦^~^";
 		msg.timeMiles=System.currentTimeMillis();

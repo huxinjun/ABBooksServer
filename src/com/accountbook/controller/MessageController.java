@@ -60,7 +60,7 @@ public class MessageController {
     		Date date=new Date(msg.timeMiles);
     		DateFormat format=new SimpleDateFormat("yyyy年MM月dd日");
     		String dateStr=format.format(date);
-    		UserInfo findUser = userService.findUser(msg.inviteId);
+    		UserInfo findUser = userService.findUser(msg.fromId);
     		
     		Result msgResult=new Result();
     		
@@ -89,14 +89,14 @@ public class MessageController {
 		
 		Message message = mMsgService.findMessage(msgId);
 		
-		boolean isFriend = friendService.isFriend(message.acceptId, message.inviteId);
+		boolean isFriend = friendService.isFriend(message.toId, message.fromId);
 		if(isFriend){
 			return result.put(Result.RESULT_COMMAND_INVALID, "已经是好友啦!");
 		}
 		
 		Friend friend=new Friend();
-		friend.inviteId=message.inviteId;
-		friend.acceptId=message.acceptId;
+		friend.inviteId=message.fromId;
+		friend.acceptId=message.toId;
 		friend.time=System.currentTimeMillis();
 		
 		friendService.newFriend(friend);

@@ -7,6 +7,7 @@ import com.accountbook.model.Message;
 public interface IMessageService {
 	
 	public void newMessage(Message data);
+	public void newMessage(int type,String from,String to,String content);
 	/**
 	 * 根据数据库id查询
 	 */

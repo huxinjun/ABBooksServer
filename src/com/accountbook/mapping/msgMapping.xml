@@ -3,8 +3,8 @@
 <mapper namespace="com.accountbook.dao.MessageDao" >
   <resultMap id="map" type="com.accountbook.model.Message" >
     <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="invite_id" property="inviteId" jdbcType="VARCHAR" />
-    <result column="accept_id" property="acceptId" jdbcType="VARCHAR" />
+    <result column="from_id" property="fromId" jdbcType="VARCHAR" />
+    <result column="to_id" property="toId" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="TINYINT" />
     <result column="content" property="content" jdbcType="VARCHAR" />
     <result column="time" property="timeMiles" jdbcType="INTEGER" />
@@ -12,38 +12,38 @@
   </resultMap>
   
   <sql id="colums" >
-    id,invite_id,accept_id,type,content,time,state
+    id,from_id,to_id,type,content,time,state
   </sql>
 	<select id="query" parameterType="integer" resultMap="map">
 		SELECT * FROM message WHERE id = #{id};
 	</select>
 	<select id="queryAllMsgById" parameterType="String" resultMap="map">
-		SELECT * FROM message WHERE accept_id = #{acceptId};
+		SELECT * FROM message WHERE to_id = #{toId};
 	</select>
 	<select id="queryInviteMsgById" parameterType="String" resultMap="map">
-		SELECT * FROM message WHERE accept_id = #{0,jdbcType=VARCHAR} and type=#{1,jdbcType=TINYINT} and state!=2;
+		SELECT * FROM message WHERE to_id = #{0,jdbcType=VARCHAR} and type=#{1,jdbcType=TINYINT} and state!=2;
 	</select>
 	
 	<select id="querySystemMsgById" parameterType="String" resultMap="map">
-		SELECT * FROM message WHERE accept_id = #{acceptId} and type=0 and state!=2;
+		SELECT * FROM message WHERE to_id = #{toId} and type=0 and state!=2;
 	</select>
 	
 	<select id="queryUnreadCount" parameterType="String" resultType="integer">
-		SELECT * FROM message WHERE accept_id = #{acceptId} and state=0;
+		SELECT * FROM message WHERE to_id = #{toId} and state=0;
 	</select>
 	
 	<select id="queryInviteUnreadCount" parameterType="String" resultType="integer">
-		SELECT * FROM message WHERE accept_id = #{acceptId} and type=1 and state=0;
+		SELECT * FROM message WHERE to_id = #{toId} and type=1 and state=0;
 	</select>
 	
 	<select id="querySystemUnreadCount" parameterType="String" resultType="integer">
-		SELECT * FROM message WHERE accept_id = #{acceptId} and type=0 and state=0;
+		SELECT * FROM message WHERE to_id = #{toId} and type=0 and state=0;
 	</select>
 	
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.model.Message">
 		insert into message(<include refid="colums"></include>)
-		values(null,#{inviteId},#{acceptId},#{type},#{content},#{timeMiles},#{state})
+		values(null,#{fromId},#{toId},#{type},#{content},#{timeMiles},#{state})
 	</insert>
 	
 	<!-- 更新 -->
