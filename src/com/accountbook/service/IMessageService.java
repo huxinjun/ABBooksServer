@@ -9,19 +9,14 @@ public interface IMessageService {
 	public void newMessage(Message data);
 	public void newMessage(int type,String from,String to,String content);
 	/**
-	 * 根据数据库id查询
-	 */
-	public Message findMessage(int id);
-	/**
 	 * 根据用户id查询
 	 */
-	public List<Message> findMessage(String acceptId);
-	public List<Message> findInviteMessage(String acceptId,String type);
-	public List<Message> findSystemMsgById(String acceptId);
+	public Message findMessage(int id);
+	public List<Message> findUserMsgs(String user1Id,String user2Id,Integer pageIndex,Integer pageSize);
+	public List<Message> findInviteMsgs(String userId);
 	
-	public int getUnreadCount(String acceptId);
-	public int getInviteUnreadCount(String acceptId);
-	public int getSystemUnreadCount(String acceptId);
+	public int getUserUnreadCount(String user1Id,String user2Id);
+	public int getInviteUnreadCount(String userId);
 	
 	public void makeReaded(int id);
 	public void makeDeleted(int id);

@@ -1,5 +1,7 @@
 package com.accountbook.model;
 
+import java.sql.Timestamp;
+
 /**
  * 消息
  * @author xinjun
@@ -30,7 +32,7 @@ public class Message {
 	/**
 	 * 创建时间 :毫秒
 	 */
-	public long timeMiles;
+	public Timestamp timeMiles;
 	
 	/**
 	 * 普通消息:0未读,1已读,2已删除

@@ -2,6 +2,7 @@ package com.accountbook.dao;
 
 
 import java.util.List;
+import java.util.Map;
 
 import com.accountbook.model.Message;
 
@@ -12,12 +13,12 @@ import com.accountbook.model.Message;
  */
 public interface MessageDao {
 	public void insert(Message data);
-	public Message query(int id);
-	public List<Message> queryAllMsgById(String acceptId);
-	public List<Message> queryInviteMsgById(String acceptId,String type);
-	public List<Message> querySystemMsgById(String acceptId);
-	public int queryUnreadCount(String acceptId);
-	public int queryInviteUnreadCount(String acceptId);
-	public int querySystemUnreadCount(String acceptId);
 	public void updateStatus(int id,int status);
+	
+	public Message queryMsg(int id);
+	public List<Message> queryUserMsgs(Map<String,Object> params);
+	public List<Message> queryInviteMsgs(String userId);
+	
+	public int queryUserUnreadCount(Map<String,Object> params);
+	public int queryInviteUnreadCount(String userId);
 }

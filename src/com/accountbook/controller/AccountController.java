@@ -32,7 +32,6 @@ import com.accountbook.service.IUserService;
 import com.accountbook.utils.CommonUtils;
 import com.accountbook.utils.IDUtil;
 import com.accountbook.utils.TextUtils;
-import com.alibaba.fastjson.JSON;
 import com.easyjson.EasyJson;
 
 /**
@@ -168,6 +167,7 @@ public class AccountController {
 						: -1;
 				int receiptGroupPersonCount = receiptPersonIsGroup
 						? groupService.findUsersCountByGroupId(target.getReceiptId()) : -1;
+						
 				// -------------------------------------------------------------------------------
 				// 两个组都没人
 				if (paidGroupPersonCount == 0 && receiptGroupPersonCount == 0) {
@@ -222,7 +222,7 @@ public class AccountController {
 		//最后给所有的用户发送消息
 		for(Member user:allUsers)
 			if(!user.getMemberId().equals(findId))
-				msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId, user.getMemberId(), "[Create]:"+JSON.toJSONString(account));
+				msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId, user.getMemberId(), "[Create]:"+account.getId());
 
 		return new Result(Result.RESULT_OK, "记录账单成功!");
 	}
@@ -312,7 +312,7 @@ public class AccountController {
 		//最后给组内所有的其他用户发送消息
 		for(UserInfo user:allGroupUsers)
 			if(!user.id.equals(findId))
-				msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId, user.id, "[CreateInner]:"+accountId);
+				msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId, user.id, "[CreateInner]:"+accountId+":"+memberId);
 		
 		// 2.看这个组需要付款还是需要收款,收款和付款完善账单时的逻辑不一样
 		boolean groupNeedPay=(groupMember.getPaidIn()-groupMember.getShouldPay())<0;

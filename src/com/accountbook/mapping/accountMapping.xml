@@ -75,7 +75,7 @@
 	
 	<!-- 更新支付方案 -->
 	<update id="updatePayTarget" parameterType="com.accountbook.model.PayTarget">
-		update account_pay set settled=#{settled} where id=#{id}
+		update account_pay set settled=#{settled},paid_status=#{paidStatus},receipt_status=#{receiptStatus} where id=#{id}
 	</update>
 	
 	<!-- 删除一个账单下的所有支付方案 -->
@@ -163,12 +163,12 @@
 	<select id="queryAccountSummary" parameterType="String" resultMap="summaryMap">
 		
 		#查询所有待付款
-		SELECT 'wait_paid' name,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.paid_id=#{userId}
+		SELECT 'wait_paid' name,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.settled=FALSE AND a.paid_id=#{userId}
 		
 		UNION
 		
 		#查询所有待收款
-		SELECT 'wait_receipt' name,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.receipt_id=#{userId}
+		SELECT 'wait_receipt' name,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.settled=FALSE AND a.receipt_id=#{userId}
 	
 		UNION
 		
@@ -192,9 +192,9 @@
 	
 		#查询所有待付款(指定另一个人)
 		SELECT 'wait_paid' NAME, p.number-r.number AS number FROM(SELECT 0 id,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
-		WHERE a.paid_id=#{user1Id} AND a.receipt_id=#{user2Id}) p LEFT JOIN 
+		WHERE a.settled=FALSE and a.paid_id=#{user1Id} AND a.receipt_id=#{user2Id}) p LEFT JOIN 
 		(SELECT 0 id,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
-		WHERE a.paid_id=#{user2Id} AND a.receipt_id=#{user1Id}) r ON p.id=r.id
+		WHERE a.settled=FALSE and a.paid_id=#{user2Id} AND a.receipt_id=#{user1Id}) r ON p.id=r.id
 				
 		UNION		
 				

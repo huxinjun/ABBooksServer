@@ -1,7 +1,10 @@
 package com.accountbook.controller;
 
 import java.io.File;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.ServletRequest;
@@ -332,7 +335,7 @@ public class GroupController {
 		msg.toId=openid;
 		msg.type=Message.MESSAGE_TYPE_INVITE_GROUP;
 		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",加入分组["+groupInfo.name+"]一起记账哦^~^";
-		msg.timeMiles=System.currentTimeMillis();
+		msg.timeMiles=Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		msg.state=Message.STATUS_UNREAD;
 		msgService.newMessage(msg);
 		

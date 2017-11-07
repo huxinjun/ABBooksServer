@@ -7,28 +7,27 @@
     <result column="to_id" property="toId" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="TINYINT" />
     <result column="content" property="content" jdbcType="VARCHAR" />
-    <result column="time" property="timeMiles" jdbcType="INTEGER" />
+    <result column="time" property="timeMiles" jdbcType="TIMESTAMP" />
     <result column="state" property="state" jdbcType="TINYINT" />
   </resultMap>
   
-  <sql id="colums" >
-    id,from_id,to_id,type,content,time,state
-  </sql>
-	<select id="query" parameterType="integer" resultMap="map">
+	<select id="queryMsg" parameterType="integer" resultMap="map">
 		SELECT * FROM message WHERE id = #{id};
 	</select>
-	<select id="queryAllMsgById" parameterType="String" resultMap="map">
-		SELECT * FROM message WHERE to_id = #{toId};
+	<select id="queryUserMsgs" parameterType="map" resultMap="map">
+		SELECT * FROM message WHERE TYPE=3 AND
+		((from_id=#{user1Id} AND to_id=#{user2Id}) OR
+		(from_id=#{user2Id} AND to_id=#{user1Id})) ORDER BY TIME ASC LIMIT #{ls},#{lc}
 	</select>
-	<select id="queryInviteMsgById" parameterType="String" resultMap="map">
-		SELECT * FROM message WHERE to_id = #{0,jdbcType=VARCHAR} and type=#{1,jdbcType=TINYINT} and state!=2;
-	</select>
-	
-	<select id="querySystemMsgById" parameterType="String" resultMap="map">
-		SELECT * FROM message WHERE to_id = #{toId} and type=0 and state!=2;
+	<select id="queryInviteMsgs" parameterType="String" resultMap="map">
+		SELECT * FROM message WHERE to_id = #{userId} and state!=2;
 	</select>
 	
-	<select id="queryUnreadCount" parameterType="String" resultType="integer">
+	
+	
+	
+	
+	<select id="queryUserUnreadCount" parameterType="map" resultType="integer">
 		SELECT * FROM message WHERE to_id = #{toId} and state=0;
 	</select>
 	
@@ -36,14 +35,9 @@
 		SELECT * FROM message WHERE to_id = #{toId} and type=1 and state=0;
 	</select>
 	
-	<select id="querySystemUnreadCount" parameterType="String" resultType="integer">
-		SELECT * FROM message WHERE to_id = #{toId} and type=0 and state=0;
-	</select>
-	
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.model.Message">
-		insert into message(<include refid="colums"></include>)
-		values(null,#{fromId},#{toId},#{type},#{content},#{timeMiles},#{state})
+		insert into message values(null,#{fromId},#{toId},#{type},#{content},#{timeMiles},#{state})
 	</insert>
 	
 	<!-- 更新 -->
