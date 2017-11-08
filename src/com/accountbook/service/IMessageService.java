@@ -8,6 +8,8 @@ public interface IMessageService {
 	
 	public void newMessage(Message data);
 	public void newMessage(int type,String from,String to,String content);
+	
+	public List<Message> findChatList(String userId);
 	/**
 	 * 根据用户id查询
 	 */

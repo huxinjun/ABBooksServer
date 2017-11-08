@@ -15,6 +15,9 @@ public interface MessageDao {
 	public void insert(Message data);
 	public void updateStatus(int id,int status);
 	
+	public List<Message> queryChatList(String userId);
+	
+	
 	public Message queryMsg(int id);
 	public List<Message> queryUserMsgs(Map<String,Object> params);
 	public List<Message> queryInviteMsgs(String userId);

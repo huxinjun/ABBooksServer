@@ -100,6 +100,11 @@ public class MessageServiceImpl implements IMessageService{
 	public Message findMessage(int id) {
 		return dao.queryMsg(id);
 	}
+	@Override
+	public List<Message> findChatList(String userId) {
+		List<Message> chatList = dao.queryChatList(userId);
+		return chatList;
+	}
 
 	
 

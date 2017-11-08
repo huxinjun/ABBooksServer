@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.accountbook.model.Account;
 import com.accountbook.model.Friend;
+import com.accountbook.model.Member;
 import com.accountbook.model.Message;
 import com.accountbook.model.PayTarget;
 import com.accountbook.model.UserInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
 import com.accountbook.service.IFriendService;
+import com.accountbook.service.IGroupService;
 import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
@@ -36,7 +38,7 @@ public class MessageController {
 	ITokenService tokenService;
 	
 	@Autowired
-	IMessageService mMsgService;
+	IMessageService msgService;
 	
 	@Autowired
 	IUserService userService;
@@ -46,6 +48,9 @@ public class MessageController {
 	
 	@Autowired
 	IAccountService accountService;
+	
+	@Autowired
+	IGroupService groupService;
 	
 	
 	
@@ -63,40 +68,64 @@ public class MessageController {
     	Result result=new Result();
     	
     	
-    	List<Message> msgs = mMsgService.findUserMsgs(findId, userId, pageIndex, pageSize);
+    	List<Message> msgs = msgService.findUserMsgs(findId, userId, pageIndex, pageSize);
     	
     	List<Result> resultMsgs=new ArrayList<>();
     	for(Message msg:msgs){
     		Result msgResult=new Result();
-    		String accountId = null;
-    		@SuppressWarnings("unused")
-			String memberId = null;
+    		String accountId =msg.content.split(":")[1];;
+    		String memberId = null;
     		String targetId=null;
+    		Account account = accountService.findAccount(accountId);
+    		
     		if(msg.content.startsWith("[Create]")){
-    			accountId=msg.content.split(":")[1];
     			
-    			Account account = accountService.findAccount(accountId);
     			String dateStr=format.format(new Date(account.getDateTimestamp().getTime()));
-    			msgResult.put("content",dateStr+account.getName()+"("+account.getDescription()+")"+"花费了"+account.getPaidIn()+"元");
+    			msgResult.put("date",dateStr);
+    			msgResult.put("msgType",Message.MESSAGE_TYPE_ACCOUNT_CREATE);
+    			msgResult.put("type",account.getType());
+    			msgResult.put("name",account.getName());
+    			msgResult.put("desc",account.getDescription());
+    			msgResult.put("paidIn",account.getPaidIn());
+    			msgResult.put("members",account.getMembers());
+    			
     			
     		}else if(msg.content.startsWith("[CreateInner]")){
-    			accountId=msg.content.split(":")[1];
     			memberId=msg.content.split(":")[2];
     			
-    			Account account = accountService.findAccount(accountId);
     			String dateStr=format.format(new Date(account.getDateTimestamp().getTime()));
-    			msgResult.put("content","完善了"+dateStr+account.getName()+"的账单,我们所在的组花费了"+account.getPaidIn()+"元");
+    			msgResult.put("date",dateStr);
+    			msgResult.put("msgType",Message.MESSAGE_TYPE_ACCOUNT_CREATE_INNER);
+    			msgResult.put("memberId",memberId);
+    			msgResult.put("type",account.getType());
+    			msgResult.put("name",account.getName());
+    			msgResult.put("desc",account.getDescription());
+    			msgResult.put("paidIn",account.getPaidIn());
     			
+    			
+    			List<UserInfo> users = groupService.findUsersByGroupId(memberId);
+    			List<Member> groupMembers=new ArrayList<>();
+    			for(UserInfo u:users)
+    				for(Member m:account.getMembers())
+    					if(u.id.equals(m.getMemberId()))
+    						groupMembers.add(m);
+    			msgResult.put("members",groupMembers);
     			
     		}else if(msg.content.startsWith("[Settle]")){
-    			accountId=msg.content.split(":")[1];
     			targetId=msg.content.split(":")[2];
-    			
     			PayTarget target = accountService.findPayTarget(targetId);
-    			msgResult.put("content","向你支付了"+target.getMoney()+"元");
+    			
+    			String dateStr=format.format(new Date(account.getDateTimestamp().getTime()));
+    			msgResult.put("date",dateStr);
+    			msgResult.put("msgType",Message.MESSAGE_TYPE_ACCOUNT_SETTLE);
+    			msgResult.put("targetId",targetId);
+    			msgResult.put("money",target.getMoney());
+    			
     			
     		}
     		
+    		msgResult.put("fromId", msg.fromId);
+    		msgResult.put("toId", msg.toId);
     		msgResult.put("accountId", accountId);
 			if(me.id.equals(msg.fromId))
 				msgResult.put("icon", me.icon);
@@ -112,6 +141,21 @@ public class MessageController {
     }
 	
 	
+	@ResponseBody
+    @RequestMapping("/chat")
+    
+    public Object getInviteMessage(HttpServletRequest request){
+    	String findId=request.getAttribute("userid").toString();
+    	
+    	//TODO 1.处理时间显示
+    	//TODO 2.加入未读个数
+    	
+    	
+    	return new Result(Result.RESULT_OK, "查询聊天列表成功").put("chats", msgService.findChatList(findId));
+    	
+	}
+	
+	
     
     @ResponseBody
     @RequestMapping("/invite")
@@ -123,7 +167,7 @@ public class MessageController {
     	Result result=new Result();
     	
     	
-    	List<Message> msgs = mMsgService.findInviteMsgs(findId);
+    	List<Message> msgs = msgService.findInviteMsgs(findId);
     	
     	List<Result> resultMsgs=new ArrayList<>();
     	for(Message msg:msgs){
@@ -155,9 +199,9 @@ public class MessageController {
 
 		
 		Result result=new Result();
-		mMsgService.makeAccepted(msgId);
+		msgService.makeAccepted(msgId);
 		
-		Message message = mMsgService.findMessage(msgId);
+		Message message = msgService.findMessage(msgId);
 		
 		boolean isFriend = friendService.isFriend(message.toId, message.fromId);
 		if(isFriend){
@@ -181,13 +225,13 @@ public class MessageController {
     public Object refuse(HttpServletRequest request,HttpServletResponse response,int msgId){
 
 		Result result=new Result();
-		Message message = mMsgService.findMessage(msgId);
+		Message message = msgService.findMessage(msgId);
 		if(message.state==Message.STATUS_INVITE_ACCEPT ||message.state==Message.STATUS_INVITE_REFUSE){
 			return result.put(Result.RESULT_COMMAND_INVALID, "重复操作!");
 		}
 		
 		
-		mMsgService.makeRefused(msgId);
+		msgService.makeRefused(msgId);
 		
 		return result.put(Result.RESULT_OK, "操作成功!");
 		
@@ -198,13 +242,13 @@ public class MessageController {
     public Object delete(HttpServletRequest request,HttpServletResponse response,int msgId){
 
 		Result result=new Result();
-		Message message = mMsgService.findMessage(msgId);
+		Message message = msgService.findMessage(msgId);
 		if(message.state==Message.STATUS_DELETE){
 			return result.put(Result.RESULT_COMMAND_INVALID, "重复操作!");
 		}
 		
 		
-		mMsgService.makeDeleted(msgId);
+		msgService.makeDeleted(msgId);
 		
 		return result.put(Result.RESULT_OK, "操作成功!");
 		

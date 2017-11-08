@@ -13,6 +13,9 @@ public class Message {
 	public static final int MESSAGE_TYPE_INVITE_USER=1;
 	public static final int MESSAGE_TYPE_INVITE_GROUP=2;
 	public static final int MESSAGE_TYPE_ACCOUNT=3;
+	public static final int MESSAGE_TYPE_ACCOUNT_CREATE=31;
+	public static final int MESSAGE_TYPE_ACCOUNT_CREATE_INNER=32;
+	public static final int MESSAGE_TYPE_ACCOUNT_SETTLE=33;
 	public static final int MESSAGE_TYPE_OTHER=99;
 	
 	
