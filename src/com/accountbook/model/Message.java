@@ -35,7 +35,7 @@ public class Message {
 	/**
 	 * 创建时间 :毫秒
 	 */
-	public Timestamp timeMiles;
+	public Timestamp time;
 	
 	/**
 	 * 普通消息:0未读,1已读,2已删除

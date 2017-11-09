@@ -32,7 +32,7 @@ public class MessageServiceImpl implements IMessageService{
 		msg.toId=to;
 		msg.type=type;
 		msg.content=content;
-		msg.timeMiles=Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		msg.time=Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		msg.state=Message.STATUS_UNREAD;
 		newMessage(msg);
 	}
@@ -102,8 +102,7 @@ public class MessageServiceImpl implements IMessageService{
 	}
 	@Override
 	public List<Message> findChatList(String userId) {
-		List<Message> chatList = dao.queryChatList(userId);
-		return chatList;
+		return dao.queryChatList(userId);
 	}
 
 	

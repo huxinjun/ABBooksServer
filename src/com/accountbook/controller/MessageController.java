@@ -27,6 +27,7 @@ import com.accountbook.service.IGroupService;
 import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
+import com.accountbook.utils.CommonUtils;
 
 
 @Controller
@@ -133,10 +134,18 @@ public class MessageController {
 				msgResult.put("icon", he.icon);
     		
     		resultMsgs.add(msgResult);
+    		
+    		//设置为已读
+    		if(msg.state==Message.STATUS_UNREAD)
+    			msgService.makeReaded(msg.id);
     	}
     	
+    	result.put("hasNextPage",msgs.size()==0?false:true);
+		result.put("pageIndex", pageIndex==null || pageIndex<=0 ? CommonUtils.PAGE_DEFAULT_INDEX : pageIndex);
+		result.put("pageSize", pageSize==null || pageSize<=0 ? CommonUtils.PAGE_DEFAULT_SIZE : pageSize);
     	
-    	return result.put(Result.RESULT_OK, "查询成功").put("datas", resultMsgs);
+    	
+    	return result.put(Result.RESULT_OK, "查询成功").put("msgs", resultMsgs);
     	
     }
 	
@@ -144,14 +153,38 @@ public class MessageController {
 	@ResponseBody
     @RequestMapping("/chat")
     
-    public Object getInviteMessage(HttpServletRequest request){
+    public Object getChatList(HttpServletRequest request){
     	String findId=request.getAttribute("userid").toString();
     	
     	//TODO 1.处理时间显示
     	//TODO 2.加入未读个数
     	
+    	 List<Message> chatList = msgService.findChatList(findId);
+    	 List<Result> results=new ArrayList<>();
+    	 for(Message item:chatList){
+    		 Result result=new Result().put(item);
+    		 result.remove("time");
+    		 result.put("date", CommonUtils.getSinceTimeString2(new Date(item.time.getTime())));
+    		 if(item.type==1 ||item.type==2)
+    			 result.put("unreadCount",msgService.getInviteUnreadCount(findId));
+			 else if(item.type==3)
+				 result.put("unreadCount",msgService.getInviteUnreadCount(findId));
+    		 
+    		 UserInfo fromUser = userService.findUser(item.fromId);
+    		 UserInfo toUser = userService.findUser(item.toId);
+    		 if(fromUser!=null){
+    			 result.put("fromName",fromUser.nickname);
+    			 result.put("fromIcon",fromUser.icon);
+    		 }
+    		 if(toUser!=null){
+    			 result.put("toName",toUser.nickname);
+    			 result.put("toIcon",toUser.icon);
+    		 }
+    		 results.add(result);
+    	 }
     	
-    	return new Result(Result.RESULT_OK, "查询聊天列表成功").put("chats", msgService.findChatList(findId));
+    	
+    	return new Result(Result.RESULT_OK, "查询聊天列表成功").put("chats",results);
     	
 	}
 	
@@ -171,21 +204,22 @@ public class MessageController {
     	
     	List<Result> resultMsgs=new ArrayList<>();
     	for(Message msg:msgs){
-    		Date date=new Date(msg.timeMiles.getTime());
+    		Date date=new Date(msg.time.getTime());
     		DateFormat format=new SimpleDateFormat("yyyy年MM月dd日");
     		String dateStr=format.format(date);
     		UserInfo findUser = userService.findUser(msg.fromId);
-    		
-    		Result msgResult=new Result();
-    		
-    		msgResult.put("id",msg.id);
-    		msgResult.put("icon",findUser.avatarUrl);
-    		msgResult.put("nickname",findUser.nickname);
-    		msgResult.put("msg",msg.content);
-    		msgResult.put("time",dateStr);
-    		msgResult.put("state",msg.state);
-    		
-    		resultMsgs.add(msgResult);
+    		if(findUser!=null){
+    			Result msgResult=new Result();
+    			
+    			msgResult.put("id",msg.id);
+    			msgResult.put("icon",findUser.avatarUrl);
+    			msgResult.put("nickname",findUser.nickname);
+    			msgResult.put("msg",msg.content);
+    			msgResult.put("time",dateStr);
+    			msgResult.put("state",msg.state);
+    			
+    			resultMsgs.add(msgResult);
+    		}
     	}
     	
     	

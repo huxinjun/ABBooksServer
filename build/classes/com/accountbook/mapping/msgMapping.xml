@@ -7,16 +7,24 @@
     <result column="to_id" property="toId" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="TINYINT" />
     <result column="content" property="content" jdbcType="VARCHAR" />
-    <result column="time" property="timeMiles" jdbcType="TIMESTAMP" />
+    <result column="time" property="time" jdbcType="TIMESTAMP" />
     <result column="state" property="state" jdbcType="TINYINT" />
   </resultMap>
   
   <!-- 查询聊天列表:每个用户的最后一条消息 -->
   	<select id="queryChatList" parameterType="String" resultMap="map">
-  		SELECT * FROM message WHERE from_id IN
-		(SELECT DISTINCT(from_id) FROM message WHERE from_id=#{userId} OR to_id=#{userId}) 
-		AND from_id!=#{userId} AND to_id=#{userId}
-		 ORDER BY TIME DESC LIMIT 0,1
+  		SELECT * FROM (SELECT * FROM message WHERE from_id IN
+		(
+		SELECT DISTINCT(from_id) FROM message WHERE from_id=#{userId} OR to_id=#{userId}
+		) AND from_id!=#{userId} AND to_id=#{userId} AND TYPE=3
+		 ORDER BY TIME DESC LIMIT 0,1) AS a
+		 
+		UNION
+		 
+		 SELECT * FROM ( 
+		 SELECT * FROM message WHERE to_id=#{userId} AND (TYPE=1 OR TYPE=2)ORDER BY TIME DESC LIMIT 0,1) AS b
+		 
+		 ORDER BY TIME DESC
 	</select>
   
   
@@ -40,16 +48,16 @@
 	
 	
 	<select id="queryUserUnreadCount" parameterType="map" resultType="integer">
-		SELECT * FROM message WHERE to_id = #{toId} and state=0;
+		SELECT count(*) FROM message WHERE to_id = #{toId} and state=0;
 	</select>
 	
 	<select id="queryInviteUnreadCount" parameterType="String" resultType="integer">
-		SELECT * FROM message WHERE to_id = #{toId} and type=1 and state=0;
+		SELECT count(*) FROM message WHERE to_id = #{toId} and (type=1 or type=2) and state=0;
 	</select>
 	
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.model.Message">
-		insert into message values(null,#{fromId},#{toId},#{type},#{content},#{timeMiles},#{state})
+		insert into message values(null,#{fromId},#{toId},#{type},#{content},#{time},#{state})
 	</insert>
 	
 	<!-- 更新 -->

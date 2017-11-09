@@ -179,7 +179,7 @@ public class UserController {
 		msg.toId=openid;
 		msg.type=Message.MESSAGE_TYPE_INVITE_USER;
 		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",我们一起记账吧^~^";
-		msg.timeMiles=Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		msg.time=Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		msg.state=Message.STATUS_UNREAD;
 		msgService.newMessage(msg);
 		

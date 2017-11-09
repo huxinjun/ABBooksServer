@@ -1,5 +1,6 @@
 package com.accountbook.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -46,6 +47,40 @@ public class CommonUtils {
 			return yearDis+"年前";
 		if(monthDis>0)
 			return monthDis+"月前";
+		if(weekDis>0)
+			return weekDis+"周前";
+		if(dayDis>0)
+			return dayDis+"天前";
+		if(hourDis>0)
+			return hourDis+"小时前";
+		if(minuteDis>0)
+			return minuteDis+"分钟前";
+		return "刚刚";
+		
+	}
+	
+	/**
+	 * 
+	 */
+	public static String getSinceTimeString2(Date time){
+		Calendar currCalendar = Calendar.getInstance();
+		currCalendar.setTime(new Date());
+		
+		Calendar otherCalendar = Calendar.getInstance();
+		otherCalendar.setTime(time);
+		
+		
+		int yearDis=currCalendar.get(Calendar.YEAR)-otherCalendar.get(Calendar.YEAR);
+		int monthDis=getAllMonth(currCalendar)-getAllMonth(otherCalendar);
+		int weekDis=getAllWeek(currCalendar)-getAllWeek(otherCalendar);
+		int dayDis=getAllDay(currCalendar)-getAllDay(otherCalendar);
+		int hourDis=getAllHour(currCalendar)-getAllHour(otherCalendar);
+		int minuteDis=getAllMinute(currCalendar)-getAllMinute(otherCalendar);
+		
+//		System.out.println(yearDis+"年"+monthDis+"月"+weekDis+"周"+dayDis+"日"+hourDis+"时"+minuteDis+"分");
+		SimpleDateFormat format=new SimpleDateFormat("yyyy/MM/dd");
+		if(yearDis>0 || monthDis>0)
+			return format.format(time);
 		if(weekDis>0)
 			return weekDis+"周前";
 		if(dayDis>0)
