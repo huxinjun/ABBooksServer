@@ -33,9 +33,11 @@
 		SELECT * FROM message WHERE id = #{id};
 	</select>
 	<select id="queryUserMsgs" parameterType="map" resultMap="map">
-		SELECT * FROM message WHERE TYPE=3 AND
-		((from_id=#{user1Id} AND to_id=#{user2Id}) OR
-		(from_id=#{user2Id} AND to_id=#{user1Id})) ORDER BY TIME ASC LIMIT #{ls},#{lc}
+		SELECT * FROM 
+		(SELECT * FROM message WHERE TYPE=3 AND
+				((from_id=#{user1Id} AND to_id=#{user2Id}) OR
+				(from_id=#{user2Id} AND to_id=#{user1Id})) ORDER BY TIME DESC LIMIT #{ls},#{lc})AS a
+				ORDER BY TIME ASC
 	</select>
 	<select id="queryInviteMsgs" parameterType="String" resultMap="map">
 		SELECT * FROM message WHERE to_id = #{userId} and state!=2;

@@ -499,7 +499,9 @@ public class AccountController {
 		findPayTarget.setSettled(true);
 		accountService.updatePayTarget(findPayTarget);
 		
-		msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId,targetId, "[Settle]:"+accountId+":"+targetId);
+		String toId=findPayTarget.getPaidId().equals(findId)?findPayTarget.getReceiptId():findPayTarget.getPaidId();
+		
+		msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId,toId, "[Settle]:"+accountId+":"+targetId);
 		
 
 		return new Result(Result.RESULT_OK, "更新付款状态成功!");

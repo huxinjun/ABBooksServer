@@ -82,6 +82,7 @@ public class MessageController {
     		if(msg.content.startsWith("[Create]")){
     			
     			String dateStr=format.format(new Date(account.getDateTimestamp().getTime()));
+    			msgResult.put("id",msg.id);
     			msgResult.put("date",dateStr);
     			msgResult.put("msgType",Message.MESSAGE_TYPE_ACCOUNT_CREATE);
     			msgResult.put("type",account.getType());
@@ -93,15 +94,19 @@ public class MessageController {
     			
     		}else if(msg.content.startsWith("[CreateInner]")){
     			memberId=msg.content.split(":")[2];
+    			Member member=getMemberById(account.getMembers(),memberId);
+    			
     			
     			String dateStr=format.format(new Date(account.getDateTimestamp().getTime()));
+    			msgResult.put("id",msg.id);
     			msgResult.put("date",dateStr);
     			msgResult.put("msgType",Message.MESSAGE_TYPE_ACCOUNT_CREATE_INNER);
     			msgResult.put("memberId",memberId);
     			msgResult.put("type",account.getType());
     			msgResult.put("name",account.getName());
     			msgResult.put("desc",account.getDescription());
-    			msgResult.put("paidIn",account.getPaidIn());
+    			msgResult.put("paidIn",member.getPaidIn());
+    			msgResult.put("shouldPay",member.getShouldPay());
     			
     			
     			List<UserInfo> users = groupService.findUsersByGroupId(memberId);
@@ -117,10 +122,14 @@ public class MessageController {
     			PayTarget target = accountService.findPayTarget(targetId);
     			
     			String dateStr=format.format(new Date(account.getDateTimestamp().getTime()));
+    			msgResult.put("id",msg.id);
     			msgResult.put("date",dateStr);
     			msgResult.put("msgType",Message.MESSAGE_TYPE_ACCOUNT_SETTLE);
     			msgResult.put("targetId",targetId);
     			msgResult.put("money",target.getMoney());
+    			msgResult.put("paidId",target.getPaidId());
+    			msgResult.put("receiptId",target.getReceiptId());
+    			
     			
     			
     		}
@@ -148,6 +157,14 @@ public class MessageController {
     	return result.put(Result.RESULT_OK, "查询成功").put("msgs", resultMsgs);
     	
     }
+	
+	
+	private Member getMemberById(List<Member> members, String memberId) {
+		for (Member member : members)
+			if (member.getMemberId().equals(memberId))
+				return member;
+		return null;
+	}
 	
 	
 	@ResponseBody
