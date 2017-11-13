@@ -181,10 +181,17 @@ SELECT * FROM
 
 
 #查询聊天列表(最后一条消息)
-SELECT * FROM (SELECT * FROM message WHERE from_id IN
+SELECT * FROM (SELECT * FROM message WHERE (from_id IN
 (
 SELECT DISTINCT(from_id) FROM message WHERE from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
-) AND from_id!='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND TYPE=3
+) AND from_id!='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')
+OR (from_id IN
+(
+SELECT DISTINCT(to_id) FROM message WHERE from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+) AND to_id!='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')
+
+
+ AND TYPE=3
  ORDER BY TIME DESC LIMIT 0,1) AS a
  
 UNION

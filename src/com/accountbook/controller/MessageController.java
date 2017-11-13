@@ -74,14 +74,14 @@ public class MessageController {
     	List<Result> resultMsgs=new ArrayList<>();
     	for(Message msg:msgs){
     		Result msgResult=new Result();
-    		String accountId =msg.content.split(":")[1];;
+    		String accountId =msg.content.split(":")[1];
     		String memberId = null;
     		String targetId=null;
     		Account account = accountService.findAccount(accountId);
+    		String dateStr=format.format(new Date(account.getDateTimestamp().getTime()));
     		
     		if(msg.content.startsWith("[Create]")){
     			
-    			String dateStr=format.format(new Date(account.getDateTimestamp().getTime()));
     			msgResult.put("id",msg.id);
     			msgResult.put("date",dateStr);
     			msgResult.put("msgType",Message.MESSAGE_TYPE_ACCOUNT_CREATE);
@@ -96,8 +96,6 @@ public class MessageController {
     			memberId=msg.content.split(":")[2];
     			Member member=getMemberById(account.getMembers(),memberId);
     			
-    			
-    			String dateStr=format.format(new Date(account.getDateTimestamp().getTime()));
     			msgResult.put("id",msg.id);
     			msgResult.put("date",dateStr);
     			msgResult.put("msgType",Message.MESSAGE_TYPE_ACCOUNT_CREATE_INNER);
@@ -121,14 +119,15 @@ public class MessageController {
     			targetId=msg.content.split(":")[2];
     			PayTarget target = accountService.findPayTarget(targetId);
     			
-    			String dateStr=format.format(new Date(account.getDateTimestamp().getTime()));
     			msgResult.put("id",msg.id);
     			msgResult.put("date",dateStr);
     			msgResult.put("msgType",Message.MESSAGE_TYPE_ACCOUNT_SETTLE);
     			msgResult.put("targetId",targetId);
     			msgResult.put("money",target.getMoney());
     			msgResult.put("paidId",target.getPaidId());
+    			msgResult.put("paidName",userService.findUser(target.getPaidId()).nickname);
     			msgResult.put("receiptId",target.getReceiptId());
+    			msgResult.put("receiptName",userService.findUser(target.getReceiptId()).nickname);
     			
     			
     			
@@ -173,31 +172,84 @@ public class MessageController {
     public Object getChatList(HttpServletRequest request){
     	String findId=request.getAttribute("userid").toString();
     	
-    	//TODO 1.处理时间显示
-    	//TODO 2.加入未读个数
-    	
     	 List<Message> chatList = msgService.findChatList(findId);
     	 List<Result> results=new ArrayList<>();
-    	 for(Message item:chatList){
-    		 Result result=new Result().put(item);
-    		 result.remove("time");
-    		 result.put("date", CommonUtils.getSinceTimeString2(new Date(item.time.getTime())));
-    		 if(item.type==1 ||item.type==2)
-    			 result.put("unreadCount",msgService.getInviteUnreadCount(findId));
-			 else if(item.type==3)
-				 result.put("unreadCount",msgService.getInviteUnreadCount(findId));
+    	 for(Message msg:chatList){
+    		 Result msgResult=new Result().put(msg);
+    		 msgResult.remove("time");
+    		 msgResult.remove("content");
+    		 msgResult.put("date", CommonUtils.getSinceTimeString2(new Date(msg.time.getTime())));
+    		 if(msg.type==1 ||msg.type==2)
+    			 msgResult.put("unreadCount",msgService.getInviteUnreadCount(findId));
+			 else if(msg.type==3)
+				 msgResult.put("unreadCount",msgService.getInviteUnreadCount(findId));
     		 
-    		 UserInfo fromUser = userService.findUser(item.fromId);
-    		 UserInfo toUser = userService.findUser(item.toId);
-    		 if(fromUser!=null){
-    			 result.put("fromName",fromUser.nickname);
-    			 result.put("fromIcon",fromUser.icon);
+    		 UserInfo fromUser = userService.findUser(msg.fromId);
+    		 UserInfo toUser = userService.findUser(msg.toId);
+    		 UserInfo he=fromUser.id.equals(findId)?toUser:fromUser;
+    		 
+    		 if(he!=null){
+    			 msgResult.put("name",he.nickname);
+    			 msgResult.put("icon",he.icon);
     		 }
-    		 if(toUser!=null){
-    			 result.put("toName",toUser.nickname);
-    			 result.put("toIcon",toUser.icon);
+    		 
+    		 
+    		 if(msg.type==1 ||msg.type==2){
+    			 //邀请消息
+    		 }else if(msg.type==3){
+    			 //帐友聊天
+    			 String accountId =msg.content.split(":")[1];
+        		 String memberId = null;
+         		 String targetId=null;
+        		 Account account = accountService.findAccount(accountId);
+        		 String dateStr=CommonUtils.getSinceTimeString2(new Date(account.getDateTimestamp().getTime()));
+         		
+         		if(msg.content.startsWith("[Create]")){
+         			msgResult.put("date",dateStr);
+         			msgResult.put("content","[新账单]"+account.getPaidIn()+"元");
+         			
+         		}else if(msg.content.startsWith("[CreateInner]")){
+         			memberId=msg.content.split(":")[2];
+         			Member member=getMemberById(account.getMembers(),memberId);
+         			
+         			msgResult.put("date",dateStr);
+         			msgResult.put("content","[组内账单]"+member.getShouldPay()+"元");
+         			
+         		}else if(msg.content.startsWith("[Settle]")){
+         			targetId=msg.content.split(":")[2];
+         			PayTarget target = accountService.findPayTarget(targetId);
+         			
+         			String opt=findId.equals(msg.fromId)?findId.equals(target.getPaidId())?"付款":"收款":findId.equals(target.getPaidId())?"收款":"付款";
+         			
+         			msgResult.put("date",dateStr);
+         			msgResult.put("content","["+opt+"]"+target.getMoney()+"元");
+         		}
+    			 
     		 }
-    		 results.add(result);
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 
+    		 results.add(msgResult);
     	 }
     	
     	
