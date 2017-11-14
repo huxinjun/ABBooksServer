@@ -178,6 +178,9 @@ public class MessageController {
     		 Result msgResult=new Result().put(msg);
     		 msgResult.remove("time");
     		 msgResult.remove("content");
+    		 msgResult.remove("fromId");
+    		 msgResult.remove("toId");
+    		 msgResult.put("userId", findId.equals(msg.fromId)?msg.toId:msg.fromId);
     		 msgResult.put("date", CommonUtils.getSinceTimeString2(new Date(msg.time.getTime())));
     		 if(msg.type==1 ||msg.type==2)
     			 msgResult.put("unreadCount",msgService.getInviteUnreadCount(findId));
@@ -196,6 +199,8 @@ public class MessageController {
     		 
     		 if(msg.type==1 ||msg.type==2){
     			 //邀请消息
+    			 msgResult.put("name","邀请消息");
+    			 msgResult.put("icon","http://img4.imgtn.bdimg.com/it/u=3386476608,1677035006&fm=27&gp=0.jpg");
     		 }else if(msg.type==3){
     			 //帐友聊天
     			 String accountId =msg.content.split(":")[1];

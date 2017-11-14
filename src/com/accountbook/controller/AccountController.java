@@ -525,6 +525,9 @@ public class AccountController {
 			result.put("imgs", null);
 		else
 			result.put("imgs", findAccount.getImgs().split(","));
+		
+		UserInfo createUser = userService.findUser(findAccount.getUserId());
+		result.put("user_icon", createUser.icon);
 
 		// 成员为组时查找当前用户是否在改组内
 		if (findAccount.getMembers() != null && findAccount.getMembers().size() > 0) {
@@ -558,7 +561,6 @@ public class AccountController {
 				results = accountService.findAccounts(findId, bookId,pageIndex,pageSize);
 		}
 
-		UserInfo findUser = userService.findUser(findId);
 
 		// 将字符串的icons替换为数组形式
 		List<Result> resultsWapper = new ArrayList<>();
@@ -570,7 +572,8 @@ public class AccountController {
 			else
 				put.put("imgs", account.getImgs().split(","));
 
-			put.put("user_icon", findUser.icon);
+			UserInfo createUser = userService.findUser(account.getUserId());
+			put.put("user_icon", createUser.icon);
 			put.put("date", new SimpleDateFormat("yyyy年MM月dd日").format(new Date(account.getDateTimestamp().getTime())));
 			put.put("dateDis", CommonUtils.getSinceTimeString(account.getCreateTimestamp()));
 
