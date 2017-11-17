@@ -20,7 +20,7 @@ public class PayTarget implements Serializable{
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = 2809923759790985299L;
+	private static final long serialVersionUID = 8143345537623173334L;
 	/**
 	 * 
 	 */
@@ -43,10 +43,6 @@ public class PayTarget implements Serializable{
 	/**
 	 * 
 	 */
-	private boolean settled;
-	/**
-	 * 
-	 */
 	@JSONField("paid_id")
 	private String paidId;
 	/**
@@ -54,6 +50,10 @@ public class PayTarget implements Serializable{
 	 */
 	@JSONField("receipt_id")
 	private String receiptId;
+	/**
+	 * 
+	 */
+	private float waitPaidMoney;
 	/**
 	 * 
 	 */
@@ -86,11 +86,11 @@ public class PayTarget implements Serializable{
 	public void setMoney(float money){
 		this.money=money;
 	}
-	public boolean getSettled(){
-		return this.settled;
+	public float getWaitPaidMoney(){
+		return this.waitPaidMoney;
 	}
-	public void setSettled(boolean settled){
-		this.settled=settled;
+	public void setWaitPaidMoney(float waitPaidMoney){
+		this.waitPaidMoney=waitPaidMoney;
 	}
 	public String getId(){
 		return this.id;
@@ -118,7 +118,7 @@ public class PayTarget implements Serializable{
 	public String toString() {
 		return "PayTarget [accountId=" + accountId + ", paidId=" + paidId
 				+ ", paidStatus=" + paidStatus + ", money=" + money
-				+ ", settled=" + settled + ", id=" + id
+				+ ", waitPaidMoney=" + waitPaidMoney + ", id=" + id
 				+ ", receiptId=" + receiptId + ", receiptStatus=" + receiptStatus
 				+ "]";
 	}
@@ -147,7 +147,7 @@ public class PayTarget implements Serializable{
 			return false;
 		if (money != other.money)
 			return false;
-		if (settled != other.settled)
+		if (waitPaidMoney != other.waitPaidMoney)
 			return false;
 		if (id == null) {
 			if (other.id != null)

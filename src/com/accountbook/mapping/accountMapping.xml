@@ -46,7 +46,7 @@
 	    <result column="paid_id" property="paidId" jdbcType="VARCHAR" />
 	    <result column="receipt_id" property="receiptId" jdbcType="VARCHAR" />
 	    <result column="money" property="money" jdbcType="DOUBLE" />
-	    <result column="settled" property="settled" jdbcType="BOOLEAN" />
+	    <result column="wait_paid_money" property="waitPaidMoney" jdbcType="DOUBLE" />
 	    <result column="paid_status" property="paidStatus" jdbcType="TINYINT" />
 	    <result column="receipt_status" property="receiptStatus" jdbcType="TINYINT" />
   </resultMap>
@@ -69,13 +69,13 @@
 	</insert>
 	
 	<insert id="insertPayTarget" parameterType="com.accountbook.model.PayTarget">
-		insert into account_pay values(#{id},#{accountId},#{paidId},#{receiptId},#{money},#{settled},#{paidStatus},#{receiptStatus})
+		insert into account_pay values(#{id},#{accountId},#{paidId},#{receiptId},#{money},#{waitPaidMoney},#{paidStatus},#{receiptStatus})
 	</insert>
 	
 	
 	<!-- 更新支付方案 -->
 	<update id="updatePayTarget" parameterType="com.accountbook.model.PayTarget">
-		update account_pay set settled=#{settled},paid_status=#{paidStatus},receipt_status=#{receiptStatus} where id=#{id}
+		update account_pay set wait_paid_money=#{waitPaidMoney},paid_status=#{paidStatus},receipt_status=#{receiptStatus} where id=#{id}
 	</update>
 	
 	<!-- 删除一个账单下的所有支付方案 -->
@@ -134,7 +134,7 @@
 		SELECT * from account_pay where id=#{targetId}
 	</select>
 	<select id="queryPayTargetByAccountId" parameterType="String" resultMap="targetsMap">
-		SELECT a.id,account_id,paid_id,receipt_id,money,settled,paid_status,receipt_status,CONCAT(IFNULL(c.nickname,''),'',IFNULL(b.name,''))  AS member_name FROM account_pay AS a 
+		SELECT a.id,account_id,paid_id,receipt_id,money,wait_paid_money,paid_status,receipt_status,CONCAT(IFNULL(c.nickname,''),'',IFNULL(b.name,''))  AS member_name FROM account_pay AS a 
 		LEFT JOIN group_ AS b ON a.paid_id=b.id    
 		LEFT JOIN USER AS c ON a.paid_id=c.id WHERE a.account_id=#{accountId} ORDER BY CONVERT(member_name USING gbk) asc
 	</select>
@@ -163,12 +163,12 @@
 	<select id="queryAccountSummary" parameterType="String" resultMap="summaryMap">
 		
 		#查询所有待付款
-		SELECT 'wait_paid' name,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.settled=FALSE AND a.paid_id=#{userId}
+		SELECT 'wait_paid' name,SUM(wait_paid_money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.wait_paid_money>0 AND a.paid_id=#{userId}
 		
 		UNION
 		
 		#查询所有待收款
-		SELECT 'wait_receipt' name,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.settled=FALSE AND a.receipt_id=#{userId}
+		SELECT 'wait_receipt' name,SUM(wait_paid_money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.wait_paid_money>0 AND a.receipt_id=#{userId}
 	
 		UNION
 		
@@ -191,10 +191,10 @@
 	<select id="queryAccountSummary2P" parameterType="map" resultMap="summaryMap">
 	
 		#查询所有待付款(指定另一个人)
-		SELECT 'wait_paid' NAME, p.number-r.number AS number FROM(SELECT 0 id,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
-		WHERE a.settled=FALSE and a.paid_id=#{user1Id} AND a.receipt_id=#{user2Id}) p LEFT JOIN 
-		(SELECT 0 id,SUM(money) AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
-		WHERE a.settled=FALSE and a.paid_id=#{user2Id} AND a.receipt_id=#{user1Id}) r ON p.id=r.id
+		SELECT 'wait_paid' NAME, IFNULL(p.number-r.number,0) AS number FROM(SELECT 0 id,SUM(wait_paid_money) AS number FROM account_pay AS a
+		WHERE wait_paid_money>0 AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ') p LEFT JOIN 
+		(SELECT 0 id,SUM(wait_paid_money) AS number FROM account_pay AS a 
+		WHERE wait_paid_money>0 AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') r ON p.id=r.id
 				
 		UNION		
 				
@@ -218,6 +218,25 @@
 		) AND member_id=#{user2Id}
 		)
 		AND member_id IN(#{user1Id},#{user2Id})
+		
+	</select>
+	
+	
+	<select id="queryWaitPaidMoney" parameterType="map" resultMap="double">
+	
+		#查询所有待付款(指定另一个人)
+		SELECT p.number-r.number FROM(SELECT 0 id,SUM(wait_paid_money) AS number FROM account_pay AS a
+		WHERE wait_paid_money>0 AND a.paid_id=#{user1Id} AND a.receipt_id=#{user2Id}) p LEFT JOIN 
+		(SELECT 0 id,SUM(wait_paid_money) AS number FROM account_pay AS a 
+		WHERE wait_paid_money>0 AND a.paid_id=#{user2Id} AND a.receipt_id=#{user1Id}) r ON p.id=r.id
+		
+	</select>
+	
+	<select id="queryEarliestNotSettledTarget" parameterType="map" resultMap="targetsMap">
+	
+		#查询最初始的一个待付大于0的PayTarget
+		SELECT * FROM account_pay AS p LEFT JOIN account AS a ON p.account_id=a.id
+		WHERE wait_paid_money>0 AND p.paid_id=#{user1Id} AND p.receipt_id=#{user2Id} ORDER BY a.date_timestamp ASC LIMIT 0,1
 		
 	</select>
 	

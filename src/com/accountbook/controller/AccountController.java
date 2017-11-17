@@ -173,7 +173,7 @@ public class AccountController {
 				if (paidGroupPersonCount == 0 && receiptGroupPersonCount == 0) {
 					target.setPaidStatus(PayTarget.STATUS_NOT_NEED);
 					target.setReceiptStatus(PayTarget.STATUS_NOT_NEED);
-					target.setSettled(true);// 标记为已付
+					target.setWaitPaidMoney(0);// 标记为已付
 				}
 				// -------------------------------------------------------------------------------
 				// 支付组有人
@@ -219,6 +219,27 @@ public class AccountController {
 		} catch (Exception ex) {
 
 		}
+		//重要操作:抵消账单
+		Account findAccount = accountService.findAccount(account.getId());
+		/**
+		 * 1.遍历所有Paytarget(遍历Paytarget),找支付者和收款者非组的
+		 * 2.查询以往记录中支付者需要给收款者支付的钱
+		 * 		如果大于等于0:无法抵消账单,因为以往都是欠款
+		 * 		如果小于0:说明收款者需要向支付者掏钱,进入抵消账单的流程
+		 * 3.抵消账单:
+		 * 		3.1 查询时间最远的一笔waitPaidMoney大于0并且支付者与付款者与上面位置相反的PayTarget(查询Paytarget)
+		 * 		3.2 查看查出的PayTarget的waitPaidMoney是否大于遍历Paytarget的money
+		 * 			如果大于:说明本次的收款者向支付者在以往欠了比本次支付者更多的钱
+		 * 					生成一个抵消记录类,将遍历Paytarget的waitPaidMoney置为0
+		 * 					break跳出循环!!!
+		 * 			如果小于:说明本次的收款者向支付者在以往欠的钱不足以完全抵消,
+		 * 					那么:生成一个抵消记录类,然后设置查询Paytarget的waitPaidMoney为0
+		 * 					goto3.1
+		 * 		
+		 */
+		
+		
+		
 		//最后给所有的用户发送消息
 		for(Member user:allUsers)
 			if(!user.getMemberId().equals(findId))
@@ -292,7 +313,7 @@ public class AccountController {
 		List<String> settleMembers = new ArrayList<>();// 这里面记录的成员id都是和将要完善账单的组已经结清的,之后这个里面的id和我们组分解出来的成员之间也都是结清的状态
 		if (oldResult != null && oldResult.size() > 0 && oldResult.get(0) != null && oldResult.get(0).getPayTarget() != null)
 			for (PayTarget target : oldResult.get(0).getPayTarget()) {
-				if (target.getSettled()) {
+				if (target.getWaitPaidMoney()==0) {
 					if (target.getPaidId().equals(memberId))
 						settleMembers.add(target.getReceiptId());
 					else
@@ -362,7 +383,7 @@ public class AccountController {
 					payTarget.setReceiptId(target.getReceiptId());
 					payTarget.setAccountId(accountId);
 					payTarget.setMoney(innerMember.getPaidIn());
-					payTarget.setSettled(true);
+					payTarget.setWaitPaidMoney(0);
 					payTarget.setPaidStatus(PayTarget.STATUS_NOT_NEED);
 					//检查收款者是否是个组,是组的话需要为其设置receit_status
 					boolean receiptPersonIsGroup = isGroup(account.getMembers(), target.getReceiptId());
@@ -458,7 +479,7 @@ public class AccountController {
 							target.setId(IDUtil.generateNewId());
 							// 恢复支付状态
 							if (settleMembers.contains(target.getPaidId()))
-								target.setSettled(true);
+								target.setWaitPaidMoney(0);
 							target.setReceiptStatus(PayTarget.STATUS_COMPLETED);
 							accountService.addPayTarget(target);
 						}
@@ -496,7 +517,7 @@ public class AccountController {
 	public Object updatePayTargetSettle(ServletRequest req,String accountId,String targetId) {
 		String findId = req.getAttribute("userid").toString();
 		PayTarget findPayTarget = accountService.findPayTarget(targetId);
-		findPayTarget.setSettled(true);
+		findPayTarget.setWaitPaidMoney(0);
 		accountService.updatePayTarget(findPayTarget);
 		
 		String toId=findPayTarget.getPaidId().equals(findId)?findPayTarget.getReceiptId():findPayTarget.getPaidId();

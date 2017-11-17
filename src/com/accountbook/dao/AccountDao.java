@@ -35,7 +35,10 @@ public interface AccountDao {
 	public List<SummaryInfo> queryAccountSummary(String userId);
 	public List<SummaryInfo> queryAccountSummary2P(Map<String,Object> map);
 	
-	
+	/**查询两个用户待付的金额:user1Id向user2Id待付的*/
+	public double queryWaitPaidMoney(Map<String,Object> map);
+	/**查询两个用户之间最早的一个未付清的支付方案*/
+	public PayTarget queryEarliestNotSettledTarget(Map<String,Object> map);
 	
 	
 	//更新支付方案

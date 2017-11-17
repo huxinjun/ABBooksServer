@@ -69,8 +69,8 @@
                     "receipt_id":"bbb",	
                     //支付多少
                     "money":100.0,
-                    //是否结清
-                    "settled":false,
+                    //待付金额
+                    "waitPaidMoney":100.0,
                     //支付者状态
                     "paid_status":0,
                     //收款者状态
