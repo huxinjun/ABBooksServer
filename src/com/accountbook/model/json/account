@@ -74,7 +74,11 @@
                     //支付者状态
                     "paid_status":0,
                     //收款者状态
-                    "receipt_status":0
+                    "receipt_status":0,
+                    //被抵消的次数
+                    "offset_count":0,
+                    //被抵消的金额
+                    "offset_money":100.0
                 }
             ]
         }

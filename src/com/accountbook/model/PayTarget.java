@@ -20,7 +20,7 @@ public class PayTarget implements Serializable{
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = 8143345537623173334L;
+	private static final long serialVersionUID = -7366029436643710024L;
 	/**
 	 * 
 	 */
@@ -40,6 +40,16 @@ public class PayTarget implements Serializable{
 	 * 
 	 */
 	private float money;
+	/**
+	 * 
+	 */
+	@JSONField("offset_money")
+	private float offsetMoney;
+	/**
+	 * 
+	 */
+	@JSONField("offset_count")
+	private int offsetCount;
 	/**
 	 * 
 	 */
@@ -98,6 +108,12 @@ public class PayTarget implements Serializable{
 	public void setId(String id){
 		this.id=id;
 	}
+	public float getOffsetMoney(){
+		return this.offsetMoney;
+	}
+	public void setOffsetMoney(float offsetMoney){
+		this.offsetMoney=offsetMoney;
+	}
 	public String getReceiptId(){
 		return this.receiptId;
 	}
@@ -110,6 +126,12 @@ public class PayTarget implements Serializable{
 	public void setReceiptStatus(int receiptStatus){
 		this.receiptStatus=receiptStatus;
 	}
+	public int getOffsetCount(){
+		return this.offsetCount;
+	}
+	public void setOffsetCount(int offsetCount){
+		this.offsetCount=offsetCount;
+	}
 
 
 	//**************************************************toString******************************************************
@@ -119,7 +141,8 @@ public class PayTarget implements Serializable{
 		return "PayTarget [accountId=" + accountId + ", paidId=" + paidId
 				+ ", paidStatus=" + paidStatus + ", money=" + money
 				+ ", waitPaidMoney=" + waitPaidMoney + ", id=" + id
-				+ ", receiptId=" + receiptId + ", receiptStatus=" + receiptStatus
+				+ ", offsetMoney=" + offsetMoney + ", receiptId=" + receiptId
+				+ ", receiptStatus=" + receiptStatus + ", offsetCount=" + offsetCount
 				+ "]";
 	}
 
@@ -154,12 +177,16 @@ public class PayTarget implements Serializable{
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
+		if (offsetMoney != other.offsetMoney)
+			return false;
 		if (receiptId == null) {
 			if (other.receiptId != null)
 				return false;
 		} else if (!receiptId.equals(other.receiptId))
 			return false;
 		if (receiptStatus != other.receiptStatus)
+			return false;
+		if (offsetCount != other.offsetCount)
 			return false;
 		return true;
 	}

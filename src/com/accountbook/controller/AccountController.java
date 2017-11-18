@@ -20,6 +20,7 @@ import com.accountbook.core.AccountCalculator.CalculatorException;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
 import com.accountbook.model.Message;
+import com.accountbook.model.PayOffset;
 import com.accountbook.model.PayResult;
 import com.accountbook.model.PayTarget;
 import com.accountbook.model.SummaryInfo;
@@ -133,6 +134,8 @@ public class AccountController {
 					for (PayTarget target : result.get(0).getPayTarget()) {
 						target.setAccountId(account.getId());
 						target.setId(IDUtil.generateNewId());
+						//初始值为全款未付
+						target.setWaitPaidMoney(target.getMoney());
 						accountService.addPayTarget(target);
 					}
 
@@ -167,7 +170,7 @@ public class AccountController {
 						: -1;
 				int receiptGroupPersonCount = receiptPersonIsGroup
 						? groupService.findUsersCountByGroupId(target.getReceiptId()) : -1;
-						
+				
 				// -------------------------------------------------------------------------------
 				// 两个组都没人
 				if (paidGroupPersonCount == 0 && receiptGroupPersonCount == 0) {
@@ -220,7 +223,28 @@ public class AccountController {
 
 		}
 		//重要操作:抵消账单
-		Account findAccount = accountService.findAccount(account.getId());
+		offsetTarget(account.getId());
+		
+		
+		
+		//最后给所有的用户发送消息
+		for(Member user:allUsers)
+			if(!user.getMemberId().equals(findId))
+				msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId, user.getMemberId(), "[Create]:"+account.getId());
+
+		return new Result(Result.RESULT_OK, "记录账单成功!");
+	}
+	
+	/**
+	 * 支付方案的抵消操作,比如有两笔账
+	 * 第一笔A向B支付10元
+	 * 第二笔B向A支付5元
+	 * 那么第二笔可以抵消第一笔中的5元
+	 * 结果:A向B支付5元
+	 * @param accountId
+	 */
+	private void offsetTarget(String accountId){
+		Account findAccount = accountService.findAccount(accountId);
 		/**
 		 * 1.遍历所有Paytarget(遍历Paytarget),找支付者和收款者非组的
 		 * 2.查询以往记录中支付者需要给收款者支付的钱
@@ -237,15 +261,70 @@ public class AccountController {
 		 * 					goto3.1
 		 * 		
 		 */
+		if(findAccount.getPayResult()==null || findAccount.getPayResult().size()==0
+				|| findAccount.getPayResult().get(0).getPayTarget()==null
+				|| findAccount.getPayResult().get(0).getPayTarget().size()==0)
+			return;
+		ArrayList<PayTarget> findPayTargets = findAccount.getPayResult().get(0).getPayTarget();
+		System.out.println("抵消findPayTargets.size():"+findPayTargets.size());
+		for(PayTarget target:findPayTargets){
+			System.out.println("抵消target:"+target);
+			if(isNotGroup(findAccount.getMembers(), target.getPaidId())
+					&& isNotGroup(findAccount.getMembers(), target.getReceiptId())){
+				double waitPaidMoney = accountService.getWaitPaidMoney(target.getPaidId(), target.getReceiptId(),target.getId());
+				System.out.println("抵消waitPaidMoney:"+waitPaidMoney);
+				if(waitPaidMoney<0){
+					while(true){
+						//符合抵消条件(以往账单中本次的收款者欠了支付者的钱)
+						PayTarget notSettledTarget = accountService.findEarliestNotSettledTarget(target.getReceiptId(), target.getPaidId(),target.getId());
+						System.out.println("抵消notSettledTarget:"+notSettledTarget);
+						if(notSettledTarget==null)
+							break;
+						if(notSettledTarget.getWaitPaidMoney()>=target.getWaitPaidMoney()){
+							//足以抵消
+							System.out.println("足以抵消");
+							//记录抵消信息到数据库
+							PayOffset offset=new PayOffset();
+							offset.originPayId=target.getId();
+							offset.targetPayId=notSettledTarget.getId();
+							offset.money=target.getWaitPaidMoney();
+							accountService.addPayOffset(offset);
+							
+							target.setWaitPaidMoney(0);
+							notSettledTarget.setWaitPaidMoney(notSettledTarget.getWaitPaidMoney()-offset.money);//抵消的部分需要扣除
+							target.setOffsetCount(target.getOffsetCount()+1);
+							notSettledTarget.setOffsetCount(notSettledTarget.getOffsetCount()+1);
+							
+							accountService.updatePayTarget(target);
+							accountService.updatePayTarget(notSettledTarget);
+							break;
+							
+						}else{
+							//不够抵消
+							System.out.println("不够抵消");
+							
+							//记录抵消信息到数据库
+							PayOffset offset=new PayOffset();
+							offset.originPayId=target.getId();
+							offset.targetPayId=notSettledTarget.getId();
+							offset.money=notSettledTarget.getWaitPaidMoney();
+							accountService.addPayOffset(offset);
+							
+							notSettledTarget.setWaitPaidMoney(0);
+							target.setWaitPaidMoney(target.getWaitPaidMoney()-offset.money);//抵消的部分需要扣除
+							target.setOffsetCount(target.getOffsetCount()+1);
+							notSettledTarget.setOffsetCount(notSettledTarget.getOffsetCount()+1);
+							
+							accountService.updatePayTarget(notSettledTarget);
+							accountService.updatePayTarget(target);
+						}
+						
+					}
+					
+				}
+			}
+		}
 		
-		
-		
-		//最后给所有的用户发送消息
-		for(Member user:allUsers)
-			if(!user.getMemberId().equals(findId))
-				msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId, user.getMemberId(), "[Create]:"+account.getId());
-
-		return new Result(Result.RESULT_OK, "记录账单成功!");
 	}
 
 	/**
@@ -261,6 +340,20 @@ public class AccountController {
 				if (member.getIsGroup())
 					return true;
 		return false;
+	}
+	/**
+	 * 判断一个成员是不是个组
+	 * 
+	 * @param members
+	 * @param memberId
+	 * @return
+	 */
+	private boolean isNotGroup(List<Member> members, String memberId) {
+		for (Member member : members)
+			if (member.getMemberId().equals(memberId))
+				if (member.getIsGroup())
+					return false;
+		return true;
 	}
 
 	/**
@@ -429,63 +522,69 @@ public class AccountController {
 				for(PayTarget payTarget:waitToInsertTargets)
 					accountService.addPayTarget(payTarget);
 				
+				//抵消
+				offsetTarget(accountId);
+				
 				return new Result(Result.RESULT_OK, "完善账单成功!");
 			}else{
 				//下面是收款逻辑------------------------------------------------------------------------------------------------------------
 				
-					List<Member> IN=new ArrayList<>();//需要收钱的人
-			        List<Member> OUT=new ArrayList<>();//需要支出的人
-			        List<PayTarget> mTargets=new ArrayList<>();
-			        
-					//1.找出所有和本组相关的paytarget，再将那个需要付款的成员加入到out数组
-					if (oldResult != null && oldResult.size() > 0 && oldResult.get(0) != null && oldResult.get(0).getPayTarget() != null)
-						for (PayTarget target : oldResult.get(0).getPayTarget()) {
-							if (target.getReceiptId().equals(memberId)){
-								mTargets.add(target);//和我这个组相关的支付
-								OUT.add(getMemberById(findAccount.getMembers(), target.getPaidId()));
-							}
+				List<Member> IN=new ArrayList<>();//需要收钱的人
+		        List<Member> OUT=new ArrayList<>();//需要支出的人
+		        List<PayTarget> mTargets=new ArrayList<>();
+		        
+				//1.找出所有和本组相关的paytarget，再将那个需要付款的成员加入到out数组
+				if (oldResult != null && oldResult.size() > 0 && oldResult.get(0) != null && oldResult.get(0).getPayTarget() != null)
+					for (PayTarget target : oldResult.get(0).getPayTarget()) {
+						if (target.getReceiptId().equals(memberId)){
+							mTargets.add(target);//和我这个组相关的支付
+							OUT.add(getMemberById(findAccount.getMembers(), target.getPaidId()));
 						}
-					
-					//2.根据组成员的应付款,计算组内成员的应付款
-					AccountCalculator calculator = new AccountCalculator(account);
-					calculator.calcShouldPay(account.getMembers(), groupMember.getShouldPay());
-					
-					//3.记录组内成员到数据库
-					for (Member member : account.getMembers()) {
-						member.setId(IDUtil.generateNewId());
-						member.setAccountId(account.getId());
-						member.setParentMemberId(memberId);
-						accountService.addMember(member);
 					}
-					
-					//4.遍历本组成员，计算成员应收还是应付，再决定将其加入out或是in
-					for(Member innerMember:account.getMembers()){
-						boolean needPay=innerMember.getPaidIn()<innerMember.getShouldPay();
-						if(needPay)
-							OUT.add(innerMember);
-						else
-							IN.add(innerMember);
+				
+				//2.根据组成员的应付款,计算组内成员的应付款
+				AccountCalculator calculator = new AccountCalculator(account);
+				calculator.calcShouldPay(account.getMembers(), groupMember.getShouldPay());
+				
+				//3.记录组内成员到数据库
+				for (Member member : account.getMembers()) {
+					member.setId(IDUtil.generateNewId());
+					member.setAccountId(account.getId());
+					member.setParentMemberId(memberId);
+					accountService.addMember(member);
+				}
+				
+				//4.遍历本组成员，计算成员应收还是应付，再决定将其加入out或是in
+				for(Member innerMember:account.getMembers()){
+					boolean needPay=innerMember.getPaidIn()<innerMember.getShouldPay();
+					if(needPay)
+						OUT.add(innerMember);
+					else
+						IN.add(innerMember);
+				}
+				
+				//5.计算出新的paytarget后将数据库中和本组相关的条目删除，并在数据库中插入新计算的paytarget，注意恢复之前支付状态
+				PayResult calcResult = calculator.calcResult(IN, OUT);
+				//删除
+				for(PayTarget target:mTargets)
+					accountService.deletePayTarget(target.getId());
+				//记录
+				if (calcResult != null && calcResult.getPayTarget() != null)
+					for (PayTarget target : calcResult.getPayTarget()) {
+						target.setAccountId(account.getId());
+						target.setId(IDUtil.generateNewId());
+						// 恢复支付状态
+						if (settleMembers.contains(target.getPaidId()))
+							target.setWaitPaidMoney(0);
+						target.setReceiptStatus(PayTarget.STATUS_COMPLETED);
+						accountService.addPayTarget(target);
 					}
-					
-					//5.计算出新的paytarget后将数据库中和本组相关的条目删除，并在数据库中插入新计算的paytarget，注意恢复之前支付状态
-					PayResult calcResult = calculator.calcResult(IN, OUT);
-					//删除
-					for(PayTarget target:mTargets)
-						accountService.deletePayTarget(target.getId());
-					//记录
-					if (calcResult != null && calcResult.getPayTarget() != null)
-						for (PayTarget target : calcResult.getPayTarget()) {
-							target.setAccountId(account.getId());
-							target.setId(IDUtil.generateNewId());
-							// 恢复支付状态
-							if (settleMembers.contains(target.getPaidId()))
-								target.setWaitPaidMoney(0);
-							target.setReceiptStatus(PayTarget.STATUS_COMPLETED);
-							accountService.addPayTarget(target);
-						}
-					
-					System.out.println("----------------------------------");
-					System.out.println(calcResult);
+				
+				System.out.println("----------------------------------");
+				System.out.println(calcResult);
+				
+				//抵消
+				offsetTarget(accountId);
 				
 				return new Result(Result.RESULT_OK, "完善账单成功!");
 			}

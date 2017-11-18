@@ -16,7 +16,7 @@ public class PayResult implements Serializable{
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = 8138388083678153653L;
+	private static final long serialVersionUID = -7304887531856593511L;
 	/**
 	 * 付账计算结果
 	 */

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.accountbook.dao.AccountDao;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
+import com.accountbook.model.PayOffset;
 import com.accountbook.model.PayResult;
 import com.accountbook.model.PayTarget;
 import com.accountbook.model.SummaryInfo;
@@ -76,6 +77,10 @@ public class AccountServiceImpl implements IAccountService {
 				account.setPayResult(new ArrayList<PayResult>());
 				account.getPayResult().add(new PayResult());
 				account.getPayResult().get(0).setPayTarget((ArrayList<PayTarget>) payTargets);
+				
+				for(PayTarget target:payTargets)
+					if(target.getOffsetCount()>0)
+						target.setOffsetMoney((float) dao.queryOffsetMoney(target.getId()));
 			}
 		}
 		return accounts;
@@ -136,6 +141,11 @@ public class AccountServiceImpl implements IAccountService {
 	public void updatePayTarget(PayTarget target) {
 		dao.updatePayTarget(target);
 	}
+	
+	@Override
+	public void addPayOffset(PayOffset offset) {
+		dao.insertPayOffset(offset);
+	}
 
 	@Override
 	public void deletePayTargets(String accountId) {
@@ -171,6 +181,32 @@ public class AccountServiceImpl implements IAccountService {
 	public PayTarget findPayTarget(String targetId) {
 		return dao.queryPayTarget(targetId);
 	}
+
+	@Override
+	public double getWaitPaidMoney(String user1Id, String user2Id,String targetId) {
+		return dao.queryWaitPaidMoney(new HashMap<String,Object>(){
+			private static final long serialVersionUID = 1L;
+			{
+				put("user1Id", user1Id);
+				put("user2Id", user2Id);
+				put("targetId", targetId);
+			}
+		});
+	}
+
+	@Override
+	public PayTarget findEarliestNotSettledTarget(String user1Id, String user2Id,String targetId) {
+		return dao.queryEarliestNotSettledTarget(new HashMap<String,Object>(){
+			private static final long serialVersionUID = 1L;
+			{
+				put("user1Id", user1Id);
+				put("user2Id", user2Id);
+				put("targetId", targetId);
+			}
+		});
+	}
+
+	
 
 	
 

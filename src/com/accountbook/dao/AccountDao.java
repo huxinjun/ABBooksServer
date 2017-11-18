@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
+import com.accountbook.model.PayOffset;
 import com.accountbook.model.PayTarget;
 import com.accountbook.model.SummaryInfo;
 
@@ -14,6 +15,7 @@ public interface AccountDao {
 	public void insert(Account account);
 	public void insertMember(Member member);
 	public void insertPayTarget(PayTarget target);
+	public void insertPayOffset(PayOffset offset);
 	
 	
 	
@@ -28,6 +30,10 @@ public interface AccountDao {
 	
 	public List<Member> queryMembersByAccountId(String accountId);
 	public PayTarget queryPayTarget(String targetId);
+	
+	/**查询一个支付方案被抵扣的金额数目*/
+	public double queryOffsetMoney(String targetId);
+	
 	public List<PayTarget> queryPayTargetByAccountId(String accountId);
 	/**查询和userId相关的所有成员:分组和帐友*/
 	public List<Member> queryMembers(String userId);

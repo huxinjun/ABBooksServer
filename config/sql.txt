@@ -108,10 +108,11 @@ SELECT 'wait_receipt' NAME,SUM(wait_paid_money) FROM account_pay AS a LEFT JOIN 
 
 
 #查询所有待付款(指定另一个人)
-SELECT 'wait_paid' NAME, IFNULL(p.number-r.number,0) AS number FROM(SELECT 0 id,SUM(wait_paid_money) AS number FROM account_pay AS a
-WHERE wait_paid_money>0 AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ') p LEFT JOIN 
-(SELECT 0 id,SUM(wait_paid_money) AS number FROM account_pay AS a 
-WHERE wait_paid_money>0 AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') r ON p.id=r.id
+SELECT 'wait_paid' NAME,p.number-r.number AS number FROM(SELECT 0 id, IFNULL(SUM(wait_paid_money),0) AS number FROM account_pay AS a
+WHERE wait_paid_money>0 AND id!='7ncUUBN7AdCEsXuBP6MHqQ==' AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ') p LEFT JOIN 
+(SELECT 0 id,IFNULL(SUM(wait_paid_money),0) AS number FROM account_pay AS a 
+WHERE wait_paid_money>0 AND id!='7ncUUBN7AdCEsXuBP6MHqQ==' AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') r ON p.id=r.id
+
 		
 UNION		
 		
