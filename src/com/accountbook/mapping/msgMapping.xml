@@ -13,25 +13,7 @@
   
   <!-- 查询聊天列表:每个用户的最后一条消息 -->
   	<select id="queryChatList" parameterType="String" resultMap="map">
-  		SELECT * FROM (SELECT * FROM message WHERE (from_id IN
-		(
-		SELECT DISTINCT(from_id) FROM message WHERE from_id=#{userId} OR to_id=#{userId}
-		) AND from_id!=#{userId} AND to_id=#{userId})
-		OR (from_id IN
-		(
-		SELECT DISTINCT(to_id) FROM message WHERE from_id=#{userId} OR to_id=#{userId}
-		) AND to_id!=#{userId} AND from_id=#{userId})
-		
-		
-		 AND TYPE=3
-		 ORDER BY TIME DESC LIMIT 0,1) AS a
-		 
-		UNION
-		 
-		 SELECT * FROM ( 
-		 SELECT * FROM message WHERE to_id=#{userId} AND (TYPE=1 OR TYPE=2)ORDER BY TIME DESC LIMIT 0,1) AS b
-		 
-		 ORDER BY TIME DESC
+  		SELECT * FROM message WHERE  to_id=#{userId} OR from_id=#{userId} GROUP BY from_id,to_id ORDER BY TIME DESC
 	</select>
   
   

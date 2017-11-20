@@ -175,6 +175,19 @@ public class MessageController {
     	 List<Message> chatList = msgService.findChatList(findId);
     	 List<Result> results=new ArrayList<>();
     	 for(Message msg:chatList){
+    		 
+    		//不添加重复的,因为数据库是用groupby查的,会出现重复的
+    		 boolean repeat=false;
+    		 for(Result res:results)
+    			 if(msg.fromId.equals(res.get("userId")) || msg.toId.equals(res.get("userId"))){
+    				 repeat=true;
+    				 break;
+    			 }
+    		 if(repeat)
+				 continue;
+    		 
+    		 
+    		 
     		 Result msgResult=new Result().put(msg);
     		 msgResult.remove("time");
     		 msgResult.remove("content");
@@ -189,6 +202,8 @@ public class MessageController {
     		 
     		 UserInfo fromUser = userService.findUser(msg.fromId);
     		 UserInfo toUser = userService.findUser(msg.toId);
+    		 if(fromUser==null || toUser==null)
+    			 continue;
     		 UserInfo he=fromUser.id.equals(findId)?toUser:fromUser;
     		 
     		 if(he!=null){
