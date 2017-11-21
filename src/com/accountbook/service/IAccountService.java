@@ -3,6 +3,7 @@ package com.accountbook.service;
 import java.util.List;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
+import com.accountbook.model.Offset;
 import com.accountbook.model.PayOffset;
 import com.accountbook.model.PayTarget;
 import com.accountbook.model.SummaryInfo;
@@ -27,6 +28,8 @@ public interface IAccountService {
 	public double getWaitPaidMoney(String user1Id, String user2Id,String targetId);
 	/**查询两个用户之间最早的一个未付清的支付方案*/
 	public PayTarget findEarliestNotSettledTarget(String user1Id, String user2Id,String targetId);
+	/**查询抵消记录*/
+	public List<Offset> findOffsets(String targetId);
 	
 	public List<Member> findAllMembers(String userId);
 	public PayTarget findPayTarget(String targetId);

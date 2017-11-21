@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.accountbook.dao.AccountDao;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
+import com.accountbook.model.Offset;
 import com.accountbook.model.PayOffset;
 import com.accountbook.model.PayResult;
 import com.accountbook.model.PayTarget;
@@ -204,6 +205,12 @@ public class AccountServiceImpl implements IAccountService {
 				put("targetId", targetId);
 			}
 		});
+	}
+	
+	/**查询抵消记录*/
+	@Override
+	public List<Offset> findOffsets(String targetId){
+		return dao.queryOffsets(targetId);
 	}
 
 	

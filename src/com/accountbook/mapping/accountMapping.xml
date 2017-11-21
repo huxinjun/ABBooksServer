@@ -64,6 +64,18 @@
 	    <result column="name" property="name" jdbcType="VARCHAR" />
 	    <result column="number" property="number" jdbcType="DOUBLE" />
   </resultMap>
+  
+  
+  
+  <resultMap id="offsetsMap" type="com.accountbook.model.Offset" >
+	    <result column="type" property="type" jdbcType="INTEGER" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="paid_in" property="paidIn" jdbcType="DOUBLE" />
+	    <result column="date_timestamp" property="dateTimestamp" jdbcType="TIMESTAMP" />
+  		<result column="paid_icon" property="paidIcon" jdbcType="VARCHAR" />
+  		<result column="receipt_icon" property="receiptIcon" jdbcType="VARCHAR" />
+  		<result column="money" property="money" jdbcType="DOUBLE" />
+  </resultMap>
 
 
 	<!-- 插入 -->
@@ -256,5 +268,17 @@
 		WHERE wait_paid_money>0 AND p.id!=#{targetId} AND p.paid_id=#{user1Id} AND p.receipt_id=#{user2Id} ORDER BY a.date_timestamp ASC LIMIT 0,1
 		
 	</select>
+	
+	<select id="queryOffsets" parameterType="string" resultMap="offsetsMap">
+		#查询抵消记录列表
+		SELECT c.type,c.name,c.paid_in,c.date_timestamp,d.icon AS paid_icon,e.icon AS receipt_icon,b.money FROM account_pay_offset AS a 
+		LEFT JOIN account_pay AS b ON a.origin_pay_id=b.id 
+		LEFT JOIN account AS c ON b.account_id=c.id
+		LEFT JOIN USER AS d ON b.paid_id=d.id
+		LEFT JOIN USER AS e ON b.receipt_id=e.id
+		WHERE target_pay_id=#{targetId}
+		
+	</select>
+	
 	
 </mapper>

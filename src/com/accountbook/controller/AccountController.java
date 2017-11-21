@@ -658,6 +658,24 @@ public class AccountController {
 				}
 			}
 		}
+		
+		//每个支付target都需要添加其对应的抵消记录
+		List<PayResult> results = findAccount.getPayResult();
+		if (results != null && results.size() > 0 && results.get(0) != null && results.get(0).getPayTarget() != null){
+			List<Result> newResults = new ArrayList<>();
+			List<Result> newTargets = new ArrayList<>();
+			newResults.add(new Result().put("payTarget", newTargets));
+			
+			for(PayTarget target:results.get(0).getPayTarget()){
+				Result r=new Result();
+				r.put(target);
+				r.put("offsets", accountService.findOffsets(target.getId()));
+				newTargets.add(r);
+			}
+			
+			result.put("payResult", newResults);
+		}
+		
 
 		return result.put(Result.RESULT_OK, "查询成功").put("date",
 				new SimpleDateFormat("yyyy年MM月dd日").format(new Date(findAccount.getDateTimestamp().getTime())));

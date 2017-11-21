@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
+import com.accountbook.model.Offset;
 import com.accountbook.model.PayOffset;
 import com.accountbook.model.PayTarget;
 import com.accountbook.model.SummaryInfo;
@@ -46,6 +47,8 @@ public interface AccountDao {
 	/**查询两个用户之间最早的一个未付清的支付方案*/
 	public PayTarget queryEarliestNotSettledTarget(Map<String,Object> map);
 	
+	/**查询抵消记录*/
+	public List<Offset> queryOffsets(String targetId);
 	
 	//更新支付方案
 	public void updatePayTarget(PayTarget target);
