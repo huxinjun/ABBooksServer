@@ -40,6 +40,10 @@ public class AccountServiceImpl implements IAccountService {
 			account.setPayResult(new ArrayList<PayResult>());
 			account.getPayResult().add(new PayResult());
 			account.getPayResult().get(0).setPayTarget((ArrayList<PayTarget>) payTargets);
+			
+			for(PayTarget target:payTargets)
+				if(target.getOffsetCount()>0)
+					target.setOffsetMoney((float) dao.queryOffsetMoney(target.getId()));
 		}
 		return account;
 	}

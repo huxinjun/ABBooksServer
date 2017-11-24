@@ -20,6 +20,7 @@ import com.accountbook.core.AccountCalculator.CalculatorException;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
 import com.accountbook.model.Message;
+import com.accountbook.model.Offset;
 import com.accountbook.model.PayOffset;
 import com.accountbook.model.PayResult;
 import com.accountbook.model.PayTarget;
@@ -669,7 +670,17 @@ public class AccountController {
 			for(PayTarget target:results.get(0).getPayTarget()){
 				Result r=new Result();
 				r.put(target);
-				r.put("offsets", accountService.findOffsets(target.getId()));
+				
+				List<Offset> offsets = accountService.findOffsets(target.getId());
+				List<Result> resultOffsets = new ArrayList<>();
+				for(Offset o:offsets){
+					Result r1=new Result();
+					r1.put(o);
+					r1.remove("dateTimestamp");
+					r1.put("date",new SimpleDateFormat("yyyy/MM/dd/").format(new Date(o.dateTimestamp.getTime())));
+					resultOffsets.add(r1);
+				}
+				r.put("offsets", resultOffsets);
 				newTargets.add(r);
 			}
 			
