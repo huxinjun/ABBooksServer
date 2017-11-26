@@ -213,8 +213,8 @@ public class AccountServiceImpl implements IAccountService {
 	
 	/**查询抵消记录*/
 	@Override
-	public List<Offset> findOffsets(String targetId){
-		return dao.queryOffsets(targetId);
+	public List<Offset> findOffsets(String payId){
+		return dao.queryOffsets(payId);
 	}
 
 	

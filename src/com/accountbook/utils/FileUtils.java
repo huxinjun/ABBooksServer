@@ -121,6 +121,9 @@ public class FileUtils {
 	public static boolean send(String localPath,OutputStream os) {
 		System.out.println("FileUtils.sendServerFile:"+localPath);
 		try {  
+			File file=new File(localPath);
+			if(!file.exists())
+				localPath="D:\\accountbook\\img\\image.png";
 			  
 			FileInputStream fis=new FileInputStream(localPath);
 			byte[] buf = new byte[2048]; 

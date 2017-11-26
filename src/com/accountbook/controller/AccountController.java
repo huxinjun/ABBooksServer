@@ -617,12 +617,14 @@ public class AccountController {
 	public Object updatePayTargetSettle(ServletRequest req,String accountId,String targetId) {
 		String findId = req.getAttribute("userid").toString();
 		PayTarget findPayTarget = accountService.findPayTarget(targetId);
+		float oldWaitPaidMoney = findPayTarget.getWaitPaidMoney();
 		findPayTarget.setWaitPaidMoney(0);
 		accountService.updatePayTarget(findPayTarget);
 		
 		String toId=findPayTarget.getPaidId().equals(findId)?findPayTarget.getReceiptId():findPayTarget.getPaidId();
 		
-		msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId,toId, "[Settle]:"+accountId+":"+targetId);
+		String paidMoneyStr=oldWaitPaidMoney==findPayTarget.getMoney()?"":":"+oldWaitPaidMoney;
+		msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId,toId, "[Settle]:"+accountId+":"+targetId+paidMoneyStr);
 		
 
 		return new Result(Result.RESULT_OK, "更新付款状态成功!");
@@ -677,7 +679,7 @@ public class AccountController {
 					Result r1=new Result();
 					r1.put(o);
 					r1.remove("dateTimestamp");
-					r1.put("date",new SimpleDateFormat("yyyy/MM/dd/").format(new Date(o.dateTimestamp.getTime())));
+					r1.put("date",new SimpleDateFormat("yyyy/MM/dd").format(new Date(o.dateTimestamp.getTime())));
 					resultOffsets.add(r1);
 				}
 				r.put("offsets", resultOffsets);
@@ -687,6 +689,7 @@ public class AccountController {
 			result.put("payResult", newResults);
 		}
 		
+		result.put("dateDis", CommonUtils.getSinceTimeString(findAccount.getCreateTimestamp()));
 
 		return result.put(Result.RESULT_OK, "查询成功").put("date",
 				new SimpleDateFormat("yyyy年MM月dd日").format(new Date(findAccount.getDateTimestamp().getTime())));

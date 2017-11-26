@@ -48,7 +48,7 @@ public interface AccountDao {
 	public PayTarget queryEarliestNotSettledTarget(Map<String,Object> map);
 	
 	/**查询抵消记录*/
-	public List<Offset> queryOffsets(String targetId);
+	public List<Offset> queryOffsets(String payId);
 	
 	//更新支付方案
 	public void updatePayTarget(PayTarget target);

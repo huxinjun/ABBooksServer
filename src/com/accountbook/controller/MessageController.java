@@ -28,6 +28,7 @@ import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.CommonUtils;
+import com.accountbook.utils.TextUtils;
 
 
 @Controller
@@ -117,13 +118,14 @@ public class MessageController {
     			
     		}else if(msg.content.startsWith("[Settle]")){
     			targetId=msg.content.split(":")[2];
+    			String paidMoney=msg.content.split(":").length>3?msg.content.split(":")[3]:null;
     			PayTarget target = accountService.findPayTarget(targetId);
     			
     			msgResult.put("id",msg.id);
     			msgResult.put("date",dateStr);
     			msgResult.put("msgType",Message.MESSAGE_TYPE_ACCOUNT_SETTLE);
     			msgResult.put("targetId",targetId);
-    			msgResult.put("money",target.getMoney());
+    			msgResult.put("money",TextUtils.isEmpty(paidMoney)?target.getMoney():Double.parseDouble(paidMoney));
     			msgResult.put("paidId",target.getPaidId());
     			msgResult.put("paidName",userService.findUser(target.getPaidId()).nickname);
     			msgResult.put("receiptId",target.getReceiptId());
@@ -174,6 +176,7 @@ public class MessageController {
     	
     	 List<Message> chatList = msgService.findChatList(findId);
     	 List<Result> results=new ArrayList<>();
+    	 System.out.println(chatList);
     	 for(Message msg:chatList){
     		 
     		//不添加重复的,因为数据库是用groupby查的,会出现重复的
@@ -183,7 +186,7 @@ public class MessageController {
     				 repeat=true;
     				 break;
     			 }
-    		 if(repeat)
+    		 if(repeat && msg.type==3)
 				 continue;
     		 
     		 
@@ -237,12 +240,13 @@ public class MessageController {
          			
          		}else if(msg.content.startsWith("[Settle]")){
          			targetId=msg.content.split(":")[2];
+         			String paidMoney=msg.content.split(":").length>3?msg.content.split(":")[3]:null;
          			PayTarget target = accountService.findPayTarget(targetId);
          			
          			String opt=findId.equals(msg.fromId)?findId.equals(target.getPaidId())?"付款":"收款":findId.equals(target.getPaidId())?"收款":"付款";
          			
          			msgResult.put("date",dateStr);
-         			msgResult.put("content","["+opt+"]"+target.getMoney()+"元");
+         			msgResult.put("content","["+opt+"]"+(TextUtils.isEmpty(paidMoney)?target.getMoney():paidMoney)+"元");
          		}
     			 
     		 }

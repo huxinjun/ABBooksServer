@@ -70,7 +70,9 @@ OR
 SELECT * FROM group_ AS g LEFT JOIN group_user AS u ON g.id=u.group_id  WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' ORDER BY CONVERT(category USING gbk),CONVERT(NAME USING gbk)
 
 
-
+#查询添加的帐友
+SELECT u.id,u.nickname,u.icon FROM friend AS f LEFT JOIN USER AS u ON (f.accept_id=u.id OR f.invite_id=u.id) AND u.id!='oCBrx0JeF9VZDICxonPeDD1VtoQk'
+		WHERE accept_id='oCBrx0JeF9VZDICxonPeDD1VtoQk' OR invite_id='oCBrx0JeF9VZDICxonPeDD1VtoQk'
 
 
 
@@ -197,21 +199,8 @@ SELECT * FROM
 
 
 #查询聊天列表(最后一条消息)
-SELECT * FROM (SELECT * FROM message WHERE (from_id IN
-(
-SELECT DISTINCT(from_id) FROM message WHERE from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
-) AND from_id!='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')
-OR (from_id IN
-(
-SELECT DISTINCT(to_id) FROM message WHERE from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
-) AND to_id!='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')
-
-
- AND TYPE=3
- ORDER BY TIME DESC LIMIT 0,1) AS a
- 
-UNION
- 
+SELECT * FROM message WHERE TIME=(SELECT MAX(TIME) FROM (SELECT MAX(TIME) AS TIME FROM message WHERE  (to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') AND TYPE=3 GROUP BY from_id,to_id) AS a)
+UNION 
  SELECT * FROM ( 
  SELECT * FROM message WHERE to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND (TYPE=1 OR TYPE=2)ORDER BY TIME DESC LIMIT 0,1) AS b
  
@@ -237,4 +226,11 @@ LEFT JOIN account_pay AS b ON a.origin_pay_id=b.id
 LEFT JOIN account AS c ON b.account_id=c.id
 LEFT JOIN USER AS d ON b.paid_id=d.id
 LEFT JOIN USER AS e ON b.receipt_id=e.id
-WHERE target_pay_id='lxRSsgKmM6aKyxjSoyewzA==' 
+WHERE target_pay_id='zmMntQoRbnqXkR_qtbHdVQ=='
+UNION
+SELECT c.type,c.name,c.paid_in,c.date_timestamp,d.icon AS paid_icon,e.icon AS receipt_icon,b.money FROM account_pay_offset AS a 
+LEFT JOIN account_pay AS b ON a.target_pay_id=b.id 
+LEFT JOIN account AS c ON b.account_id=c.id
+LEFT JOIN USER AS d ON b.paid_id=d.id
+LEFT JOIN USER AS e ON b.receipt_id=e.id
+WHERE origin_pay_id='zmMntQoRbnqXkR_qtbHdVQ=='

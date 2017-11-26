@@ -26,8 +26,8 @@
 	
 	<!-- 查询一个用户的所有好友-->
 	<select id="query" parameterType="String" resultMap="userMap">
-		SELECT u.id,u.nickname,u.icon FROM friend AS f LEFT JOIN USER AS u ON f.invite_id=u.id OR f.invite_id=u.id 
-		WHERE accept_id=#{userId} OR invite_id=#{userId};
+		SELECT u.id,u.nickname,u.icon FROM friend AS f LEFT JOIN USER AS u ON (f.accept_id=u.id OR f.invite_id=u.id) AND u.id!=#{userId}
+		WHERE accept_id=#{userId} OR invite_id=#{userId}
 	</select>
 
 	

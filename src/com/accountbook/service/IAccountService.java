@@ -29,7 +29,7 @@ public interface IAccountService {
 	/**查询两个用户之间最早的一个未付清的支付方案*/
 	public PayTarget findEarliestNotSettledTarget(String user1Id, String user2Id,String targetId);
 	/**查询抵消记录*/
-	public List<Offset> findOffsets(String targetId);
+	public List<Offset> findOffsets(String payId);
 	
 	public List<Member> findAllMembers(String userId);
 	public PayTarget findPayTarget(String targetId);
