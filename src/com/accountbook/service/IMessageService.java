@@ -19,6 +19,7 @@ public interface IMessageService {
 	
 	public int getUserUnreadCount(String user1Id,String user2Id);
 	public int getInviteUnreadCount(String userId);
+	public List<Message> findAccountMsgs(String accountId);
 	
 	public void makeReaded(int id);
 	public void makeDeleted(int id);

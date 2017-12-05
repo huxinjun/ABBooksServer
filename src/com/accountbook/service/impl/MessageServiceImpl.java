@@ -104,6 +104,13 @@ public class MessageServiceImpl implements IMessageService{
 	public List<Message> findChatList(String userId) {
 		return dao.queryChatList(userId);
 	}
+	@Override
+	public List<Message> findAccountMsgs(String accountId) {
+		String p1="[Create]:"+accountId+"%";
+		String p2="[CreateInner]:"+accountId+"%";
+		String p3="[Settle]:"+accountId+"%";
+		return dao.queryAccountMsgs(p1,p2,p3);
+	}
 
 	
 

@@ -48,12 +48,17 @@ public interface AccountDao {
 	public PayTarget queryEarliestNotSettledTarget(Map<String,Object> map);
 	
 	/**查询抵消记录*/
+	public List<PayOffset> queryOriginOffsets(String payId);
+	/**查询抵消记录,包装好了头像等,适用于列表显示*/
 	public List<Offset> queryOffsets(String payId);
 	
 	//更新支付方案
 	public void updatePayTarget(PayTarget target);
 	public void deletePayTarget(String targetId);
 	public void deletePayTargets(String accountId);
-
 	public void deleteMember(String id);
+	
+	
+	public void deleteAccount(String accountId);
+	public void deleteOffset(String offsetId);
 }

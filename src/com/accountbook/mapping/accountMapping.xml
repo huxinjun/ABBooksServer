@@ -115,6 +115,14 @@
 	<delete id="deleteMember" parameterType="String">
 		delete from account_member where id=#{id};
 	</delete>
+	<!-- 删除某个抵消记录 -->
+	<delete id="deleteOffset" parameterType="String">
+		delete from account_pay_offset where id=#{id};
+	</delete>
+	<!-- 删除某个抵消记录 -->
+	<delete id="deleteAccount" parameterType="String">
+		delete from account where id=#{accountId};
+	</delete>
 	
 	
 	
@@ -269,8 +277,14 @@
 		
 	</select>
 	
+	<select id="queryOriginOffsets" parameterType="string" resultMap="offsetMap">
+		#查询抵消记录列表,原始记录
+		
+		SELECT * from account_pay_offset where target_pay_id =#{payId} or origin_pay_id=#{payId}
+	</select>
+	
 	<select id="queryOffsets" parameterType="string" resultMap="offsetsMap">
-		#查询抵消记录列表
+		#查询抵消记录列表,包装好的数据
 		
 		SELECT c.type,c.name,c.paid_in,c.date_timestamp,d.icon AS paid_icon,e.icon AS receipt_icon,b.money FROM account_pay_offset AS a 
 		LEFT JOIN account_pay AS b ON a.origin_pay_id=b.id 

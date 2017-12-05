@@ -752,6 +752,81 @@ public class AccountController {
 	
 	
 	
+	/**
+	 * 删除account
+	 */
+	@ResponseBody
+	@RequestMapping("/delete")
+	public Object delete(ServletRequest req,String accountId) {
+//		String findId=req.getAttribute("userid").toString();
+		Account findAccount = accountService.findAccount(accountId);
+		/**
+		 * 1.首先修改涉及到的paytarget
+		 * 		1.1遍历所有paytarget
+		 * 		1.2查找到和这个partarget相关的payoffset记录
+		 * 		1.3遍历这个payoffset集合,一个payoffset会与两个paytarget产生关系
+		 * 		1.4这个offset的origin_target是用来抵消target_pay_id的
+		 * 			找出和遍历的partarget不同的target(可能是origin_pay_id,可能是target_pay_id)
+		 * 		         然后将offset的抵消金额加给查找出partarget的waitpaidmoney,再置查找出partarget的offset_count减掉1就可以
+		 * 		1.5删除这个offset
+		 *      1.6删除个paytarget
+		 * 
+		 * 2.删除相关的member
+		 * 
+		 * 3.删除account
+		 * 
+		 * 4.将message中相关的消息标记为删除
+		 * 
+		 */
+		boolean noTargets=false;
+		if(findAccount.getPayResult()==null || findAccount.getPayResult().size()==0
+				|| findAccount.getPayResult().get(0).getPayTarget()==null
+				|| findAccount.getPayResult().get(0).getPayTarget().size()==0)
+			noTargets=true;
+		if(!noTargets){
+			ArrayList<PayTarget> findPayTargets = findAccount.getPayResult().get(0).getPayTarget();
+			System.out.println("删除findPayTargets.size():"+findPayTargets.size());
+			for(PayTarget target:findPayTargets){
+				List<PayOffset> findOffsets = accountService.queryOriginOffsets(target.getId());
+				if(findOffsets!=null && findOffsets.size()>0){
+					for(PayOffset offset:findOffsets){
+						//找出需要更新的target,即在payoffset中与targetid不同的那个target
+						PayTarget findPayTarget=accountService.findPayTarget(target.getId().equals(offset.targetPayId)?offset.originPayId:offset.targetPayId);
+						//更新target
+						findPayTarget.setWaitPaidMoney(findPayTarget.getWaitPaidMoney()+offset.money);
+						findPayTarget.setOffsetCount(findPayTarget.getOffsetCount()-1);
+						accountService.updatePayTarget(findPayTarget);
+						
+						//删除offset
+						accountService.deleteOffset(String.valueOf(offset.id));
+						
+					}
+				}
+				
+				//删除taget
+				accountService.deletePayTarget(target.getId());
+			}
+		}
+		//删除member
+		for(Member member:findAccount.getMembers())
+			accountService.deleteMember(member.getId());
+		
+		//删除account
+		accountService.deleteAccount(findAccount.getId());
+		
+		//标记message为删除
+		List<Message> accountMsgs = msgService.findAccountMsgs(findAccount.getId());
+		System.out.println("AcoountId查找的消息:"+accountMsgs);
+		if(accountMsgs!=null && accountMsgs.size()>0)
+			for(Message msg:accountMsgs){
+				msgService.makeDeleted(msg.id);
+			}
+		
+		return new Result(Result.RESULT_OK, "删除成功");
+	}
+	
+	
+	
 	
 	
 	

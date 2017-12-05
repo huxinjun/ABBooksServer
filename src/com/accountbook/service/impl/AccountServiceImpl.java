@@ -212,9 +212,23 @@ public class AccountServiceImpl implements IAccountService {
 	}
 	
 	/**查询抵消记录*/
+	public List<PayOffset> queryOriginOffsets(String payId){
+		return dao.queryOriginOffsets(payId);
+	}
+	/**查询抵消记录,包装好了头像等,适用于列表显示*/
 	@Override
 	public List<Offset> findOffsets(String payId){
 		return dao.queryOffsets(payId);
+	}
+
+	@Override
+	public void deleteOffset(String offsetId){
+		dao.deleteOffset(offsetId);
+	}
+
+	@Override
+	public void deleteAccount(String accountId) {
+		dao.deleteAccount(accountId);
 	}
 
 	

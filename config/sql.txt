@@ -208,7 +208,11 @@ UNION
  
  
  
- 
+ #查询账单相关的消息
+ SELECT * FROM message WHERE 
+content LIKE '[Create]:vKzGZBfU67lSXhkkbt7GLg==%' OR 
+content LIKE '[CreateInner]:vKzGZBfU67lSXhkkbt7GLg==%' OR
+content LIKE '[Settle]:vKzGZBfU67lSXhkkbt7GLg==%' 
  
  
  

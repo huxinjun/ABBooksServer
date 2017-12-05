@@ -28,7 +28,10 @@ public interface IAccountService {
 	public double getWaitPaidMoney(String user1Id, String user2Id,String targetId);
 	/**查询两个用户之间最早的一个未付清的支付方案*/
 	public PayTarget findEarliestNotSettledTarget(String user1Id, String user2Id,String targetId);
+	
 	/**查询抵消记录*/
+	public List<PayOffset> queryOriginOffsets(String payId);
+	/**查询抵消记录,包装好了头像等,适用于列表显示*/
 	public List<Offset> findOffsets(String payId);
 	
 	public List<Member> findAllMembers(String userId);
@@ -41,8 +44,10 @@ public interface IAccountService {
 	public void updatePayTarget(PayTarget target);
 	public void deletePayTarget(String targetId);
 	public void deletePayTargets(String accountId);
+	public void deleteOffset(String offsetId);
 	
 	
 	public void deleteMember(String id);
+	public void deleteAccount(String accountId);
 	
 }
