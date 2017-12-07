@@ -111,6 +111,10 @@ public class MessageServiceImpl implements IMessageService{
 		String p3="[Settle]:"+accountId+"%";
 		return dao.queryAccountMsgs(p1,p2,p3);
 	}
+	@Override
+	public void delete(int id) {
+		dao.delete(id);
+	}
 
 	
 

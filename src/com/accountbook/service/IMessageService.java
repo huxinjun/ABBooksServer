@@ -25,4 +25,6 @@ public interface IMessageService {
 	public void makeDeleted(int id);
 	public void makeAccepted(int id);
 	public void makeRefused(int id);
+	
+	public void delete(int id);
 }

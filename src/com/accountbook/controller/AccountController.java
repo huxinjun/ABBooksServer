@@ -461,6 +461,7 @@ public class AccountController {
 					for(PayTarget payTarget:calcResult.getPayTarget()){
 						payTarget.setAccountId(accountId);
 						payTarget.setId(IDUtil.generateNewId());
+						payTarget.setWaitPaidMoney(payTarget.getMoney());
 						waitToInsertTargets.add(payTarget);
 					}
 				}
@@ -818,9 +819,8 @@ public class AccountController {
 		List<Message> accountMsgs = msgService.findAccountMsgs(findAccount.getId());
 		System.out.println("AcoountId查找的消息:"+accountMsgs);
 		if(accountMsgs!=null && accountMsgs.size()>0)
-			for(Message msg:accountMsgs){
-				msgService.makeDeleted(msg.id);
-			}
+			for(Message msg:accountMsgs)
+				msgService.delete(msg.id);
 		
 		return new Result(Result.RESULT_OK, "删除成功");
 	}
