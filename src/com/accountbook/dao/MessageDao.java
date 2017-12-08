@@ -14,6 +14,7 @@ import com.accountbook.model.Message;
 public interface MessageDao {
 	public void insert(Message data);
 	public void updateStatus(int id,int status);
+	public void updateStatusBatch(Map<String,Object> params);
 	public void delete(int id);
 	
 	public List<Message> queryChatList(String userId);

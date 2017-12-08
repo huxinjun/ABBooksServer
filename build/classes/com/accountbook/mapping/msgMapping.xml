@@ -13,7 +13,7 @@
   
   <!-- 查询聊天列表:每个用户的最后一条消息 -->
   	<select id="queryChatList" parameterType="String" resultMap="map">
-  		SELECT * FROM message WHERE TIME=(SELECT MAX(TIME) FROM (SELECT MAX(TIME) AS TIME FROM message WHERE  (to_id=#{userId} OR from_id=#{userId}) AND TYPE=3 GROUP BY from_id,to_id) AS a)
+  		SELECT * FROM message WHERE TIME=(SELECT MAX(TIME) FROM (SELECT MAX(TIME) AS TIME FROM message WHERE  (to_id=#{userId} OR from_id=#{userId}) AND TYPE=3 and state!=2 GROUP BY from_id,to_id) AS a)
 		UNION 
 		 SELECT * FROM ( 
 		 SELECT * FROM message WHERE to_id=#{userId} AND (TYPE=1 OR TYPE=2)ORDER BY TIME DESC LIMIT 0,1) AS b
@@ -28,7 +28,7 @@
 	</select>
 	<select id="queryUserMsgs" parameterType="map" resultMap="map">
 		SELECT * FROM 
-		(SELECT * FROM message WHERE TYPE=3 AND
+		(SELECT * FROM message WHERE TYPE=3 AND state!=2 and
 				((from_id=#{user1Id} AND to_id=#{user2Id}) OR
 				(from_id=#{user2Id} AND to_id=#{user1Id})) ORDER BY TIME DESC LIMIT #{ls},#{lc})AS a
 				ORDER BY TIME ASC
@@ -52,7 +52,7 @@
 	
 	
 	<select id="queryUserUnreadCount" parameterType="map" resultType="integer">
-		SELECT count(*) FROM message WHERE to_id = #{toId} and state=0;
+		SELECT count(*) FROM message WHERE (  (from_id=#{user1Id} and to_id=#{user2Id}) or (from_id=#{user2Id} and to_id=#{user1Id}) ) and state=0;
 	</select>
 	
 	<select id="queryInviteUnreadCount" parameterType="String" resultType="integer">
@@ -67,6 +67,11 @@
 	<!-- 更新 -->
 	<update id="updateStatus" parameterType="java.lang.Integer">
 		update message set state=#{1} where id=#{0}
+	</update>
+	
+	<!-- 和某个帐友的所有消息标记为某个状态 -->
+	<update id="updateStatusBatch" parameterType="map">
+		update message set state=#{state} WHERE (  (from_id=#{user1Id} and to_id=#{user2Id}) or (from_id=#{user2Id} and to_id=#{user1Id}) );
 	</update>
 	
 	

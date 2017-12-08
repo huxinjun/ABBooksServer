@@ -167,6 +167,25 @@ public class MessageController {
 		return null;
 	}
 	
+	@ResponseBody
+    @RequestMapping("/readAll")
+    public Object makeUserMsgsReaded(HttpServletRequest request,String userId){
+		String findId=request.getAttribute("userid").toString();
+		
+		msgService.updateStatusBatch(findId, userId,Message.STATUS_READED);
+		
+		return new Result(Result.RESULT_OK, "已经全部标记为已读");
+	}
+	
+	@ResponseBody
+    @RequestMapping("/deleteAll")
+    public Object makeUserMsgsDeleted(HttpServletRequest request,String userId){
+		String findId=request.getAttribute("userid").toString();
+		
+		msgService.updateStatusBatch(findId, userId,Message.STATUS_DELETE);
+		
+		return new Result(Result.RESULT_OK, "已经全部删除");
+	}
 	
 	@ResponseBody
     @RequestMapping("/chat")
@@ -201,7 +220,7 @@ public class MessageController {
     		 if(msg.type==1 ||msg.type==2)
     			 msgResult.put("unreadCount",msgService.getInviteUnreadCount(findId));
 			 else if(msg.type==3)
-				 msgResult.put("unreadCount",msgService.getInviteUnreadCount(findId));
+				 msgResult.put("unreadCount",msgService.getUserUnreadCount(msg.fromId,msg.toId));
     		 
     		 UserInfo fromUser = userService.findUser(msg.fromId);
     		 UserInfo toUser = userService.findUser(msg.toId);

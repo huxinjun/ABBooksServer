@@ -115,6 +115,22 @@ public class MessageServiceImpl implements IMessageService{
 	public void delete(int id) {
 		dao.delete(id);
 	}
+	@Override
+	public void updateStatusBatch(String user1Id, String user2Id,int state) {
+		dao.updateStatusBatch(new HashMap<String,Object>(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			{
+				put("user1Id",user1Id);
+				put("user2Id",user2Id);
+				put("state",state);
+			}
+		});
+		
+	}
 
 	
 

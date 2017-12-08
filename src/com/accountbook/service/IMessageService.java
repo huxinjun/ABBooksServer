@@ -25,6 +25,8 @@ public interface IMessageService {
 	public void makeDeleted(int id);
 	public void makeAccepted(int id);
 	public void makeRefused(int id);
+	public void updateStatusBatch(String user1Id,String user2Id,int state);
+	
 	
 	public void delete(int id);
 }
