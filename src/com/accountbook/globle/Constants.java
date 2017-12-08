@@ -11,7 +11,7 @@ public class Constants {
 	/**
 	 * 用户上传的，或者其他方式获取的文件都存储在这个目录下
 	 */
-	public static String EXTERN_FILE_DIR="D:/";
+	public static String EXTERN_FILE_DIR="C:/";
 	/**
 	 * 图片
 	 */
