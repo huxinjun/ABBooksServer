@@ -16,7 +16,7 @@
   		SELECT * FROM message WHERE TIME=(SELECT MAX(TIME) FROM (SELECT MAX(TIME) AS TIME FROM message WHERE  (to_id=#{userId} OR from_id=#{userId}) AND TYPE=3 and state!=2 GROUP BY from_id,to_id) AS a)
 		UNION 
 		 SELECT * FROM ( 
-		 SELECT * FROM message WHERE to_id=#{userId} AND (TYPE=1 OR TYPE=2)ORDER BY TIME DESC LIMIT 0,1) AS b
+		 SELECT * FROM message WHERE to_id=#{userId} AND (TYPE=1 OR TYPE=2) and state!=2 ORDER BY TIME DESC LIMIT 0,1) AS b
 		 
 		 ORDER BY TIME DESC
 	</select>
@@ -33,8 +33,12 @@
 				(from_id=#{user2Id} AND to_id=#{user1Id})) ORDER BY TIME DESC LIMIT #{ls},#{lc})AS a
 				ORDER BY TIME ASC
 	</select>
-	<select id="queryInviteMsgs" parameterType="String" resultMap="map">
-		SELECT * FROM message WHERE to_id = #{userId} and state!=2;
+	<select id="queryInviteMsgs" parameterType="map" resultMap="map">
+		SELECT * FROM message WHERE to_id = #{userId} and state!=2 ORDER BY TIME DESC LIMIT #{ls},#{lc};
+	</select>
+	
+	<select id="isRepeatInvite" parameterType="String" resultType="Boolean">
+		SELECT count(*) FROM message WHERE from_id = #{0} and to_id = #{1} and state!=12;
 	</select>
 	
 	<select id="queryAccountMsgs" parameterType="string" resultMap="map">
@@ -71,7 +75,7 @@
 	
 	<!-- 和某个帐友的所有消息标记为某个状态 -->
 	<update id="updateStatusBatch" parameterType="map">
-		update message set state=#{state} WHERE (  (from_id=#{user1Id} and to_id=#{user2Id}) or (from_id=#{user2Id} and to_id=#{user1Id}) );
+		update message set state=#{state} WHERE (  (from_id=#{user1Id} and to_id=#{user2Id}) or (from_id=#{user2Id} and to_id=#{user1Id}) ) and state!=2;
 	</update>
 	
 	

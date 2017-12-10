@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -202,20 +203,6 @@ public class GroupController {
 	}
 	
 	
-	@ResponseBody
-    @RequestMapping("/join")
-    public Object joinGroup(ServletRequest req,String groupId){
-		String findId=req.getAttribute("userid").toString();
-		
-		Result result=new Result();
-		groupService.joinGroup(groupId, findId);
-		
-		//TODO 更新分组icon
-		updateGroupIcon(groupId);
-		
-		
-		return result.put(Result.RESULT_OK, "成功加入分组!");
-	}
 	
 	@ResponseBody
     @RequestMapping("/quit")
@@ -227,40 +214,10 @@ public class GroupController {
 		
 		
 		//TODO 更新分组icon
-		updateGroupIcon(groupId);
+		IconUtil.updateGroupIcon(groupService, groupId);
 		
 		return result.put(Result.RESULT_OK, "成功退出分组!");
 	}
-	
-	/**
-	 * 更新分组头像,当成员变动时,或者初次创建时
-	 */
-	private void updateGroupIcon(String groupId){
-		
-		Group group=groupService.queryGroupInfo(groupId);
-		List<UserInfo> users = groupService.findUsersByGroupId(groupId);
-		
-		if(TextUtils.isNotEmpty(group.icon)){
-			File oldFile=new File(FileUtils.getImageAbsolutePath(group.icon));
-			if(oldFile.exists()){
-				System.out.println("updateGroupIcon.删除旧图:"+oldFile.getAbsolutePath());
-				oldFile.delete();
-			}
-		}
-		
-		List<String> icons=new ArrayList<>();
-		for(UserInfo user:users){
-			String iconPath = FileUtils.getImageAbsolutePath(user.icon);
-			icons.add(iconPath);
-		}
-		
-		group.icon=IconUtil.createIcon(group, icons);
-		
-		System.out.println("updateGroupIcon.更新头像:"+group);
-		
-		groupService.updateGroupInfo(group);
-	}
-	
 	
 	
 	/**
@@ -312,38 +269,33 @@ public class GroupController {
 	
 	
 	
-	
-	
-	
 	@ResponseBody
-	@RequestMapping("/invite")
-	public Object inviteUser(ServletRequest req,String code,String openid,String groupId,String formId){
+	@RequestMapping("/join")
+	public Object joinGroup(ServletRequest req,String code,String groupId,String formId){
 		String findId=req.getAttribute("userid").toString();
 		
 		
 		Result result=new Result();
 		
-		
 		UserInfo me = userService.findUser(findId);
-		UserInfo he = userService.findUser(openid);
 		
 		Group groupInfo = groupService.queryGroupInfo(groupId);
 		
 		//数据库中加入邀请信息
 		Message msg=new Message();
-		msg.fromId=me.id;
-		msg.toId=openid;
+		msg.fromId=findId;
+		msg.toId=groupInfo.adminId;//给组管理员发送消息
 		msg.type=Message.MESSAGE_TYPE_INVITE_GROUP;
-		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",加入分组["+groupInfo.name+"]一起记账哦^~^";
+		msg.content=groupInfo.id;
 		msg.time=Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		msg.state=Message.STATUS_UNREAD;
 		msgService.newMessage(msg);
 		
 		
 		
-		String sendResult = WxUtil.sendTemplateInviteMessage(openid, formId, me.nickname, msg.content);
+		String sendResult = WxUtil.sendTemplateInviteMessage(groupInfo.adminId, formId, me.nickname, msg.content);
 		
-		return result.put(Result.RESULT_FILE_SAVE_ERROR, sendResult);
+		return result.put(Result.RESULT_OK, "已经向组管理员请求加入分组消息").put("templateResult", sendResult);
 		
 	}
 	

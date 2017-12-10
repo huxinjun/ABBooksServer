@@ -22,8 +22,10 @@ public interface MessageDao {
 	
 	public Message queryMsg(int id);
 	public List<Message> queryUserMsgs(Map<String,Object> params);
-	public List<Message> queryInviteMsgs(String userId);
+	public List<Message> queryInviteMsgs(Map<String,Object> params);
 	public List<Message> queryAccountMsgs(String p1,String p2,String p3);
+	
+	public boolean isRepeatInvite(String user1Id,String user2Id);
 	
 	public int queryUserUnreadCount(Map<String,Object> params);
 	public int queryInviteUnreadCount(String userId);

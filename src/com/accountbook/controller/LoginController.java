@@ -43,6 +43,7 @@ public class LoginController {
     @RequestMapping("/fromWX")
     public Result loginFromWx(HttpServletRequest request,HttpServletResponse response,@RequestParam(required=true) String code){
 		Result result=new Result();
+		System.out.println("loginFromWx");
     	
 		//换取openid和session_key
     	Map<String,String> params=new HashMap<>();

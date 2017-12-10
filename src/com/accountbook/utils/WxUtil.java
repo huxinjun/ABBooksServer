@@ -1,5 +1,7 @@
 package com.accountbook.utils;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,9 +11,10 @@ import java.util.Map.Entry;
 
 import com.accountbook.globle.Constants;
 import com.accountbook.model.WxAccessToken;
-import com.accountbook.model.WxTemplateInvite;
-import com.accountbook.model.WxTemplateInvite.KeyWord;
+import com.accountbook.model.WxTemplate;
+import com.accountbook.model.WxTemplate.KeyWord;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.util.Base64;
 
 /**
  * 和微信相关的工具类
@@ -20,7 +23,7 @@ import com.alibaba.fastjson.JSON;
  */
 public class WxUtil {
 
-	
+	private static final String TEMPLETE_URL="https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=";
 	
 	/**
 	 * 获取Accesstoken
@@ -41,6 +44,14 @@ public class WxUtil {
 		return accessToken.access_token;
 	}
 	
+	/**
+	 * 获取发送模板的接口地址
+	 * @return
+	 */
+	public static String getTempleteUrl(){
+		return TEMPLETE_URL+getAccesstoken();
+	}
+	
 	
 	
 	/**
@@ -48,7 +59,6 @@ public class WxUtil {
 	 * @return
 	 */
 	public static byte[] getQrImage(String pagePath,Map<String,String> params){
-		String url="https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token="+getAccesstoken();
 		
 		StringBuilder sb=new StringBuilder();
 		sb.append("{\"path\": \"");
@@ -70,31 +80,75 @@ public class WxUtil {
 		
 		System.out.println("WxUtil.getQrImage:"+sb.toString());
 		
-		byte[] rawData = HttpUtils.sendPost2(url,sb.toString());
+		byte[] rawData = HttpUtils.sendPost2(getTempleteUrl(),sb.toString());
 		
 		return rawData;
 		
 	}
 	
 	
-	
+	/**
+	 * 邀请好友模板，向被邀请者发送
+	 */
 	public static String sendTemplateInviteMessage(String openid,String formid,String inviteName,String content){
 		//发送模板消息start-------------------------------------------------------------------------------------------------------
-		String url="https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token="+getAccesstoken();
 		
-		WxTemplateInvite invite=new WxTemplateInvite();
+		WxTemplate invite=new WxTemplate();
 		invite.touser=openid;
 		invite.template_id="r63a82Qy_kap-4SxZUT9SfwS5004qb-l_i17zzUOqY4";
 		invite.page="pages/msg_invite/msg_invite";
 		invite.form_id=formid;
 		List<KeyWord> data=new ArrayList<>();
+//		发送人
+//		{{keyword1.DATA}}
+//		申请信息
+//		{{keyword2.DATA}}
 		data.add(new KeyWord(inviteName,"#173177"));
 		data.add(new KeyWord("赶紧进入小账本本!!!呲呲的^_^","#173177"));
 		invite.data=data;
 		
 		System.out.println(invite.toString());
 		
-		String result=HttpUtils.sendPost(url,invite.toString());
+		String result=HttpUtils.sendPost(getTempleteUrl(),invite.toString());
+		
+		//发送模板消息end-------------------------------------------------------------------------------------------------------
+		return result;
+	}
+	
+	
+	
+	/**
+	 * 加帐友或者进组模板
+	 * 如果是组的话向组内成员发送
+	 * 如果是加帐友的话向邀请者发送
+	 */
+	public static String sendTemplateInviteResultMessage(String openid,String formid,String name,boolean success,Date date,boolean isGroup,String groupId){
+		//发送模板消息start-------------------------------------------------------------------------------------------------------
+		
+		WxTemplate invite=new WxTemplate();
+		invite.touser=openid;
+		invite.template_id="LI1orCp7eFVDmek1jCh15b48nx9wJDiF8QI7NmKQNcA";
+		invite.page=isGroup?"pages/group_edit/group_edit?"+groupId.replaceAll("=", "!XJ!"):"pages/msg_friend/msg_friend";
+		invite.form_id=formid;
+		List<KeyWord> data=new ArrayList<>();
+//		姓名
+//		{{keyword1.DATA}}
+//		申请结果
+//		{{keyword2.DATA}}
+//		申请时间
+//		{{keyword3.DATA}}
+//		申请类型
+//		{{keyword4.DATA}}
+		data.add(new KeyWord(name,"#173177"));
+		data.add(new KeyWord(success?"接受":"拒绝","#ff0000"));
+		SimpleDateFormat format=new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+		data.add(new KeyWord(format.format(date),"#173177"));
+		data.add(new KeyWord(isGroup?"加入分组":"添加帐友","#173177"));
+		invite.data=data;
+		
+		System.out.println(invite.toString());
+		
+		String result=HttpUtils.sendPost(getTempleteUrl(),invite.toString());
 		
 		//发送模板消息end-------------------------------------------------------------------------------------------------------
 		return result;

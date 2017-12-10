@@ -15,7 +15,7 @@ public interface IMessageService {
 	 */
 	public Message findMessage(int id);
 	public List<Message> findUserMsgs(String user1Id,String user2Id,Integer pageIndex,Integer pageSize);
-	public List<Message> findInviteMsgs(String userId);
+	public List<Message> findInviteMsgs(String userId,Integer pageIndex,Integer pageSize);
 	
 	public int getUserUnreadCount(String user1Id,String user2Id);
 	public int getInviteUnreadCount(String userId);
@@ -27,6 +27,7 @@ public interface IMessageService {
 	public void makeRefused(int id);
 	public void updateStatusBatch(String user1Id,String user2Id,int state);
 	
+	public boolean isRepeatInvite(String user1Id,String user2Id);
 	
 	public void delete(int id);
 }

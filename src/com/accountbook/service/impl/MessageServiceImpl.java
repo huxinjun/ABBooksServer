@@ -75,8 +75,21 @@ public class MessageServiceImpl implements IMessageService{
 		return msgs;
 	}
 	@Override
-	public List<Message> findInviteMsgs(String userId) {
-		return dao.queryInviteMsgs(userId);
+	public List<Message> findInviteMsgs(String userId,Integer pageIndex,Integer pageSize) {
+		Limit limit = CommonUtils.getLimit(pageIndex, pageSize);
+		List<Message> msgs=dao.queryInviteMsgs(new HashMap<String,Object>(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			{
+				put("userId",userId);
+				put("ls", limit.start);
+				put("lc", limit.count);
+			}
+		});
+		return msgs;
 	}
 	@Override
 	public int getUserUnreadCount(String user1Id, String user2Id) {
@@ -130,6 +143,10 @@ public class MessageServiceImpl implements IMessageService{
 			}
 		});
 		
+	}
+	@Override
+	public boolean isRepeatInvite(String user1Id, String user2Id) {
+		return dao.isRepeatInvite(user1Id, user2Id);
 	}
 
 	

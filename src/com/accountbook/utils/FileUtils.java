@@ -123,7 +123,7 @@ public class FileUtils {
 		try {  
 			File file=new File(localPath);
 			if(!file.exists())
-				localPath="D:\\accountbook\\img\\image.png";
+				localPath=Constants.EXTERN_FILE_DIR+"\\img\\image.png";
 			  
 			FileInputStream fis=new FileInputStream(localPath);
 			byte[] buf = new byte[2048]; 

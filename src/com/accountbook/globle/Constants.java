@@ -10,8 +10,9 @@ public class Constants {
 
 	/**
 	 * 用户上传的，或者其他方式获取的文件都存储在这个目录下
+	 * 该值读取自web.xml
 	 */
-	public static String EXTERN_FILE_DIR="C:/";
+	public static String EXTERN_FILE_DIR="";
 	/**
 	 * 图片
 	 */

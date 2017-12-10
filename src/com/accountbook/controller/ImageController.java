@@ -2,8 +2,6 @@ package com.accountbook.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,24 +38,49 @@ public class ImageController {
 
 	
 	
-	@SuppressWarnings("deprecation")
 	@ResponseBody
 	@RequestMapping(value="/get/**",method=RequestMethod.GET)
 	public void getImage(HttpServletRequest request,HttpServletResponse response){
-		String filepath=extractPathFromPattern(request);
-		System.out.println("........................."+filepath);
+		String urlPath=extractPathFromPattern(request);
+		//response.addHeader("Cache-Control", "public, max-age=31536000");
+		response.addHeader("Cache-Control", "no-cache");
+		System.out.println(".........................img urlPath:"+urlPath);
 		
-		if(TextUtils.isEmpty(filepath))
-			return;
-		try {
-			//让客户的使用缓存
-			if(TextUtils.isNotEmpty(request.getHeader("If-Modified-Since")))
+		File file=new File(FileUtils.getImageAbsolutePath(urlPath));
+		//让客户的使用缓存
+		String modifySinceStr=request.getHeader("If-Modified-Since");
+		if(TextUtils.isEmpty(modifySinceStr))
+			//第一次请求，需要发送服务器的图片
+			sendServerFile(response,file,urlPath);
+		else{
+			//判断文件是否过期
+			long modifySince;
+			try{
+				modifySince=Long.parseLong(modifySinceStr);
+			}catch(Exception ex){
+				modifySince=0;
+			}
+			long serverFileLastModify=file.exists()?file.lastModified():0;
+			if(serverFileLastModify>modifySince)
+				sendServerFile(response,file,urlPath);
+			else{
+				//没有过期，客户端资源可用
 				response.setStatus(304);
-			else
-				response.setStatus(200);
-			response.addHeader("Cache-Control", "public, max-age=31536000");
-			response.addHeader("Last-Modified", new Date(new File(FileUtils.getImageAbsolutePath(filepath)).lastModified()).toGMTString());
-			FileUtils.send(FileUtils.getImageAbsolutePath(filepath), response.getOutputStream());
+				response.addHeader("Last-Modified", String.valueOf(file.lastModified()));
+				System.out.println(".........................304使用缓存");
+				return;
+			}
+		}
+	}
+	
+	/**
+	 * 向客户端发送最新的图片资源
+	 */
+	private void sendServerFile(HttpServletResponse response,File file,String urlPath){
+		response.setStatus(200);
+		response.addHeader("Last-Modified", String.valueOf(file.lastModified()));
+		try {
+			FileUtils.send(FileUtils.getImageAbsolutePath(urlPath), response.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

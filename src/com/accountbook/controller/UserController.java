@@ -167,18 +167,26 @@ public class UserController {
 		
 		Result result=new Result();
 		
+		if(findId.equals(openid))
+			return result.put(Result.RESULT_COMMAND_INVALID, "我是自己的忠实粉丝！");
+		
+		//查询是否之前发起过请求
+		if(msgService.isRepeatInvite(findId, openid))
+			return result.put(Result.RESULT_COMMAND_INVALID, "重复的好友邀请");
+		
+		
+		
 		
 		UserInfo me = userService.findUser(findId);
-		UserInfo he = userService.findUser(openid);
 		
 		
 		
 		//数据库中加入邀请信息
 		Message msg=new Message();
-		msg.fromId=me.id;
+		msg.fromId=findId;
 		msg.toId=openid;
 		msg.type=Message.MESSAGE_TYPE_INVITE_USER;
-		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",我们一起记账吧^~^";
+//		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",我们一起记账吧^~^";
 		msg.time=Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		msg.state=Message.STATUS_UNREAD;
 		msgService.newMessage(msg);

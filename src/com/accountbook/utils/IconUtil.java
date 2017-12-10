@@ -7,11 +7,14 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import com.accountbook.model.Group;
+import com.accountbook.model.UserInfo;
+import com.accountbook.service.IGroupService;
 
 
 /**
@@ -237,5 +240,37 @@ public class IconUtil {
 		return null;
 	}
 
+	
+	
+	
+	
+	/**
+	 * 更新分组头像,当成员变动时,或者初次创建时
+	 */
+	public static void updateGroupIcon(IGroupService groupService,String groupId){
+		
+		Group group=groupService.queryGroupInfo(groupId);
+		List<UserInfo> users = groupService.findUsersByGroupId(groupId);
+		
+		if(TextUtils.isNotEmpty(group.icon)){
+			File oldFile=new File(FileUtils.getImageAbsolutePath(group.icon));
+			if(oldFile.exists()){
+				System.out.println("updateGroupIcon.删除旧图:"+oldFile.getAbsolutePath());
+				oldFile.delete();
+			}
+		}
+		
+		List<String> icons=new ArrayList<>();
+		for(UserInfo user:users){
+			String iconPath = FileUtils.getImageAbsolutePath(user.icon);
+			icons.add(iconPath);
+		}
+		
+		group.icon=IconUtil.createIcon(group, icons);
+		
+		System.out.println("updateGroupIcon.更新头像:"+group);
+		
+		groupService.updateGroupInfo(group);
+	}
 
 }

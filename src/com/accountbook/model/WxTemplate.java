@@ -7,7 +7,7 @@ import java.util.List;
  * @author Administrator
  *
  */
-public class WxTemplateInvite {
+public class WxTemplate {
 	
 	public String touser;
 	public String template_id;

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.accountbook.model.Account;
 import com.accountbook.model.Friend;
+import com.accountbook.model.Group;
 import com.accountbook.model.Member;
 import com.accountbook.model.Message;
 import com.accountbook.model.PayTarget;
@@ -28,7 +29,9 @@ import com.accountbook.service.IMessageService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.CommonUtils;
+import com.accountbook.utils.IconUtil;
 import com.accountbook.utils.TextUtils;
+import com.accountbook.utils.WxUtil;
 
 
 @Controller
@@ -305,14 +308,14 @@ public class MessageController {
     @ResponseBody
     @RequestMapping("/invite")
     
-    public Object getInviteMessage(HttpServletRequest request,HttpServletResponse response,String type/**type必须:1帐友邀请,2加入组邀请*/){
+    public Object getInviteMessage(HttpServletRequest request,HttpServletResponse response,String type/**type必须:1帐友邀请,2加入组邀请*/,Integer pageIndex,Integer pageSize){
     	String findId=request.getAttribute("userid").toString();
     	
     	
     	Result result=new Result();
     	
     	
-    	List<Message> msgs = msgService.findInviteMsgs(findId);
+    	List<Message> msgs = msgService.findInviteMsgs(findId,pageIndex,pageSize);
     	
     	List<Result> resultMsgs=new ArrayList<>();
     	for(Message msg:msgs){
@@ -334,6 +337,10 @@ public class MessageController {
     		}
     	}
     	
+    	result.put("hasNextPage",msgs.size()==0?false:true);
+		result.put("pageIndex", pageIndex==null || pageIndex<=0 ? CommonUtils.PAGE_DEFAULT_INDEX : pageIndex);
+		result.put("pageSize", pageSize==null || pageSize<=0 ? CommonUtils.PAGE_DEFAULT_SIZE : pageSize);
+    	
     	
     	return result.put(Result.RESULT_OK, "查询成功").put("datas", resultMsgs);
     	
@@ -341,34 +348,67 @@ public class MessageController {
     
     @ResponseBody
     @RequestMapping("/invite/accept")
-    public Object accept(HttpServletRequest request,HttpServletResponse response,int msgId){
-
+    public Object accept(HttpServletRequest request,HttpServletResponse response,int msgId,String formId){
+    	String findId=request.getAttribute("userid").toString();
 		
 		Result result=new Result();
-		msgService.makeAccepted(msgId);
 		
 		Message message = msgService.findMessage(msgId);
 		
-		boolean isFriend = friendService.isFriend(message.toId, message.fromId);
-		if(isFriend){
-			return result.put(Result.RESULT_COMMAND_INVALID, "已经是好友啦!");
+		boolean isGroup=false;
+		String tempToId=message.fromId;
+		String tempUserName="";
+		String groupId="";
+		
+		switch (message.type) {
+			//处理接受分组请求
+			case Message.MESSAGE_TYPE_INVITE_GROUP:
+				isGroup=true;
+				groupId=message.content;
+				Group group = groupService.queryGroupInfo(groupId);
+				groupService.joinGroup(groupId, message.fromId);
+				//更新分组icon
+				IconUtil.updateGroupIcon(groupService, groupId);
+				tempUserName=group.name;
+				
+				result.put(Result.RESULT_OK, "加入分组成功!");
+				break;
+			//处理帐友请求
+			case Message.MESSAGE_TYPE_INVITE_USER:
+				isGroup=false;
+				boolean isFriend = friendService.isFriend(message.toId, message.fromId);
+				if(isFriend){
+					return result.put(Result.RESULT_COMMAND_INVALID, "已经是好友啦!");
+				}
+				
+				Friend friend=new Friend();
+				friend.inviteId=message.fromId;
+				friend.acceptId=message.toId;
+				friend.time=System.currentTimeMillis();
+				
+				friendService.newFriend(friend);
+				
+				UserInfo me = userService.findUser(findId);
+				
+				tempUserName=me.nickname;
+				result.put(Result.RESULT_OK, "帐友添加成功!");
+				break;
 		}
 		
-		Friend friend=new Friend();
-		friend.inviteId=message.fromId;
-		friend.acceptId=message.toId;
-		friend.time=System.currentTimeMillis();
+		msgService.makeAccepted(msgId);
 		
-		friendService.newFriend(friend);
+		//发送模板消息
+		String sendResult = WxUtil.sendTemplateInviteResultMessage(findId, formId, tempUserName, true, new Date(message.time.getTime()), isGroup,groupId);
 		
-		return result.put(Result.RESULT_OK, "添加好友成功!");
+		return result.put("templateResult", sendResult);
 		
     }
     
     
     @ResponseBody
     @RequestMapping("/invite/refuse")
-    public Object refuse(HttpServletRequest request,HttpServletResponse response,int msgId){
+    public Object refuse(HttpServletRequest request,HttpServletResponse response,int msgId,String formId){
+    	String findId=request.getAttribute("userid").toString();
 
 		Result result=new Result();
 		Message message = msgService.findMessage(msgId);
@@ -377,9 +417,50 @@ public class MessageController {
 		}
 		
 		
-		msgService.makeRefused(msgId);
+		boolean isGroup=false;
+		String tempToId=message.fromId;
+		String tempUserName="";
 		
-		return result.put(Result.RESULT_OK, "操作成功!");
+		switch (message.type) {
+			//处理拒绝分组请求
+			case Message.MESSAGE_TYPE_INVITE_GROUP:
+				isGroup=true;
+				String groupId=message.content;
+				Group group = groupService.queryGroupInfo(groupId);
+				groupService.joinGroup(groupId, message.fromId);
+				//更新分组icon
+				IconUtil.updateGroupIcon(groupService, groupId);
+				tempUserName=group.name;
+				
+				result.put(Result.RESULT_OK, "加入分组失败!");
+				break;
+			//处理拒绝帐友请求
+			case Message.MESSAGE_TYPE_INVITE_USER:
+				isGroup=false;
+				boolean isFriend = friendService.isFriend(message.toId, message.fromId);
+				if(isFriend){
+					return result.put(Result.RESULT_COMMAND_INVALID, "已经是好友,不能拒绝!");
+				}
+				
+				Friend friend=new Friend();
+				friend.inviteId=message.fromId;
+				friend.acceptId=message.toId;
+				friend.time=System.currentTimeMillis();
+				
+				friendService.newFriend(friend);
+				
+				UserInfo me = userService.findUser(findId);
+				
+				tempUserName=me.nickname;
+				result.put(Result.RESULT_OK, "帐友添加失败!");
+				break;
+		}
+		
+		msgService.makeRefused(msgId);
+		//发送模板消息
+		String sendResult = WxUtil.sendTemplateInviteResultMessage(tempToId, formId, tempUserName, false, new Date(message.time.getTime()), isGroup,"");
+		
+		return result.put("templateResult", sendResult);
 		
     }
     
