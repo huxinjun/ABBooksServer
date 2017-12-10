@@ -13,7 +13,7 @@ public interface IMessageService {
 	/**
 	 * 根据用户id查询
 	 */
-	public Message findMessage(int id);
+	public Message findMessage(long id);
 	public List<Message> findUserMsgs(String user1Id,String user2Id,Integer pageIndex,Integer pageSize);
 	public List<Message> findInviteMsgs(String userId,Integer pageIndex,Integer pageSize);
 	
@@ -21,13 +21,13 @@ public interface IMessageService {
 	public int getInviteUnreadCount(String userId);
 	public List<Message> findAccountMsgs(String accountId);
 	
-	public void makeReaded(int id);
-	public void makeDeleted(int id);
-	public void makeAccepted(int id);
-	public void makeRefused(int id);
+	public void makeReaded(long id);
+	public void makeDeleted(long id);
+	public void makeAccepted(long id);
+	public void makeRefused(long id);
 	public void updateStatusBatch(String user1Id,String user2Id,int state);
 	
 	public boolean isRepeatInvite(String user1Id,String user2Id);
 	
-	public void delete(int id);
+	public void delete(long id);
 }

@@ -12,6 +12,7 @@
     <result column="city" property="city" jdbcType="VARCHAR" />
     <result column="province" property="province" jdbcType="VARCHAR" />
     <result column="language" property="language" jdbcType="VARCHAR" />
+    <result column="notif_open" property="notifOpen" jdbcType="BOOLEAN" />
   </resultMap>
   
 	
@@ -25,7 +26,7 @@
 	
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.model.UserInfo">
-		insert into user values(#{id},#{nickname},#{icon},#{avatarUrl},#{qr},#{gender},#{country},#{city},#{province},#{language})
+		insert into user values(#{id},#{nickname},#{icon},#{avatarUrl},#{qr},#{gender},#{country},#{city},#{province},#{language},true)
 	</insert>
 	
 	<!-- 更新 -->

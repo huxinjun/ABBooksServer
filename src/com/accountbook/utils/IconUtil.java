@@ -36,7 +36,7 @@ public class IconUtil {
 	 * @throws IOException 
 	 */
 	public static String createIcon(Group group,List<String> memberIcons){
-	    
+		System.out.println("createIcon："+group+",icons:"+memberIcons);
 	    int iconSize=500;
 	    
 	    BufferedImage image = new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_RGB );
@@ -50,7 +50,10 @@ public class IconUtil {
 				if(i>8)
 					break;
 				System.out.println("本地头像路径："+memberIcons.get(i));
-				Image srcImage = ImageIO.read(new File(memberIcons.get(i))); //读取图片文件
+				File imgFile = new File(memberIcons.get(i));
+				if(!imgFile.exists())
+					imgFile=new File(FileUtils.getDefaultImagePath());
+				Image srcImage = ImageIO.read(imgFile); //读取图片文件
 				int[] position = calcPosition(memberIcons.size()>9?9:memberIcons.size(), i, iconSize, iconSize/10);
 				g.drawImage(srcImage, position[0], position[1], position[2], position[3], null);  //将原始图片 按固定大小绘制到image中
 			}
@@ -259,10 +262,11 @@ public class IconUtil {
 				oldFile.delete();
 			}
 		}
-		
+		System.out.println("updateGroupIcon.users:"+users);
 		List<String> icons=new ArrayList<>();
 		for(UserInfo user:users){
-			String iconPath = FileUtils.getImageAbsolutePath(user.icon);
+			String iconPath = FileUtils.getImageAbsolutePath(user.avatarUrl);
+			System.out.println("updateGroupIcon.iconPath:"+iconPath);
 			icons.add(iconPath);
 		}
 		

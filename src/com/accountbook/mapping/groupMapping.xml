@@ -15,6 +15,7 @@
   <resultMap id="usermap" type="com.accountbook.model.UserInfo" >
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
     <result column="avatarUrl" property="avatarUrl" jdbcType="VARCHAR" />
     <result column="qr" property="qr" jdbcType="VARCHAR" />
     <result column="gender" property="gender" jdbcType="INTEGER" />
@@ -22,6 +23,7 @@
     <result column="city" property="city" jdbcType="VARCHAR" />
     <result column="province" property="province" jdbcType="VARCHAR" />
     <result column="language" property="language" jdbcType="VARCHAR" />
+    <result column="notif_open" property="notifOpen" jdbcType="BOOLEAN" />
   </resultMap>
   
   <select id="queryById" parameterType="String" resultMap="map">
@@ -41,9 +43,10 @@
   
   
 	<select id="queryGroups" parameterType="String" resultMap="map">
-		SELECT * FROM group_ AS g LEFT JOIN group_user AS u ON g.id=u.group_id  
-		WHERE admin_id=#{userId} OR user_id=#{userId} 
-		ORDER BY CONVERT(category USING gbk),CONVERT(name USING gbk)
+		SELECT * FROM group_ WHERE id IN (SELECT DISTINCT(g.id) FROM group_ AS g LEFT JOIN group_user AS u ON g.id=u.group_id  
+		WHERE admin_id=#{userId} OR user_id=#{userId}
+		ORDER BY CONVERT(category USING gbk),CONVERT(NAME USING gbk)
+		)
 	</select>
 	
 	<!-- 插入组 -->

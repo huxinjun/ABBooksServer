@@ -26,6 +26,7 @@ import com.accountbook.service.IAccountService;
 import com.accountbook.service.IFriendService;
 import com.accountbook.service.IGroupService;
 import com.accountbook.service.IMessageService;
+import com.accountbook.service.INotifService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.CommonUtils;
@@ -57,7 +58,8 @@ public class MessageController {
 	@Autowired
 	IGroupService groupService;
 	
-	
+	@Autowired
+	INotifService notifService;
 	
 	
 	@ResponseBody
@@ -348,7 +350,7 @@ public class MessageController {
     
     @ResponseBody
     @RequestMapping("/invite/accept")
-    public Object accept(HttpServletRequest request,HttpServletResponse response,int msgId,String formId){
+    public Object accept(HttpServletRequest request,HttpServletResponse response,int msgId){
     	String findId=request.getAttribute("userid").toString();
 		
 		Result result=new Result();
@@ -398,7 +400,7 @@ public class MessageController {
 		msgService.makeAccepted(msgId);
 		
 		//发送模板消息
-		String sendResult = WxUtil.sendTemplateInviteResultMessage(findId, formId, tempUserName, true, new Date(message.time.getTime()), isGroup,groupId);
+		String sendResult = WxUtil.sendTemplateInviteResultMessage(notifService,tempToId,tempUserName, true, new Date(message.time.getTime()), isGroup,groupId);
 		
 		return result.put("templateResult", sendResult);
 		
@@ -407,7 +409,7 @@ public class MessageController {
     
     @ResponseBody
     @RequestMapping("/invite/refuse")
-    public Object refuse(HttpServletRequest request,HttpServletResponse response,int msgId,String formId){
+    public Object refuse(HttpServletRequest request,HttpServletResponse response,int msgId){
     	String findId=request.getAttribute("userid").toString();
 
 		Result result=new Result();
@@ -458,7 +460,7 @@ public class MessageController {
 		
 		msgService.makeRefused(msgId);
 		//发送模板消息
-		String sendResult = WxUtil.sendTemplateInviteResultMessage(tempToId, formId, tempUserName, false, new Date(message.time.getTime()), isGroup,"");
+		String sendResult = WxUtil.sendTemplateInviteResultMessage(notifService,tempToId,tempUserName, false, new Date(message.time.getTime()), isGroup,"");
 		
 		return result.put("templateResult", sendResult);
 		

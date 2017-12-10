@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.accountbook.dao.MessageDao" >
   <resultMap id="map" type="com.accountbook.model.Message" >
-    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="id" property="id" jdbcType="BIGINT" />
     <result column="from_id" property="fromId" jdbcType="VARCHAR" />
     <result column="to_id" property="toId" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="TINYINT" />
@@ -23,7 +23,7 @@
   
   
   
-	<select id="queryMsg" parameterType="integer" resultMap="map">
+	<select id="queryMsg" parameterType="long" resultMap="map">
 		SELECT * FROM message WHERE id = #{id};
 	</select>
 	<select id="queryUserMsgs" parameterType="map" resultMap="map">
@@ -69,7 +69,7 @@
 	</insert>
 	
 	<!-- 更新 -->
-	<update id="updateStatus" parameterType="java.lang.Integer">
+	<update id="updateStatus" parameterType="long">
 		update message set state=#{1} where id=#{0}
 	</update>
 	
@@ -80,7 +80,7 @@
 	
 	
 	<!-- 删除 -->
-	<delete id="delete" parameterType="Integer">
+	<delete id="delete" parameterType="long">
 		delete from message where id=#{id};
 	</delete>
 </mapper>

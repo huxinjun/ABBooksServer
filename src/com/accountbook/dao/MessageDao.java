@@ -13,14 +13,14 @@ import com.accountbook.model.Message;
  */
 public interface MessageDao {
 	public void insert(Message data);
-	public void updateStatus(int id,int status);
+	public void updateStatus(long id,long status);
 	public void updateStatusBatch(Map<String,Object> params);
-	public void delete(int id);
+	public void delete(long id);
 	
 	public List<Message> queryChatList(String userId);
 	
 	
-	public Message queryMsg(int id);
+	public Message queryMsg(long id);
 	public List<Message> queryUserMsgs(Map<String,Object> params);
 	public List<Message> queryInviteMsgs(Map<String,Object> params);
 	public List<Message> queryAccountMsgs(String p1,String p2,String p3);

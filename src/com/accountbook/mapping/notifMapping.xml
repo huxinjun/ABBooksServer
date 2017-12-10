@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.accountbook.dao.NotifDao" >
+  <resultMap id="map" type="com.accountbook.model.Form" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="form_id" property="formId" jdbcType="VARCHAR" />
+    <result column="time" property="time" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+	
+	<!-- 获取最早的一个可用记录,并删除不可用记录-->
+	<select id="queryOne" parameterType="String" resultMap="map">
+		<![CDATA[SELECT * FROM form WHERE TO_DAYS(NOW()) - TO_DAYS(TIME) <= 6 AND user_id=#{userId} ORDER BY TIME ASC LIMIT 0,1;]]>
+	</select>
+	
+	
+	<!-- 删除过期的记录 -->
+	<delete id="deleteInvalid" parameterType="String">
+		DELETE FROM form WHERE TO_DAYS(NOW()) - TO_DAYS(TIME) > 6 AND user_id=#{userId}
+	</delete>
+	
+	<!-- 删除指定id的记录 -->
+	<delete id="delete" parameterType="LONG">
+		DELETE FROM form WHERE id=#{id}
+	</delete>
+	
+	<!-- 获取可用数量 -->
+	<select id="queryValidCount" parameterType="String" resultType="INTEGER">
+		<![CDATA[SELECT COUNT(*) FROM form WHERE TO_DAYS(NOW()) - TO_DAYS(TIME) <= 6 and user_id=#{userId}]]>
+	</select>
+	
+	<!-- 是否开启提醒功能-->
+	<select id="isNotifOpen" parameterType="String" resultType="BOOLEAN">
+		SELECT notif_open FROM user WHERE id=#{userId}
+	</select>
+	
+	
+	
+	<!-- 插入新的form信息 -->
+	<insert id="insert" parameterType="com.accountbook.model.Form">
+		insert into form values(null,#{userId},#{formId},#{time})
+	</insert>
+	
+	<!-- 开关 -->
+	<update id="switcher" parameterType="map">
+		update user set notif_open=#{isOpen} where id=#{id}
+	</update>
+	
+	
+</mapper>

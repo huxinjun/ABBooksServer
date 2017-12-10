@@ -90,6 +90,21 @@ public class FileUtils {
 		return null;
     }
 	
+	
+	public static String saveFile(byte[] bytes,File file){
+		try {
+			
+			FileOutputStream fos=new FileOutputStream(file);
+			fos.write(bytes);
+			fos.close();
+			System.out.println("存储文件:"+file.getPath());
+			return file.getPath();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+    }
+	
     
     /**
      * 从输入流获取数据
@@ -123,7 +138,7 @@ public class FileUtils {
 		try {  
 			File file=new File(localPath);
 			if(!file.exists())
-				localPath=Constants.EXTERN_FILE_DIR+"\\img\\image.png";
+				localPath=getDefaultImagePath();
 			  
 			FileInputStream fis=new FileInputStream(localPath);
 			byte[] buf = new byte[2048]; 
@@ -140,5 +155,8 @@ public class FileUtils {
 		return false;
 	}
 	
+	public static String getDefaultImagePath(){
+		return Constants.EXTERN_FILE_DIR+"\\img\\image.png";
+	}
     
 }

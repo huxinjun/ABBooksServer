@@ -4,7 +4,7 @@ public class Constants {
 	
 	
 	public static String APP_ID="wx9d9db1b5e01578f8";
-	public static String APP_SECRET="0d29e97ba582d015afd603ff6346fb93";
+	public static String APP_SECRET="d8fd02b0ac68d9bd7d9d67ce8014b12a";
 	
 	
 

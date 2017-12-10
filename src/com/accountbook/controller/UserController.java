@@ -1,5 +1,6 @@
 package com.accountbook.controller;
 
+import java.io.File;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +19,7 @@ import com.accountbook.model.UserInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IFriendService;
 import com.accountbook.service.IMessageService;
+import com.accountbook.service.INotifService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.FileUtils;
@@ -43,6 +45,9 @@ public class UserController {
 	
 	@Autowired
 	IFriendService friendService;
+	
+	@Autowired
+	INotifService notifService;
 	
 	
 	
@@ -123,8 +128,12 @@ public class UserController {
 		if(findUser==null)
 			return new Result(Result.RESULT_FAILD,"未查询到用户");
 		
-		if(findUser.qr!=null && !"".equals(findUser.qr))
-			return new Result(Result.RESULT_OK,findUser.qr);
+		if(findUser.qr!=null && !"".equals(findUser.qr)){
+			boolean exists = new File(FileUtils.getImageAbsolutePath(findUser.qr)).exists();
+			System.out.println("用户二维码是否存在:"+exists);
+			if(exists)
+				return new Result(Result.RESULT_OK,findUser.qr);
+		}
 		
 		
 		//获取二维码start-------------------------------------------------------------------------------------------------------
@@ -162,16 +171,16 @@ public class UserController {
 	
 	@ResponseBody
 	@RequestMapping("/invite")
-	public Object inviteUser(HttpServletRequest request,String code,String openid,String formId){
+	public Object inviteUser(HttpServletRequest request,String code,String friendId){
 		String findId=request.getAttribute("userid").toString();
 		
 		Result result=new Result();
 		
-		if(findId.equals(openid))
+		if(findId.equals(friendId))
 			return result.put(Result.RESULT_COMMAND_INVALID, "我是自己的忠实粉丝！");
 		
 		//查询是否之前发起过请求
-		if(msgService.isRepeatInvite(findId, openid))
+		if(msgService.isRepeatInvite(findId, friendId))
 			return result.put(Result.RESULT_COMMAND_INVALID, "重复的好友邀请");
 		
 		
@@ -184,7 +193,7 @@ public class UserController {
 		//数据库中加入邀请信息
 		Message msg=new Message();
 		msg.fromId=findId;
-		msg.toId=openid;
+		msg.toId=friendId;
 		msg.type=Message.MESSAGE_TYPE_INVITE_USER;
 //		msg.content="hi~~"+he.nickname+",我是"+me.nickname+",我们一起记账吧^~^";
 		msg.time=Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
@@ -192,7 +201,7 @@ public class UserController {
 		msgService.newMessage(msg);
 		
 		
-		String sendResult = WxUtil.sendTemplateInviteMessage(openid, formId, me.nickname, msg.content);
+		String sendResult = WxUtil.sendTemplateInviteMessage(notifService,friendId,me.nickname, msg.content,false,null);
 		
 		return result.put(Result.RESULT_OK, sendResult);
 		

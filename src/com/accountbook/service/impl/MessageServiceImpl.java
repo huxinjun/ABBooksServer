@@ -38,22 +38,22 @@ public class MessageServiceImpl implements IMessageService{
 	}
 
 	@Override
-	public void makeReaded(int id) {
+	public void makeReaded(long id) {
 		dao.updateStatus(id, Message.STATUS_READED);
 	}
 
 	@Override
-	public void makeDeleted(int id) {
+	public void makeDeleted(long id) {
 		dao.updateStatus(id, Message.STATUS_DELETE);
 	}
 
 	@Override
-	public void makeAccepted(int id) {
+	public void makeAccepted(long id) {
 		dao.updateStatus(id, Message.STATUS_INVITE_ACCEPT);
 	}
 
 	@Override
-	public void makeRefused(int id) {
+	public void makeRefused(long id) {
 		dao.updateStatus(id, Message.STATUS_INVITE_REFUSE);
 	}
 	@Override
@@ -110,7 +110,7 @@ public class MessageServiceImpl implements IMessageService{
 		return dao.queryInviteUnreadCount(userId);
 	}
 	@Override
-	public Message findMessage(int id) {
+	public Message findMessage(long id) {
 		return dao.queryMsg(id);
 	}
 	@Override
@@ -125,7 +125,7 @@ public class MessageServiceImpl implements IMessageService{
 		return dao.queryAccountMsgs(p1,p2,p3);
 	}
 	@Override
-	public void delete(int id) {
+	public void delete(long id) {
 		dao.delete(id);
 	}
 	@Override

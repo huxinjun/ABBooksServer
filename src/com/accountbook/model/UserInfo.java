@@ -15,6 +15,7 @@ public class UserInfo {
 	public String city;
 	public String province;
 	public String language;
+	public boolean notifOpen;
 	
 	
 	public boolean flag;
@@ -24,9 +25,9 @@ public class UserInfo {
 	public String toString() {
 		return "UserInfo [id=" + id + ", nickname=" + nickname + ", icon=" + icon + ", avatarUrl=" + avatarUrl + ", qr="
 				+ qr + ", gender=" + gender + ", country=" + country + ", city=" + city + ", province=" + province
-				+ ", language=" + language + ", flag=" + flag + "]";
+				+ ", language=" + language + ", notifOpen=" + notifOpen + ", flag=" + flag + "]";
 	}
-	
+
 	
 
 }

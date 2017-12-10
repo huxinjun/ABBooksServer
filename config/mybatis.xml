@@ -20,6 +20,7 @@
 		<mapper resource="com/accountbook/mapping/friendMapping.xml"/>
 		<mapper resource="com/accountbook/mapping/groupMapping.xml"/>
 		<mapper resource="com/accountbook/mapping/accountMapping.xml"/>
+		<mapper resource="com/accountbook/mapping/notifMapping.xml"/>
 		</mappers>
 
 

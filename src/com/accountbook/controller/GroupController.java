@@ -23,6 +23,7 @@ import com.accountbook.model.UserInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IGroupService;
 import com.accountbook.service.IMessageService;
+import com.accountbook.service.INotifService;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.FileUtils;
@@ -50,7 +51,8 @@ public class GroupController {
 	@Autowired
 	IGroupService groupService;
 	
-	
+	@Autowired
+	INotifService notifService;
 	
 	
 	@ResponseBody
@@ -233,8 +235,12 @@ public class GroupController {
 		if(findGroup==null)
 			return new Result(Result.RESULT_FAILD,"未查询到分组");
 		
-		if(findGroup.qr!=null && !"".equals(findGroup.qr))
-			return new Result(Result.RESULT_OK,findGroup.qr);
+		if(findGroup.qr!=null && !"".equals(findGroup.qr)){
+			boolean exists = new File(FileUtils.getImageAbsolutePath(findGroup.qr)).exists();
+			System.out.println("分组二维码是否存在:"+exists);
+			if(exists)
+				return new Result(Result.RESULT_OK,findGroup.qr);
+		}
 		
 		
 		//获取二维码start-------------------------------------------------------------------------------------------------------
@@ -271,7 +277,7 @@ public class GroupController {
 	
 	@ResponseBody
 	@RequestMapping("/join")
-	public Object joinGroup(ServletRequest req,String code,String groupId,String formId){
+	public Object joinGroup(ServletRequest req,String code,String groupId){
 		String findId=req.getAttribute("userid").toString();
 		
 		
@@ -280,6 +286,17 @@ public class GroupController {
 		UserInfo me = userService.findUser(findId);
 		
 		Group groupInfo = groupService.queryGroupInfo(groupId);
+		//如果是管理自己要加入该组,那就直接进组,不用发消息
+		if(groupInfo.adminId.equals(findId)){
+			if(groupService.isGroupMember(findId, groupId))
+				return result.put(Result.RESULT_OK, "已经是该组成员了");
+			else{
+				groupService.joinGroup(groupId, findId);
+				//更新分组icon
+				IconUtil.updateGroupIcon(groupService, groupId);
+				return result.put(Result.RESULT_OK, "成功加入组");
+			}
+		}	
 		
 		//数据库中加入邀请信息
 		Message msg=new Message();
@@ -293,7 +310,7 @@ public class GroupController {
 		
 		
 		
-		String sendResult = WxUtil.sendTemplateInviteMessage(groupInfo.adminId, formId, me.nickname, msg.content);
+		String sendResult = WxUtil.sendTemplateInviteMessage(notifService,groupInfo.adminId,me.nickname, msg.content,true,groupInfo.name);
 		
 		return result.put(Result.RESULT_OK, "已经向组管理员请求加入分组消息").put("templateResult", sendResult);
 		

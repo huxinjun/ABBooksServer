@@ -1,7 +1,6 @@
 package com.accountbook.service;
 
 import java.util.List;
-
 import com.accountbook.model.UserInfo;
 
 public interface IUserService {
