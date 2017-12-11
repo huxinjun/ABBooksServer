@@ -30,10 +30,12 @@ import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
 import com.accountbook.service.IGroupService;
 import com.accountbook.service.IMessageService;
+import com.accountbook.service.INotifService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.CommonUtils;
 import com.accountbook.utils.IDUtil;
 import com.accountbook.utils.TextUtils;
+import com.accountbook.utils.WxUtil;
 import com.easyjson.EasyJson;
 
 /**
@@ -56,6 +58,9 @@ public class AccountController {
 	
 	@Autowired
 	IMessageService msgService;
+	
+	@Autowired
+	INotifService notifService;
 
 	/**
 	 * 记账
@@ -135,8 +140,6 @@ public class AccountController {
 					for (PayTarget target : result.get(0).getPayTarget()) {
 						target.setAccountId(account.getId());
 						target.setId(IDUtil.generateNewId());
-						//初始值为全款未付
-						target.setWaitPaidMoney(target.getMoney());
 						accountService.addPayTarget(target);
 					}
 
@@ -194,6 +197,7 @@ public class AccountController {
 					newTarget.setPaidId(user.id);
 					newTarget.setReceiptId(target.getReceiptId());
 					newTarget.setMoney(target.getMoney());
+					
 					accountService.addPayTarget(newTarget);
 
 					accountService.deletePayTarget(target.getId());
@@ -213,6 +217,7 @@ public class AccountController {
 					newTarget.setPaidId(target.getPaidId());
 					newTarget.setReceiptId(user.id);
 					newTarget.setMoney(target.getMoney());
+					
 					accountService.addPayTarget(newTarget);
 
 					accountService.deletePayTarget(target.getId());
@@ -233,7 +238,9 @@ public class AccountController {
 			if(!user.getMemberId().equals(findId))
 				msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId, user.getMemberId(), "[Create]:"+account.getId());
 
-		return new Result(Result.RESULT_OK, "记录账单成功!");
+		//发送模板消息
+		String result=WxUtil.sendTemplateNewAccountMessage(notifService, userService, groupService, account);
+		return new Result(Result.RESULT_OK, "记录账单成功!").put("templeteNotifResult", result);
 	}
 	
 	/**
@@ -461,7 +468,6 @@ public class AccountController {
 					for(PayTarget payTarget:calcResult.getPayTarget()){
 						payTarget.setAccountId(accountId);
 						payTarget.setId(IDUtil.generateNewId());
-						payTarget.setWaitPaidMoney(payTarget.getMoney());
 						waitToInsertTargets.add(payTarget);
 					}
 				}

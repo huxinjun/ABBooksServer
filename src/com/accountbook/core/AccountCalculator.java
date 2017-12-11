@@ -110,6 +110,8 @@ public class AccountCalculator {
                     OUT_P.setCalcData(OUT_P.getShouldPay());
                     IN_P.setCalcData((float) (IN_P.getCalcData()+pay));
                     payTarget.setMoney((float) round(pay));
+                  //初始值为全款未付
+                    payTarget.setWaitPaidMoney(payTarget.getMoney());
 
                 }else if(needMoney<OUT_P.getShouldPay()-(OUT_P.getPaidIn()+OUT_P.getCalcData())){
                     //收钱人多付的钱少于付钱人还需付的钱,向付钱人收自己多付的那部分
@@ -117,6 +119,8 @@ public class AccountCalculator {
                     OUT_P.setCalcData((float) (OUT_P.getCalcData()+pay));
                     IN_P.setCalcData((float) (IN_P.getCalcData()+pay));
                     payTarget.setMoney((float) round(pay));
+                  //初始值为全款未付
+                    payTarget.setWaitPaidMoney(payTarget.getMoney());
                 }
                 if(result.getPayTarget()==null)
                 	result.setPayTarget(new ArrayList<PayTarget>());

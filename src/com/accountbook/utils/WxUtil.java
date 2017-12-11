@@ -10,11 +10,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.accountbook.globle.Constants;
+import com.accountbook.model.Account;
 import com.accountbook.model.Form;
+import com.accountbook.model.Member;
+import com.accountbook.model.UserInfo;
 import com.accountbook.model.WxAccessToken;
 import com.accountbook.model.WxTemplate;
 import com.accountbook.model.WxTemplate.KeyWord;
+import com.accountbook.service.IGroupService;
 import com.accountbook.service.INotifService;
+import com.accountbook.service.IUserService;
 import com.alibaba.fastjson.JSON;
 
 /**
@@ -122,10 +127,12 @@ public class WxUtil {
 		invite.page="pages/msg_invite/msg_invite";
 		invite.form_id=formId;
 		List<KeyWord> data=new ArrayList<>();
-//		发送人
-//		{{keyword1.DATA}}
-//		申请信息
-//		{{keyword2.DATA}}
+		/*
+		发送人
+		{{keyword1.DATA}}
+		申请信息
+		{{keyword2.DATA}}
+		 */
 		data.add(new KeyWord(inviteName,"#173177"));
 		data.add(new KeyWord(isGroup?"我想加入["+groupName+"]":"赶紧进入小账本本!!!呲呲的^_^","#173177"));
 		invite.data=data;
@@ -163,22 +170,111 @@ public class WxUtil {
 		WxTemplate invite=new WxTemplate();
 		invite.touser=openid;
 		invite.template_id="LI1orCp7eFVDmek1jCh15b48nx9wJDiF8QI7NmKQNcA";
-		invite.page=isGroup?"pages/group_edit/group_edit?groupId="+groupId.replaceAll("=", "!XJ!"):"pages/friend/friend";
+		invite.page=isGroup?"pages/group_edit/group_edit?groupId="+encode(groupId):"pages/friend/friend";
 		invite.form_id=formId;
 		List<KeyWord> data=new ArrayList<>();
-//		姓名
-//		{{keyword1.DATA}}
-//		申请结果
-//		{{keyword2.DATA}}
-//		申请时间
-//		{{keyword3.DATA}}
-//		申请类型
-//		{{keyword4.DATA}}
+		/*
+		姓名
+		{{keyword1.DATA}}
+		申请结果
+		{{keyword2.DATA}}
+		申请时间
+		{{keyword3.DATA}}
+		申请类型
+		{{keyword4.DATA}}
+		 */
 		data.add(new KeyWord(name,"#173177"));
 		data.add(new KeyWord(success?"接受":"拒绝","#ff0000"));
 		SimpleDateFormat format=new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
 		data.add(new KeyWord(format.format(date),"#173177"));
 		data.add(new KeyWord(isGroup?"加入分组":"添加帐友","#173177"));
+		invite.data=data;
+		
+		System.out.println(invite.toString());
+		
+		String result=HttpUtils.sendPost(getTempleteUrl(),invite.toString());
+		
+		//发送模板消息end-------------------------------------------------------------------------------------------------------
+		return result;
+	}
+	
+	private static String encode(String str){
+		return str.replaceAll("=", "!XJ!");
+	}
+	
+	
+	
+	
+	/**
+	 * 新账单模板，向所有user(非组)发送
+	 */
+	public static String sendTemplateNewAccountMessage(INotifService notifService,IUserService userService,IGroupService groupService,Account account){
+		StringBuffer resultSb=new StringBuffer();
+		
+		ArrayList<Member> members = account.getMembers();
+		UserInfo createAccUser = userService.findUser(account.getUserId());
+		for(Member member:members){
+			if(member.getIsGroup()){
+				List<UserInfo> usersByGroupId = groupService.findUsersByGroupId(member.getMemberId());
+				if(usersByGroupId==null || usersByGroupId.size()==0)
+					continue;
+				for(UserInfo user:usersByGroupId)
+					if(!user.id.equals(createAccUser.id))
+						resultSb.append(sendTemplateNewAccountMessage(
+								notifService,
+								user.id,
+								account.getId(),
+								createAccUser.nickname,
+								new SimpleDateFormat("yyyy年MM月dd日").format(new Date(account.getDateTimestamp().getTime())),
+								account.getPaidIn(),
+								members.size()
+								));
+			}
+		}
+		
+		return resultSb.toString();
+	}
+	
+	/**
+	 * 新账单模板，向某个user发送
+	 */
+	public static String sendTemplateNewAccountMessage(INotifService service,String friendId,String accountId,String createUserName,String date,float money,int memberCount){
+		//发送模板消息start-------------------------------------------------------------------------------------------------------
+		//从数据库获取formid
+		if(!service.isNotifOpen(friendId)){
+			return "接受消息的用户未开启微信服务提醒:"+friendId;
+		}
+		Form form=service.getOne(friendId);
+		if(form==null){
+			return "接受消息的用户没有可用表单ID:"+friendId;
+		}
+		
+		System.out.println("!!!sendTemplateInviteMessage:"+form);
+		//查询到可以使用的formId了,首先删除数据库中的记录
+		service.delete(form.id);
+		String formId=form.formId;
+			
+		
+		WxTemplate invite=new WxTemplate();
+		invite.touser=friendId;
+		invite.template_id="naRxFwdCcjNs3p-rQS2XF6RkjkwVL0XpstnxEEsVPxg";
+		invite.page="pages/account/account?accountId="+encode(accountId);
+		invite.form_id=formId;
+		List<KeyWord> data=new ArrayList<>();
+		/*
+		 累计消费
+		{{keyword1.DATA}}
+		付费人数
+		{{keyword2.DATA}}
+		创建日期
+		{{keyword3.DATA}}
+		备注
+		{{keyword4.DATA}}
+		*/
+		data.add(new KeyWord(String.valueOf(money),"#00CD66"));
+		data.add(new KeyWord(memberCount+"位成员","#173177"));
+		data.add(new KeyWord(date,"#173177"));
+		data.add(new KeyWord(createUserName,"#173177"));
 		invite.data=data;
 		
 		System.out.println(invite.toString());

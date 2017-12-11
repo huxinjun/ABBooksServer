@@ -136,16 +136,21 @@
 	
 		#查询自己记录或者涉及到自己的账单(所有账本)
 		SELECT * FROM account WHERE 
-		id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id=#{userId}) 
-		OR user_id=#{userId} ORDER BY date_timestamp desc,create_timestamp desc limit #{ls},#{lc}
+		id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id=#{userId}
+		OR member_id IN (SELECT DISTINCT(group_id) id FROM group_user WHERE user_id=#{userId})) 
+		OR user_id=#{userId}
+		ORDER BY date_timestamp DESC,create_timestamp DESC limit #{ls},#{lc}
 		
 	</select>
 	<select id="queryMyAccountsByBookId" parameterType="map" resultMap="accountMap">
 	
 		#查询自己记录或者涉及到自己的账单(某个账本)
-		SELECT * FROM account WHERE book_id=#{bookId} AND (
-		id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id=#{userId}) 
-		OR user_id=#{userId} ) ORDER BY date_timestamp desc,create_timestamp desc limit #{ls},#{lc}
+		SELECT * FROM account WHERE 
+		book_id=#{bookId} AND 
+		id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id=#{userId}
+		OR member_id IN (SELECT DISTINCT(group_id) id FROM group_user WHERE user_id=#{userId})) 
+		OR user_id=#{userId}
+		ORDER BY date_timestamp DESC,create_timestamp DESC limit #{ls},#{lc}
 	
 	</select>
 	
@@ -227,9 +232,9 @@
 	
 		#查询所有待付款(指定另一个人)
 		SELECT 'wait_paid' NAME,p.number-r.number AS number FROM(SELECT 0 id, IFNULL(SUM(wait_paid_money),0) AS number FROM account_pay AS a
-		WHERE wait_paid_money>0 AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ') p LEFT JOIN 
+		WHERE wait_paid_money>0 AND a.paid_id=#{user1Id} AND a.receipt_id=#{user2Id}) p LEFT JOIN 
 		(SELECT 0 id,IFNULL(SUM(wait_paid_money),0) AS number FROM account_pay AS a 
-		WHERE wait_paid_money>0 AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') r ON p.id=r.id
+		WHERE wait_paid_money>0 AND a.paid_id=#{user2Id} AND a.receipt_id=#{user1Id}) r ON p.id=r.id
 
 				
 		UNION		
