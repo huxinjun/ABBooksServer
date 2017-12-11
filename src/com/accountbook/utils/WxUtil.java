@@ -213,6 +213,7 @@ public class WxUtil {
 		
 		ArrayList<Member> members = account.getMembers();
 		UserInfo createAccUser = userService.findUser(account.getUserId());
+		List<UserInfo> waitSendMsgUsers=new ArrayList<>();
 		for(Member member:members){
 			if(member.getIsGroup()){
 				List<UserInfo> usersByGroupId = groupService.findUsersByGroupId(member.getMemberId());
@@ -220,17 +221,27 @@ public class WxUtil {
 					continue;
 				for(UserInfo user:usersByGroupId)
 					if(!user.id.equals(createAccUser.id))
-						resultSb.append(sendTemplateNewAccountMessage(
-								notifService,
-								user.id,
-								account.getId(),
-								createAccUser.nickname,
-								new SimpleDateFormat("yyyy年MM月dd日").format(new Date(account.getDateTimestamp().getTime())),
-								account.getPaidIn(),
-								members.size()
-								));
+						waitSendMsgUsers.add(user);
+						
+			}else{
+				if(!member.getMemberId().equals(createAccUser.id)){
+					UserInfo userInfo = new UserInfo();
+					userInfo.id=member.getMemberId();
+					waitSendMsgUsers.add(userInfo);
+				}
 			}
 		}
+		System.out.println("sendTemplateNewAccountMessage:"+waitSendMsgUsers);
+		for(UserInfo user:waitSendMsgUsers)
+			resultSb.append(sendTemplateNewAccountMessage(
+					notifService,
+					user.id,
+					account.getId(),
+					createAccUser.nickname,
+					new SimpleDateFormat("yyyy年MM月dd日").format(new Date(account.getDateTimestamp().getTime())),
+					account.getPaidIn(),
+					members.size()
+					));
 		
 		return resultSb.toString();
 	}
