@@ -42,8 +42,33 @@ public class ImageController {
 	@RequestMapping(value="/get/**",method=RequestMethod.GET)
 	public void getImage(HttpServletRequest request,HttpServletResponse response){
 		String urlPath=extractPathFromPattern(request);
-		//response.addHeader("Cache-Control", "public, max-age=31536000");
-		response.addHeader("Cache-Control", "no-cache");
+		
+		
+		
+		
+		
+//		public	所有内容都将被缓存(客户端和代理服务器都可缓存)
+//		private	内容只缓存到私有缓存中(仅客户端可以缓存，代理服务器不可缓存)
+//		no-cache	必须先与服务器确认返回的响应是否被更改，然后才能使用该响应来满足后续对同一个网址的请求。因此，如果存在合适的验证令牌 (ETag)，no-cache 会发起往返通信来验证缓存的响应，如果资源未被更改，可以避免下载。
+//		no-store	所有内容都不会被缓存到缓存或 Internet 临时文件中
+//		must-revalidation/proxy-revalidation	如果缓存的内容失效，请求必须发送到服务器/代理以进行重新验证
+//		max-age=xxx (xxx is numeric)单位秒	缓存的内容将在 xxx 秒后失效, 这个选项只在HTTP 1.1可用, 并如果和Last-Modified一起使用时, 优先级较高
+		
+		response.addHeader("Cache-Control", "public, max-age="+60*60);
+//		response.addHeader("Cache-Control", "no-cache");
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		System.out.println(".........................img urlPath:"+urlPath);
 		
 		File file=new File(FileUtils.getImageAbsolutePath(urlPath));
