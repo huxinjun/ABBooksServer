@@ -2,7 +2,7 @@
 	"id":"aaa",
 	"user_id":"aaa",
 	"book_id":"aaa",
-    "type":1,
+    "type":"qt",
 	
     "name":"购物",
     "description":"",

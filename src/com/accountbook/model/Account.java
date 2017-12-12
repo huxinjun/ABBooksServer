@@ -52,7 +52,7 @@ public class Account implements Serializable{
 	/**
 	 * 
 	 */
-	private int type;
+	private String type;
 	/**
 	 * 
 	 */
@@ -134,10 +134,10 @@ public class Account implements Serializable{
 	public void setIsPrivate(boolean isPrivate){
 		this.isPrivate=isPrivate;
 	}
-	public int getType(){
+	public String getType(){
 		return this.type;
 	}
-	public void setType(int type){
+	public void setType(String type){
 		this.type=type;
 	}
 	public float getAddrLon(){

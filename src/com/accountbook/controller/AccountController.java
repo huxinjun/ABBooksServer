@@ -77,7 +77,7 @@ public class AccountController {
 		Account account = EasyJson.getJavaBean(content, Account.class);
 		System.out.println("parse account:"+account);
 		//如果是借款账单,需要处理借款人的规则
-		if(account.getType()==9){
+		if(account.getType().equals("jk")){
 			for(Member member:account.getMembers())
 				if(member.getPaidIn()==0){
 					member.setRuleType(Member.RULE_TYPE_NUMBER);
@@ -649,6 +649,8 @@ public class AccountController {
 		String findId = req.getAttribute("userid").toString();
 		Result result = new Result();
 		Account findAccount = accountService.findAccount(accountId);
+		if(findAccount==null)
+			return result.put(Result.RESULT_FAILD, "账单已被删除");
 		result.put(findAccount);
 		result.remove("imgs");
 		if (findAccount.getImgs() == null || "".equals(findAccount.getImgs()))

@@ -33,6 +33,8 @@ public class AccountServiceImpl implements IAccountService {
 	@Override
 	public Account findAccount(String accountId) {
 		Account account = dao.queryAccount(accountId);
+		if(account==null)
+			return null;
 		account.setMembers((ArrayList<Member>) dao.queryMembersByAccountId(account.getId()));
 		
 		List<PayTarget> payTargets = dao.queryPayTargetByAccountId(account.getId());

@@ -90,8 +90,11 @@ SELECT u.id,u.nickname,u.icon FROM friend AS f LEFT JOIN USER AS u ON (f.accept_
 #-------------------------------------------------------------------------------------------------------------
 
 #查询当月总支出(自己)
-SELECT 'month_paidin' NAME,SUM(money) AS money FROM (
-SELECT SUM(paid_in) AS money FROM account WHERE is_private=1 AND user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+SELECT 'month_paidin' NAME,SUM(money) AS number FROM (
+SELECT SUM(paid_in) AS money FROM account WHERE is_private=1 AND TYPE!='sr' AND user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+UNION
+SELECT SUM(a.should_pay) AS money FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(b.date_timestamp,'%Y-%m'))AS total
+		
 UNION
 SELECT SUM(a.should_pay) AS money FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(b.date_timestamp,'%Y-%m'))AS total
 
