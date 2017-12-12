@@ -29,7 +29,6 @@ import com.accountbook.service.IUserService;
 import com.accountbook.utils.FileUtils;
 import com.accountbook.utils.IDUtil;
 import com.accountbook.utils.IconUtil;
-import com.accountbook.utils.TextUtils;
 import com.accountbook.utils.WxUtil;
 
 
@@ -67,11 +66,12 @@ public class GroupController {
 		group.id=IDUtil.generateNewId();
 		group.name=name;
 		group.category=category;
-		group.icon=IconUtil.createIcon(group, null);
 		group.adminId=findId;
 		group.time=System.currentTimeMillis();
 		
 		groupService.addGroup(group);
+		
+		IconUtil.updateGroupIcon(groupService, group.id);
 		
 		result.put(Result.RESULT_OK, group.id);
 		return result;
@@ -96,26 +96,11 @@ public class GroupController {
 			return result.put(Result.RESULT_COMMAND_INVALID, "没有权限!");
 		}
 		
-		if(userCount==0 && !group.name.equals(name)){
-			
-			if(TextUtils.isNotEmpty(group.icon)){
-				File oldFile=new File(FileUtils.getImageAbsolutePath(group.icon));
-				if(oldFile.exists()){
-					System.out.println("updateGroupIcon.删除旧图(无成员):"+oldFile.getAbsolutePath());
-					oldFile.delete();
-				}
-			}
-			
-			
-			group.icon=IconUtil.createIcon(group, null);
-			System.out.println("更新头像(无成员):"+group);
-		}
-		
 		group.name=name;
 		group.category=category;
-		
 		groupService.updateGroupInfo(group);
 		
+		IconUtil.updateGroupIcon(groupService, groupId);
 		return result.put(Result.RESULT_OK, "更新成功!");
 	}
 	
@@ -215,12 +200,41 @@ public class GroupController {
 		groupService.exitGroup(groupId,findId);
 		
 		
-		//TODO 更新分组icon
 		IconUtil.updateGroupIcon(groupService, groupId);
 		
 		return result.put(Result.RESULT_OK, "成功退出分组!");
 	}
 	
+	
+	@ResponseBody
+    @RequestMapping("/delete")
+    public Object deleteGroup(ServletRequest req,String groupId){
+		String findId=req.getAttribute("userid").toString();
+		
+		Result result=new Result();
+		
+		Group group = groupService.queryGroupInfo(groupId);
+		if(!group.adminId.equals(findId))
+			return result.put(Result.RESULT_FAILD, "非管理员不能删除组!");
+		
+		
+		/*
+		 * 暂时不删除了,因为旧的账单里面可能使用了这个分组的图片,删除会导致这些图片都无法显示了
+		//删除组的文件夹
+		String groupDir = FileUtils.getImageAbsolutePath(group.id);
+		File file = new File(groupDir);
+		File[] listFiles = file.listFiles();
+		//删除所有文件
+		for(File f:listFiles)
+			f.delete();
+		//再删除空文件夹
+		if(file.exists())
+			file.delete();
+		*/
+		
+		groupService.deleteGroup(groupId);
+		return result.put(Result.RESULT_OK, "成功解散并删除分组!");
+	}
 	
 	/**
 	 * 此接口获取分组的二维码

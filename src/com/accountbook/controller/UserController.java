@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.accountbook.model.Message;
 import com.accountbook.model.UserInfo;
 import com.accountbook.modle.result.Result;
+import com.accountbook.service.IAccountService;
 import com.accountbook.service.IFriendService;
 import com.accountbook.service.IMessageService;
 import com.accountbook.service.INotifService;
@@ -49,6 +50,8 @@ public class UserController {
 	@Autowired
 	INotifService notifService;
 	
+	@Autowired
+	IAccountService accountService;
 	
 	
 	@ResponseBody
@@ -107,6 +110,28 @@ public class UserController {
 		
 		
 		return result.put(Result.RESULT_OK, "更新用户信息成功");
+		
+	}
+	
+	/**
+	 * 更新头像
+	 */
+	@ResponseBody
+    @RequestMapping("/updateIcon")
+    public Object updateIcon(HttpServletRequest request){
+		String findId=request.getAttribute("userid").toString();
+		
+		
+		Result result=new Result();
+		UserInfo findUser = userService.findUser(findId);
+		//下载头像
+		findUser.icon = ImageUtils.download(findUser.avatarUrl,findId);
+		userService.updateUser(findUser);
+		
+		//更新账单中的头像
+		accountService.updateMemberIcon(findId, findUser.icon);
+		
+		return result.put(Result.RESULT_OK, "更新头像成功");
 		
 	}
 	

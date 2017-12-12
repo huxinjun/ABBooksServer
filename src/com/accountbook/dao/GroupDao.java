@@ -20,6 +20,8 @@ public interface GroupDao {
 	public void insertUser(Map<String,String> params);
 	/**删除组中用户*/
 	public void deleteUser(Map<String,String> params);
+	/**删除组*/
+	public void deleteGroup(String groupId);
 	
 	/**查询组*/
 	public Group queryById(String groupId);

@@ -58,12 +58,13 @@ public class FileUtils {
 		try {
 			FileOutputStream fos=new FileOutputStream(serverFile);
 			byte[] bytes=new byte[1024];
-			while(-1!=is.read(bytes)){
-				fos.write(bytes);
+			int n;
+			while((n=is.read(bytes))!=-1){
+				fos.write(bytes,0,n);
 			}
 			fos.close();
 			is.close();
-			System.out.println("存储文件:"+serverFile.getPath());
+//			System.out.println("存储文件:"+serverFile.getAbsolutePath()+",读取文件大小:"+serverFile.length());
 			return relativePath;
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -56,7 +56,15 @@ public class GroupServiceImpl implements IGroupService {
 				put("userId", userId);
 			}
 		});
-		
+	}
+	@Override
+	public void deleteGroup(String groupId) {
+		List<UserInfo> queryUsers = dao.queryUsers(groupId);
+		//删除所有成员
+		for(UserInfo user:queryUsers)
+			exitGroup(groupId, user.id);
+		//删除组
+		dao.deleteGroup(groupId);
 	}
 
 	@Override
@@ -84,6 +92,7 @@ public class GroupServiceImpl implements IGroupService {
 				
 		return false;
 	}
+	
 
 	
 

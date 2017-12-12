@@ -50,4 +50,6 @@ public interface IAccountService {
 	public void deleteMember(String id);
 	public void deleteAccount(String accountId);
 	
+	public void updateMemberIcon(String userId,String memberIcon);
+	
 }

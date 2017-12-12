@@ -61,4 +61,7 @@ public interface AccountDao {
 	
 	public void deleteAccount(String accountId);
 	public void deleteOffset(String offsetId);
+	
+	
+	public void updateMemberIcon(String userId,String memberIcon);
 }

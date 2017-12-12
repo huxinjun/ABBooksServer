@@ -44,7 +44,8 @@ public class NotifServiceImpl implements INotifService {
 
 	@Override
 	public int getValidCount(String userId) {
-		
+		//删除过期的form
+		dao.deleteInvalid(userId);
 		return dao.queryValidCount(userId);
 	}
 
@@ -55,6 +56,8 @@ public class NotifServiceImpl implements INotifService {
 
 	@Override
 	public boolean isNotifOpen(String userId) {
+		//删除过期的form
+		dao.deleteInvalid(userId);
 		return dao.isNotifOpen(userId);
 	}
 

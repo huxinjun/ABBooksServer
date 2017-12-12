@@ -15,8 +15,9 @@ import javax.net.ssl.SSLSocketFactory;
 public class ImageUtils {
 
 	public static void main(String args[]){
-//		String download = download("http://cdn.atool.org/res/right.png");
+//		String download = download("http://h.hiphotos.baidu.com/image/pic/item/7a899e510fb30f24ada23710c295d143ad4b03ed.jpg");
 		String download = download("https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eqicvuNcjOEqE68x3yVt8JpI9wuMSw3ib0LIgs7ZPqpz9TzWKS139bftAYTWWM8J0FhVyd4eqcgIdiag/0");
+//		String download = download("https://img.alicdn.com/tfs/TB1TK8_h_nI8KJjy0FfXXcdoVXa-750-291.jpg_Q90.jpg");
 		System.out.println(download);
 	}
 
@@ -47,7 +48,7 @@ public class ImageUtils {
             	conn.setDoInput(true);    
             	conn.setUseCaches(false); 
             }
-            
+//            System.out.println("服务器告知文件大小:"+connection.getContentLength());
             String relativePath= FileUtils.saveFile(connection.getInputStream(),dirNames);
 			
             return relativePath;

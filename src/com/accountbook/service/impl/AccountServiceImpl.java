@@ -235,6 +235,11 @@ public class AccountServiceImpl implements IAccountService {
 		dao.deleteAccount(accountId);
 	}
 
+	@Override
+	public void updateMemberIcon(String userId, String memberIcon) {
+		dao.updateMemberIcon(userId, memberIcon);
+	}
+
 	
 
 	

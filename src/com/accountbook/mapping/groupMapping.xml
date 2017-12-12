@@ -60,9 +60,13 @@
 	</insert>
 	
 	<!-- 组中移除用户 -->
-	<insert id="deleteUser" parameterType="java.util.Map">
+	<delete id="deleteUser" parameterType="java.util.Map">
 		delete from group_user where group_id=#{groupId, jdbcType=INTEGER} and user_id=#{userId, jdbcType=VARCHAR}
-	</insert>
+	</delete>
+	
+	<delete id="deleteGroup" parameterType="String">
+		delete from group where id=#{groupId}
+	</delete>
 	
 	
 	

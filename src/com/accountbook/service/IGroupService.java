@@ -20,6 +20,8 @@ public interface IGroupService {
 	public void joinGroup(String groupId,String userId);
 	/**删除组中用户*/
 	public void exitGroup(String groupId,String userId);
+	/**删除组*/
+	public void deleteGroup(String groupId);
 	
 	/**查询组*/
 	public Group queryGroupInfo(String groupId);

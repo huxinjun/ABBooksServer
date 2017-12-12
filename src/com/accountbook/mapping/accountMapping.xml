@@ -125,6 +125,11 @@
 	</delete>
 	
 	
+	<update id="updateMemberIcon" parameterType="String">
+		UPDATE account_member SET member_icon=#{1} WHERE member_id=#{0}
+	</update>
+	
+	
 	
 	
 	<select id="queryAccount" parameterType="String" resultMap="accountMap">
