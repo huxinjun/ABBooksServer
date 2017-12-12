@@ -40,6 +40,8 @@ public interface AccountDao {
 	public List<Member> queryMembers(String userId);
 	/**查询userId本月支出,待付款,代收款等信息*/
 	public List<SummaryInfo> queryAccountSummary(String userId);
+	/**查询userId当日支出,支出账单个数等信息*/
+	public List<SummaryInfo> queryAccountSummaryToday(String userId);
 	public List<SummaryInfo> queryAccountSummary2P(Map<String,Object> map);
 	
 	/**查询两个用户待付的金额:user1Id向user2Id待付的*/

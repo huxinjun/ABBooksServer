@@ -38,6 +38,7 @@ public interface IAccountService {
 	public PayTarget findPayTarget(String targetId);
 	
 	public List<SummaryInfo> getSummaryInfo(String userId);
+	public List<SummaryInfo> getSummaryInfoToday(String userId);
 	public List<SummaryInfo> getSummaryInfo(String user1Id,String user2Id);
 	
 	//更新支付方案中的状态

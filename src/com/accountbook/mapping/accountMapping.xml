@@ -268,6 +268,26 @@
 	</select>
 	
 	
+	<select id="queryAccountSummaryToday" parameterType="String" resultMap="summaryMap">
+	
+		SELECT 'day_paidin' NAME,SUM(money) AS number FROM (
+		SELECT SUM(paid_in) AS money FROM account WHERE is_private=1 AND TYPE!='sr' AND user_id=#{userId} AND DATE_FORMAT(NOW(),'%d')=DATE_FORMAT(date_timestamp,'%d')
+		UNION
+		SELECT SUM(a.should_pay) AS money FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id WHERE member_id=#{userId} AND DATE_FORMAT(NOW(),'%d')=DATE_FORMAT(b.date_timestamp,'%d'))AS total
+		
+		
+		UNION
+		
+		
+		SELECT 'day_paid_count' NAME,SUM(a) number FROM (
+		SELECT COUNT(*) AS a FROM account WHERE is_private=1 AND TYPE!='sr' AND user_id=#{userId} AND DATE_FORMAT(NOW(),'%d')=DATE_FORMAT(date_timestamp,'%d')
+		UNION
+		SELECT COUNT(*) AS a FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id WHERE member_id=#{userId} AND DATE_FORMAT(NOW(),'%d')=DATE_FORMAT(b.date_timestamp,'%d'))AS total
+	
+		
+	</select>
+	
+	
 	<select id="queryWaitPaidMoney" parameterType="map" resultType="double">
 	
 		#查询所有待付款(指定另一个人),抵消账单专用,会排除当前计算的target

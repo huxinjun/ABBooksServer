@@ -177,6 +177,11 @@ public class AccountServiceImpl implements IAccountService {
 	public List<SummaryInfo> getSummaryInfo(String userId) {
 		return dao.queryAccountSummary(userId);
 	}
+	
+	@Override
+	public List<SummaryInfo> getSummaryInfoToday(String userId) {
+		return dao.queryAccountSummaryToday(userId);
+	}
 
 	@Override
 	public List<SummaryInfo> getSummaryInfo(String user1Id, String user2Id) {

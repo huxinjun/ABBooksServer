@@ -73,8 +73,63 @@ public class AccountController {
 
 		System.out.println("AccountController.newAccount");
 		System.out.println(content);
+		
 
 		Account account = EasyJson.getJavaBean(content, Account.class);
+		account.setId(IDUtil.generateNewId());
+		account.setDateTimestamp(Timestamp.valueOf(account.getDate() + " 00:00:00"));
+		account.setCreateTimestamp(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
+		
+		//如果是收款,需要构造一个账单
+		if(account.getType().equals("hk")){
+			Member memberHe = account.getMembers().get(0);
+			UserInfo userMe = userService.findUser(findId);
+			//首先,需要确认当前用户需要向曾经的借款者收钱,并且收的钱大于当前收款的金额
+			double waitPaidMoney = accountService.getWaitPaidMoney(memberHe.getMemberId(),findId,  "");
+			System.out.println("waitPaidMoney:"+waitPaidMoney);
+			if(waitPaidMoney>0){
+				//还款成员欠了我的钱
+				if(account.getPaidIn()>waitPaidMoney)
+					return new Result(Result.RESULT_FAILD, "["+memberHe.getMemberName()+"]最多能向您还款:"+waitPaidMoney);
+				//生成还款账单
+				Member memberMe=new Member();
+				memberMe.setId(IDUtil.generateNewId());
+				memberMe.setAccountId(account.getId());
+				memberMe.setIsGroup(false);
+				memberMe.setMemberId(findId);
+				memberMe.setMemberName(userMe.nickname);
+				memberMe.setMemberIcon(userMe.icon);
+				accountService.addMember(memberMe);
+				
+				memberHe.setId(IDUtil.generateNewId());
+				memberHe.setAccountId(account.getId());
+				memberHe.setRuleType(Member.RULE_TYPE_NUMBER);
+				memberHe.setRuleNum(account.getPaidIn());
+				memberHe.setShouldPay(account.getPaidIn());
+				memberHe.setParentMemberId(null);
+				accountService.addMember(memberHe);
+				
+				PayTarget newTarget = new PayTarget();
+				newTarget.setId(IDUtil.generateNewId());
+				newTarget.setAccountId(account.getId());
+				newTarget.setPaidId(memberHe.getMemberId());
+				newTarget.setReceiptId(memberMe.getMemberId());
+				newTarget.setMoney(account.getPaidIn());
+				newTarget.setWaitPaidMoney(account.getPaidIn());
+				
+				accountService.addPayTarget(newTarget);
+				
+				accountService.addNewAccount(account);
+				
+				offsetTarget(account.getId());
+				
+				return new Result(Result.RESULT_OK, "记录账单成功!");
+				
+			}else
+				return new Result(Result.RESULT_FAILD, "["+memberHe.getMemberName()+"]无需向您支付!");
+		}
+		
+		
 		System.out.println("parse account:"+account);
 		//如果是借款账单,需要处理借款人的规则
 		if(account.getType().equals("jk")){
@@ -113,12 +168,6 @@ public class AccountController {
 				allUsers.add(member);
 		}
 
-		account.setId(IDUtil.generateNewId());
-		account.setDateTimestamp(Timestamp.valueOf(account.getDate() + " 00:00:00"));
-		account.setCreateTimestamp(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
-
-		
-		
 		
 		
 		// 只有一个成员而且是记录账单者自己时不需要在数据库中添加成员
@@ -624,6 +673,10 @@ public class AccountController {
 	public Object updatePayTargetSettle(ServletRequest req,String accountId,String targetId) {
 		String findId = req.getAttribute("userid").toString();
 		PayTarget findPayTarget = accountService.findPayTarget(targetId);
+		if(findPayTarget==null)
+			return new Result(Result.RESULT_FAILD, "账单已被删除!");
+		if(findPayTarget.getWaitPaidMoney()==0)
+			return new Result(Result.RESULT_FAILD, "重复操作!");
 		float oldWaitPaidMoney = findPayTarget.getWaitPaidMoney();
 		findPayTarget.setWaitPaidMoney(0);
 		accountService.updatePayTarget(findPayTarget);
@@ -851,6 +904,20 @@ public class AccountController {
 			simpleInfo = accountService.getSummaryInfo(findId);
 		else
 			simpleInfo = accountService.getSummaryInfo(findId,userId);
+		return result.put(Result.RESULT_OK, "查询成功").put("infos",simpleInfo);
+	}
+	
+	
+	/**
+	 * 统计当前用户今日记账的简要信息
+	 */
+	@ResponseBody
+	@RequestMapping("/getTodaySummaryInfo")
+	public Object getTodaySummaryInfo(ServletRequest req) {
+		String findId=req.getAttribute("userid").toString();
+		Result result=new Result();
+		List<SummaryInfo> simpleInfo;
+		simpleInfo = accountService.getSummaryInfoToday(findId);
 		return result.put(Result.RESULT_OK, "查询成功").put("infos",simpleInfo);
 	}
 
