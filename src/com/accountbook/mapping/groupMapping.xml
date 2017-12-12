@@ -56,16 +56,16 @@
 	
 	<!-- 组中加用户 -->
 	<insert id="insertUser" parameterType="java.util.Map">
-		insert into group_user values(null,#{groupId, jdbcType=INTEGER},#{userId, jdbcType=VARCHAR})
+		insert into group_user values(null,#{groupId, jdbcType=VARCHAR},#{userId, jdbcType=VARCHAR})
 	</insert>
 	
 	<!-- 组中移除用户 -->
 	<delete id="deleteUser" parameterType="java.util.Map">
-		delete from group_user where group_id=#{groupId, jdbcType=INTEGER} and user_id=#{userId, jdbcType=VARCHAR}
+		delete from group_user where group_id=#{groupId, jdbcType=VARCHAR} and user_id=#{userId, jdbcType=VARCHAR}
 	</delete>
 	
 	<delete id="deleteGroup" parameterType="String">
-		delete from group where id=#{groupId}
+		delete from group_ where id=#{groupId}
 	</delete>
 	
 	
