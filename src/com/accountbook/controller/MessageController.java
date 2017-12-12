@@ -232,11 +232,8 @@ public class MessageController {
     		 if(fromUser==null || toUser==null)
     			 continue;
     		 UserInfo he=fromUser.id.equals(findId)?toUser:fromUser;
-    		 
-    		 if(he!=null){
-    			 msgResult.put("name",he.nickname);
-    			 msgResult.put("icon",he.icon);
-    		 }
+    		 msgResult.put("name",he.nickname);
+    		 msgResult.put("icon",he.icon);
     		 
     		 
     		 if(msg.type==1 ||msg.type==2){

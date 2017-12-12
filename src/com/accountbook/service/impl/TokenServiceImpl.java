@@ -70,7 +70,7 @@ public class TokenServiceImpl implements ITokenService {
         String user=readJdbcProperty("username");
 		String password=readJdbcProperty("password");
         String url = sqlBaseUrl + "?user="+user+"&password="+password;
-        System.out.println("jdbcQuery.mysql_url:"+url);
+//        System.out.println("jdbcQuery.mysql_url:"+url);
  
         try {
             // 之所以要使用下面这条语句，是因为要使用MySQL的驱动，所以我们要把它驱动起来，

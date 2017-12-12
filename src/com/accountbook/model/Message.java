@@ -42,6 +42,14 @@ public class Message {
 	 * 邀请消息:0未处理,1接受,2拒绝,3删除
 	 */
 	public int state;
+
+	@Override
+	public String toString() {
+		return "Message [id=" + id + ", fromId=" + fromId + ", toId=" + toId + ", type=" + type + ", content=" + content
+				+ ", time=" + time + ", state=" + state + "]\n";
+	}
+	
+	
 	
 	
 }

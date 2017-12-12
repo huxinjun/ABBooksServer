@@ -13,8 +13,16 @@
   
   <!-- 查询聊天列表:每个用户的最后一条消息 -->
   	<select id="queryChatList" parameterType="String" resultMap="map">
-  		SELECT * FROM message WHERE TIME=(SELECT MAX(TIME) FROM (SELECT MAX(TIME) AS TIME FROM message WHERE  (to_id=#{userId} OR from_id=#{userId}) AND TYPE=3 and state!=2 GROUP BY from_id,to_id) AS a)
-		UNION 
+  		SELECT * FROM message WHERE TIME=(SELECT MAX(TIME) FROM 
+		(SELECT MAX(TIME) AS TIME FROM message WHERE( 
+		(to_id=#{userId} and from_id NOT IN(SELECT id FROM group_))
+		OR
+		(from_id=#{userId} and to_id NOT IN(SELECT id FROM group_))
+		) 
+		AND TYPE=3 AND state!=2 GROUP BY from_id,to_id)
+		 AS a)
+  		
+  		UNION 
 		 SELECT * FROM ( 
 		 SELECT * FROM message WHERE to_id=#{userId} AND (TYPE=1 OR TYPE=2) and state!=2 ORDER BY TIME DESC LIMIT 0,1) AS b
 		 
