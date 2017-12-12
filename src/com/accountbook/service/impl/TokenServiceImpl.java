@@ -1,9 +1,11 @@
 package com.accountbook.service.impl;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,8 +56,6 @@ public class TokenServiceImpl implements ITokenService {
 	 * @return
 	 */
 	private Connection conn = null;
-	//腾讯云服务器
-	private String host = "111.231.209.59:3306";
 	private TokenInfo jdbcQuery(String token){
 		TokenInfo result = null;
 		
@@ -66,8 +66,11 @@ public class TokenServiceImpl implements ITokenService {
         // 下面语句之前就要先创建javademo数据库
 //        String url = "jdbc:mysql://118.184.85.209:8888/accountbook?"
 //                + "user=root&password=root&useUnicode=true&characterEncoding=UTF8";
-        String url = "jdbc:mysql://"+host+"/accountbook?"
-        		+ "user=root&password=huxinJun7721065";
+        String sqlBaseUrl=readJdbcProperty("url");
+        String user=readJdbcProperty("username");
+		String password=readJdbcProperty("password");
+        String url = sqlBaseUrl + "?user="+user+"&password="+password;
+        System.out.println("jdbcQuery.mysql_url:"+url);
  
         try {
             // 之所以要使用下面这条语句，是因为要使用MySQL的驱动，所以我们要把它驱动起来，
@@ -97,13 +100,47 @@ public class TokenServiceImpl implements ITokenService {
         } catch (Exception e) {
             e.printStackTrace();
             conn=null;
-            return jdbcQuery(token);
+            
+//            return jdbcQuery(token);
         }
         return result;
 	}
 	
-	
-	
+	static Properties jdbcProps;
+	/**
+	 * 读取jdbc.properties中的配置
+	 * 
+	 * @return
+	 */
+	public static String readJdbcProperty(String key) {
+		if(jdbcProps!=null)
+			return jdbcProps.getProperty(key);
+		
+		jdbcProps = new Properties();
+		String value = null;
+		try {
+			// 配置文件位于当前目录中的config目录下
+			InputStream resourceAsStream = TokenServiceImpl.class.getClassLoader().getResourceAsStream("jdbc.properties");
+			jdbcProps.load(resourceAsStream);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		value = jdbcProps.getProperty(key);
+		return value;
+	}
+
+	public static void main(String[] args) {
+		System.out.println(readJdbcProperty("url"));
+		System.out.println(readJdbcProperty("username"));
+		System.out.println(readJdbcProperty("password"));
+		
+		String sqlBaseUrl=readJdbcProperty("url");
+        String user=readJdbcProperty("username");
+		String password=readJdbcProperty("password");
+        String url = sqlBaseUrl + "?user="+user+"&password="+password;
+        System.out.println(url);
+	}
 	
 	
 	
