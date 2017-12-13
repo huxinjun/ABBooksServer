@@ -124,12 +124,18 @@ public class UserController {
 		
 		Result result=new Result();
 		UserInfo findUser = userService.findUser(findId);
+		String oldIcon=findUser.icon;
 		//下载头像
 		findUser.icon = ImageUtils.download(findUser.avatarUrl,findId);
 		userService.updateUser(findUser);
 		
 		//更新账单中的头像
 		accountService.updateMemberIcon(findId, findUser.icon);
+		
+		//删除旧的头像
+		File oldIconFile=new File(FileUtils.getImageAbsolutePath(oldIcon));
+		if(oldIconFile.exists())
+			oldIconFile.delete();
 		
 		return result.put(Result.RESULT_OK, "更新头像成功");
 		

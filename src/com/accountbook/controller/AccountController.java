@@ -80,40 +80,46 @@ public class AccountController {
 		account.setDateTimestamp(Timestamp.valueOf(account.getDate() + " 00:00:00"));
 		account.setCreateTimestamp(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
 		
-		//如果是收款,需要构造一个账单
+		//如果是还款,需要特殊处理
 		if(account.getType().equals("hk")){
-			Member memberHe = account.getMembers().get(0);
-			UserInfo userMe = userService.findUser(findId);
-			//首先,需要确认当前用户需要向曾经的借款者收钱,并且收的钱大于当前收款的金额
-			double waitPaidMoney = accountService.getWaitPaidMoney(memberHe.getMemberId(),findId,  "");
+			
+			Member paidMember = null;//还款人,付钱的
+			Member recieptMember = null;//收款人,收钱的
+			for(Member member:account.getMembers())
+				if(member.getPaidIn()==0)
+					recieptMember=member;
+				else
+					paidMember=member;
+			UserInfo recieptUser=userService.findUser(recieptMember.getMemberId());
+			//首先,需要确认收款人需要向曾经的借款者收钱,并且收的钱大于当前收款的金额
+			double waitPaidMoney = accountService.getWaitPaidMoney(paidMember.getMemberId(),recieptMember.getMemberId(),  "");
 			System.out.println("waitPaidMoney:"+waitPaidMoney);
 			if(waitPaidMoney>0){
-				//还款成员欠了我的钱
+				//还款成员欠了收款人的钱
 				if(account.getPaidIn()>waitPaidMoney)
-					return new Result(Result.RESULT_FAILD, "["+memberHe.getMemberName()+"]最多能向您还款:"+waitPaidMoney);
+					return new Result(Result.RESULT_COMMAND_INVALID, "["+paidMember.getMemberName()+"]最多能向您还款:"+waitPaidMoney);
 				//生成还款账单
-				Member memberMe=new Member();
-				memberMe.setId(IDUtil.generateNewId());
-				memberMe.setAccountId(account.getId());
-				memberMe.setIsGroup(false);
-				memberMe.setMemberId(findId);
-				memberMe.setMemberName(userMe.nickname);
-				memberMe.setMemberIcon(userMe.icon);
-				accountService.addMember(memberMe);
+				recieptMember.setId(IDUtil.generateNewId());
+				recieptMember.setAccountId(account.getId());
+				recieptMember.setIsGroup(false);
+				recieptMember.setMemberId(findId);
+				recieptMember.setMemberName(recieptUser.nickname);
+				recieptMember.setMemberIcon(recieptUser.icon);
+				accountService.addMember(recieptMember);
 				
-				memberHe.setId(IDUtil.generateNewId());
-				memberHe.setAccountId(account.getId());
-				memberHe.setRuleType(Member.RULE_TYPE_NUMBER);
-				memberHe.setRuleNum(account.getPaidIn());
-				memberHe.setShouldPay(account.getPaidIn());
-				memberHe.setParentMemberId(null);
-				accountService.addMember(memberHe);
+				paidMember.setId(IDUtil.generateNewId());
+				paidMember.setAccountId(account.getId());
+				paidMember.setRuleType(Member.RULE_TYPE_NUMBER);
+				paidMember.setRuleNum(account.getPaidIn());
+				paidMember.setShouldPay(account.getPaidIn());
+				paidMember.setParentMemberId(null);
+				accountService.addMember(paidMember);
 				
 				PayTarget newTarget = new PayTarget();
 				newTarget.setId(IDUtil.generateNewId());
 				newTarget.setAccountId(account.getId());
-				newTarget.setPaidId(memberHe.getMemberId());
-				newTarget.setReceiptId(memberMe.getMemberId());
+				newTarget.setPaidId(paidMember.getMemberId());
+				newTarget.setReceiptId(recieptMember.getMemberId());
 				newTarget.setMoney(account.getPaidIn());
 				newTarget.setWaitPaidMoney(account.getPaidIn());
 				
@@ -126,18 +132,40 @@ public class AccountController {
 				return new Result(Result.RESULT_OK, "记录账单成功!");
 				
 			}else
-				return new Result(Result.RESULT_FAILD, "["+memberHe.getMemberName()+"]无需向您支付!");
+				return new Result(Result.RESULT_COMMAND_INVALID, "还款人["+paidMember.getMemberName()+"]无需向收款人["+recieptMember.getMemberName()+"]还款!原因:"
+						+"收款人在以往账单中有"+(-waitPaidMoney)+"元需要向还款人支付");
 		}
 		
 		
 		System.out.println("parse account:"+account);
 		//如果是借款账单,需要处理借款人的规则
 		if(account.getType().equals("jk")){
+			//如果被借人欠了借款人的钱,就不能借款(怎么能向一个借了你钱的人借钱呢?最多也是先还钱后再去借)
+			//先还再借的功能暂时不实现,用途不大
+			//如果是上面的情况,直接告诉客户端,无法借款
+			Member borrow = null;//借款人,收钱的
+			Member paidout = null;//被借款人,付钱的
+			@SuppressWarnings("unused")
+			Member me;//我
+			
 			for(Member member:account.getMembers())
 				if(member.getPaidIn()==0){
 					member.setRuleType(Member.RULE_TYPE_NUMBER);
 					member.setRuleNum(account.getPaidIn());
+					borrow=member;
+					if(findId.equals(member.getMemberId()))
+						me=borrow;
+				}else{
+					paidout=member;
+					if(findId.equals(member.getMemberId()))
+						me=paidout;
 				}
+			
+			//以往账单中借款人  ----欠----  被借人支付的金额
+			double waitPaidMoney = accountService.getWaitPaidMoney(borrow.getMemberId(),paidout.getMemberId(),"");
+			if(waitPaidMoney<0)
+				return new Result(Result.RESULT_COMMAND_INVALID, "被借人["+paidout.getMemberName()+"]无法向借款人["+borrow.getMemberName()+"]借款,原因:被借人在"
+						+ "以往账单中还需向借款人支付:"+(-waitPaidMoney)+"元,请还清后再创建借款账单!");
 					
 		}
 		
@@ -328,12 +356,21 @@ public class AccountController {
 			System.out.println("抵消target:"+target);
 			if(isNotGroup(findAccount.getMembers(), target.getPaidId())
 					&& isNotGroup(findAccount.getMembers(), target.getReceiptId())){
-				double waitPaidMoney = accountService.getWaitPaidMoney(target.getPaidId(), target.getReceiptId(),target.getId());
+				double waitPaidMoney;
+				if(findAccount.getType().equals("hk"))
+					waitPaidMoney = accountService.getWaitPaidMoney(target.getReceiptId(),target.getPaidId(),target.getId());
+				else
+					waitPaidMoney = accountService.getWaitPaidMoney(target.getPaidId(), target.getReceiptId(),target.getId());
+				
 				System.out.println("抵消waitPaidMoney:"+waitPaidMoney);
 				if(waitPaidMoney<0){
 					while(true){
 						//符合抵消条件(以往账单中本次的收款者欠了支付者的钱)
-						PayTarget notSettledTarget = accountService.findEarliestNotSettledTarget(target.getReceiptId(), target.getPaidId(),target.getId());
+						PayTarget notSettledTarget;
+						if(findAccount.getType().equals("hk"))
+							notSettledTarget = accountService.findEarliestNotSettledTarget(target.getPaidId(),target.getReceiptId(),target.getId());
+						else
+							notSettledTarget = accountService.findEarliestNotSettledTarget(target.getReceiptId(), target.getPaidId(),target.getId());
 						System.out.println("抵消notSettledTarget:"+notSettledTarget);
 						if(notSettledTarget==null)
 							break;

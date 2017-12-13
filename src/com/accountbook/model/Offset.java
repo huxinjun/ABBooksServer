@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 public class Offset {
 	
 
-	public int type;
+	public String type;
 	public String name;
 	public float paidIn;
 	public Timestamp dateTimestamp;

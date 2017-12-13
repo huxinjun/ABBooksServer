@@ -68,7 +68,7 @@
   
   
   <resultMap id="offsetsMap" type="com.accountbook.model.Offset" >
-	    <result column="type" property="type" jdbcType="INTEGER" />
+	    <result column="type" property="type" jdbcType="VARCHAR" />
 	    <result column="name" property="name" jdbcType="VARCHAR" />
 	    <result column="paid_in" property="paidIn" jdbcType="DOUBLE" />
 	    <result column="date_timestamp" property="dateTimestamp" jdbcType="TIMESTAMP" />
