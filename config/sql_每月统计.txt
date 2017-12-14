@@ -1,0 +1,44 @@
+﻿#查询全部待付款(自己)----------------------------
+SELECT 'wait_paid' NAME,SUM(wait_paid_money),COUNT(*) AS count FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.wait_paid_money>0 AND a.paid_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ'
+		
+UNION
+		
+#查询全部待收款(自己)----------------------------
+SELECT 'wait_receipt' NAME,SUM(wait_paid_money),COUNT(*) AS count FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id WHERE a.wait_paid_money>0 AND a.receipt_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ'
+		
+UNION
+
+#查询月总支出(自己)----------------------------
+SELECT 'month_paidin' NAME,SUM(money) AS number,SUM(_count) AS count FROM (
+SELECT SUM(paid_in) AS money,COUNT(*) AS _count FROM account WHERE is_private=1 AND TYPE!='sr' 
+AND user_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ'
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+		
+UNION
+#多人账单中的应付(去除还款和借款的账单)
+SELECT SUM(a.should_pay) AS money,COUNT(*) AS _count FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id 
+WHERE member_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ' AND b.type!='hk' AND b.type!='jk'
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+		
+#还款账单中是付款者的账单(还款中的paid_id是还钱者,出钱的,与借款刚好相反)
+UNION
+SELECT SUM(wait_paid_money) AS money,COUNT(*) AS _count FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='hk' AND a.paid_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ'
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+		
+#借款账单中自己是借款者的账单(借款中的receipt_id指的是被借人,出钱的)
+UNION
+SELECT SUM(wait_paid_money) AS money,COUNT(*) AS _count FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='jk' AND a.receipt_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ'
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m'))AS total
+		
+		
+UNION
+		
+		
+		
+#查询所有待完善的账单-----------------
+SELECT 'wait_edit' NAME,COUNT(*) AS number,0 FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE (a.paid_id IN (SELECT group_id FROM group_user WHERE user_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ') AND a.paid_status=1)
+OR
+(a.receipt_id IN (SELECT group_id FROM group_user WHERE user_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ') AND a.receipt_status=1)

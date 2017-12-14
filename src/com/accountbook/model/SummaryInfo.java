@@ -12,7 +12,7 @@ public class SummaryInfo implements Serializable{
 	/**
 	 * 自动生成的序列化串号
 	 */
-	private static final long serialVersionUID = 5023829368561440391L;
+	private static final long serialVersionUID = -2687683106585438731L;
 	/**
 	 * 
 	 */
@@ -21,6 +21,10 @@ public class SummaryInfo implements Serializable{
 	 * 
 	 */
 	private String name;
+	/**
+	 * 
+	 */
+	private int count;
 
 
 	//**********************************************Getter and Setter************************************************
@@ -37,6 +41,12 @@ public class SummaryInfo implements Serializable{
 	public void setName(String name){
 		this.name=name;
 	}
+	public int getCount(){
+		return this.count;
+	}
+	public void setCount(int count){
+		this.count=count;
+	}
 
 
 	//**************************************************toString******************************************************
@@ -44,7 +54,7 @@ public class SummaryInfo implements Serializable{
 	@Override
 	public String toString() {
 		return "SummaryInfo [number=" + number + ", name=" + name
-				+ "]";
+				+ ", count=" + count + "]";
 	}
 
 
@@ -63,6 +73,8 @@ public class SummaryInfo implements Serializable{
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
+			return false;
+		if (count != other.count)
 			return false;
 		return true;
 	}

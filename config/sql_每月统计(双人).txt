@@ -1,0 +1,29 @@
+﻿#查询所有待付款(指定另一个人)
+SELECT 'wait_paid' NAME,p.number-r.number AS number FROM(SELECT 0 id, IFNULL(SUM(wait_paid_money),0) AS number FROM account_pay AS a
+WHERE wait_paid_money>0 AND id!='7ncUUBN7AdCEsXuBP6MHqQ==' AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ') p LEFT JOIN 
+(SELECT 0 id,IFNULL(SUM(wait_paid_money),0) AS number FROM account_pay AS a 
+WHERE wait_paid_money>0 AND id!='7ncUUBN7AdCEsXuBP6MHqQ==' AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') r ON p.id=r.id
+
+		
+UNION		
+		
+		
+#查询两个人的月支出(自己和一个朋友)
+SELECT 'month_paidin' NAME,SUM(should_pay) AS number FROM account_member WHERE account_id IN
+(
+SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE a.id IN(
+SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE member_id ='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+) AND member_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ' AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(a.date_timestamp,'%Y-%m')
+)
+AND member_id IN('oCBrx0FreB-L8pIQM5_RYDGoWOKQ','oCBrx0FreB-L8pIQM5_RYDGoWOJJ')
+
+UNION
+
+#查询两个人的总支出(自己和一个朋友)
+SELECT 'paidin' NAME,SUM(should_pay) AS number FROM account_member WHERE account_id IN
+(
+SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE a.id IN(
+SELECT a.id FROM account AS a LEFT JOIN account_member AS am ON a.id=am.account_id WHERE member_id ='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+) AND member_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ' 
+)
+AND member_id IN('oCBrx0FreB-L8pIQM5_RYDGoWOKQ','oCBrx0FreB-L8pIQM5_RYDGoWOJJ')

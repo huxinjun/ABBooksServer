@@ -1,0 +1,69 @@
+﻿#自己加入或创建的组
+SELECT group_id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' UNION #查询加入的组
+SELECT id FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' #查询自己为管理员的组
+
+
+
+#和自己相关的分组
+CREATE OR REPLACE VIEW `temp_me_account` AS
+SELECT DISTINCT account_id FROM account_member WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR 
+member_id IN (SELECT group_id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' UNION 
+SELECT id FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ');
+#查询自己创建的组和账单中与自己相关的组的简要信息
+SELECT id,NAME,icon,TRUE is_group FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR id IN (SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN (SELECT account_id FROM temp_me_account))
+
+#*****************************************************************************************************************
+#查询自己的帐友id
+SELECT accept_id AS id FROM friend WHERE invite_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+UNION
+SELECT invite_id AS id FROM friend WHERE accept_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+
+#查询自己的帐友简要信息
+SELECT id,nickname AS NAME,icon,FALSE is_group FROM USER WHERE id IN(
+SELECT accept_id AS id FROM friend WHERE invite_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+UNION
+SELECT invite_id AS id FROM friend WHERE accept_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')
+#*****************************************************************************************************************
+
+
+
+#查询所有和我有关系的组和用户,记账时可选的成员
+CREATE OR REPLACE VIEW temp_me_account AS
+SELECT DISTINCT account_id FROM account_member WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR 
+member_id IN (SELECT group_id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' UNION 
+SELECT id FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ');
+#查询自己创建的组和账单中与自己相关的组
+SELECT id,NAME,icon,TRUE is_group FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR id IN (SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN (SELECT account_id FROM temp_me_account))
+UNION
+SELECT id,nickname AS NAME,icon,FALSE is_group FROM USER WHERE id IN(
+SELECT accept_id AS id FROM friend WHERE invite_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+UNION
+SELECT invite_id AS id FROM friend WHERE accept_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')
+
+#不使用视图
+#查询自己创建的组和账单中与自己相关的组
+SELECT id,NAME,icon,TRUE is_group FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR 
+id IN (
+SELECT member_id FROM account_member WHERE is_group=TRUE AND account_id IN (
+SELECT account_id FROM account_member WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR 
+member_id IN (SELECT group_id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' UNION 
+SELECT id FROM group_ WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')))
+UNION
+#查询所有帐友
+SELECT id,nickname AS NAME,icon,FALSE is_group FROM USER WHERE id IN(
+SELECT accept_id AS id FROM friend WHERE invite_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+UNION
+SELECT invite_id AS id FROM friend WHERE accept_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')
+
+
+
+
+
+
+查询加入的组或者创建的组
+SELECT * FROM group_ AS g LEFT JOIN group_user AS u ON g.id=u.group_id  WHERE admin_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' OR user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' ORDER BY CONVERT(category USING gbk),CONVERT(NAME USING gbk)
+
+
+#查询添加的帐友
+SELECT u.id,u.nickname,u.icon FROM friend AS f LEFT JOIN USER AS u ON (f.accept_id=u.id OR f.invite_id=u.id) AND u.id!='oCBrx0JeF9VZDICxonPeDD1VtoQk'
+		WHERE accept_id='oCBrx0JeF9VZDICxonPeDD1VtoQk' OR invite_id='oCBrx0JeF9VZDICxonPeDD1VtoQk'

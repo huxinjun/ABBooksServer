@@ -1,0 +1,120 @@
+﻿#查询当日总支出(自己)----------------------------
+SELECT 'day_paidin' NAME,SUM(money) AS number,SUM(_count) AS COUNT FROM (
+SELECT SUM(paid_in) AS money,COUNT(*) AS _count FROM account WHERE is_private=1 AND TYPE!='sr' 
+AND user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+AND DATE_FORMAT(NOW(),'%Y-%m-%d')=DATE_FORMAT(date_timestamp,'%Y-%m-%d')
+
+UNION
+#多人账单中的应付(去除还款和借款的账单)
+SELECT SUM(a.should_pay) AS money,COUNT(*) AS _count FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id 
+WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND b.type!='hk' AND b.type!='jk'
+AND DATE_FORMAT(NOW(),'%Y-%m-%d')=DATE_FORMAT(b.date_timestamp,'%Y-%m-%d')
+
+#还款账单中是付款者的账单(还款中的paid_id是还钱者,出钱的,与借款刚好相反)
+UNION
+SELECT SUM(wait_paid_money) AS money,COUNT(*) AS _count FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='hk' AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+AND DATE_FORMAT(NOW(),'%Y-%m-%d')=DATE_FORMAT(b.date_timestamp,'%Y-%m-%d')
+
+#借款账单中自己是借款者的账单(借款中的receipt_id指的是被借人,出钱的)
+UNION
+SELECT SUM(wait_paid_money) AS money,COUNT(*) AS _count FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='jk' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+AND DATE_FORMAT(NOW(),'%Y-%m-%d')=DATE_FORMAT(b.date_timestamp,'%Y-%m-%d'))AS total
+
+
+UNION
+
+
+
+#查询当日涉及到自己的账单数-------------------------
+SELECT 'day_count' NAME,SUM(a) number,SUM(a) COUNT FROM (
+SELECT COUNT(*) AS a FROM account WHERE is_private=1 AND TYPE!='sr' AND user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND DATE_FORMAT(NOW(),'%Y-%m-%d')=DATE_FORMAT(date_timestamp,'%Y-%m-%d')
+UNION
+SELECT COUNT(*) AS a FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND DATE_FORMAT(NOW(),'%Y-%m-%d')=DATE_FORMAT(b.date_timestamp,'%Y-%m-%d'))AS total
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#!!!莫名其妙少了一天
+
+
+#查询当日总支出(自己)----------------------------
+SELECT 'month_paidin' NAME,SUM(money) AS number,SUM(_count) AS COUNT FROM (
+SELECT SUM(paid_in) AS money,COUNT(*) AS _count FROM account WHERE is_private=1 AND TYPE!='sr' 
+AND user_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ'
+AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)+1
+
+UNION
+#多人账单中的应付(去除还款和借款的账单)
+SELECT SUM(a.should_pay) AS money,COUNT(*) AS _count FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id 
+WHERE member_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ' AND b.type!='hk' AND b.type!='jk'
+AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)+1
+
+#还款账单中是付款者的账单(还款中的paid_id是还钱者,出钱的,与借款刚好相反)
+UNION
+SELECT SUM(wait_paid_money) AS money,COUNT(*) AS _count FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='hk' AND a.paid_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ'
+AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)+1
+
+#借款账单中自己是借款者的账单(借款中的receipt_id指的是被借人,出钱的)
+UNION
+SELECT SUM(wait_paid_money) AS money,COUNT(*) AS _count FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='jk' AND a.receipt_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ'
+AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)+1)AS aaa
+
+
+UNION
+
+
+
+#查询当日涉及到自己的账单数-------------------------
+SELECT 'day_paidin' NAME,SUM(a) number,SUM(a) COUNT FROM (
+SELECT COUNT(*) AS a FROM account WHERE is_private=1 AND TYPE!='sr' AND user_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ' AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)
+UNION
+SELECT COUNT(*) AS a FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id WHERE member_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ' AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)+1)AS bbb
+
+UNION 
+SELECT 'now' NAME,TO_DAYS(NOW()) AS number,0
+UNION 
+SELECT 'database_date' NAME,TO_DAYS(date_timestamp)+1 AS number,0 FROM account WHERE id='1vo3PxIOJoISDxzIwZkutQ=='
+
+
+
+

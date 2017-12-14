@@ -941,6 +941,7 @@ public class AccountController {
 			simpleInfo = accountService.getSummaryInfo(findId);
 		else
 			simpleInfo = accountService.getSummaryInfo(findId,userId);
+		System.out.println(simpleInfo);
 		return result.put(Result.RESULT_OK, "查询成功").put("infos",simpleInfo);
 	}
 	
@@ -955,6 +956,7 @@ public class AccountController {
 		Result result=new Result();
 		List<SummaryInfo> simpleInfo;
 		simpleInfo = accountService.getSummaryInfoToday(findId);
+		System.out.println("findId:"+findId+",result:"+simpleInfo);
 		return result.put(Result.RESULT_OK, "查询成功").put("infos",simpleInfo);
 	}
 
