@@ -296,25 +296,25 @@
 		SELECT 'day_paidin' NAME,SUM(money) AS number,SUM(_count) AS COUNT FROM (
 		SELECT SUM(paid_in) AS money,COUNT(*) AS _count FROM account WHERE is_private=1 AND TYPE!='sr' 
 		AND user_id=#{userId}
-		AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)+1
+		AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)
 		
 		UNION
 		#多人账单中的应付(去除还款和借款的账单)
 		SELECT SUM(a.should_pay) AS money,COUNT(*) AS _count FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id 
 		WHERE member_id=#{userId} AND b.type!='hk' AND b.type!='jk'
-		AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)+1
+		AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)
 		
 		#还款账单中是付款者的账单(还款中的paid_id是还钱者,出钱的,与借款刚好相反)
 		UNION
 		SELECT SUM(wait_paid_money) AS money,COUNT(*) AS _count FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
 		WHERE b.type='hk' AND a.paid_id=#{userId}
-		AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)+1
+		AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)
 		
 		#借款账单中自己是借款者的账单(借款中的receipt_id指的是被借人,出钱的)
 		UNION
 		SELECT SUM(wait_paid_money) AS money,COUNT(*) AS _count FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
 		WHERE b.type='jk' AND a.receipt_id=#{userId}
-		AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)+1)AS aaa
+		AND TO_DAYS(NOW())=TO_DAYS(date_timestamp))AS aaa
 		
 		
 		UNION
@@ -325,8 +325,7 @@
 		SELECT 'day_paid_count' NAME,SUM(a) number,SUM(a) COUNT FROM (
 		SELECT COUNT(*) AS a FROM account WHERE is_private=1 AND TYPE!='sr' AND user_id=#{userId} AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)
 		UNION
-		SELECT COUNT(*) AS a FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id WHERE member_id=#{userId} AND TO_DAYS(NOW())=TO_DAYS(date_timestamp)+1)AS bbb
-
+		SELECT COUNT(*) AS a FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id WHERE member_id=#{userId} AND TO_DAYS(NOW())=TO_DAYS(date_timestamp))AS bbb
 
 	</select>
 	
@@ -346,7 +345,7 @@
 	
 		#查询最初始的一个待付大于0的PayTarget
 		SELECT * FROM account_pay AS p LEFT JOIN account AS a ON p.account_id=a.id
-		WHERE wait_paid_money>0 AND p.id!=#{targetId} AND p.paid_id=#{user1Id} AND p.receipt_id=#{user2Id} ORDER BY a.date_timestamp ASC LIMIT 0,1
+		WHERE wait_paid_money>0 AND p.id!=#{targetId} AND p.paid_id=#{user1Id} AND p.receipt_id=#{user2Id} ORDER BY a.date_timestamp,a.create_timestamp ASC LIMIT 0,1
 		
 	</select>
 	

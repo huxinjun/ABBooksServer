@@ -15,7 +15,7 @@ OR
 
 #查询最初始的一个待付大于0的PayTarget
 SELECT * FROM account_pay AS p LEFT JOIN account AS a ON p.account_id=a.id
-WHERE wait_paid_money>0 AND p.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND p.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ' ORDER BY a.`date_timestamp` ASC LIMIT 0,1
+WHERE wait_paid_money>0 AND p.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND p.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ' ORDER BY a.`date_timestamp`,a.create_timestamp ASC LIMIT 0,1
 
 #*****************************************************************************************************************
 
