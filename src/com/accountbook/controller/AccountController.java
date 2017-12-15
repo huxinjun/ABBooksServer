@@ -108,7 +108,7 @@ public class AccountController {
 				
 				paidMember.setRuleType(Member.RULE_TYPE_NUMBER);
 				paidMember.setRuleNum(account.getPaidIn());
-				paidMember.setShouldPay(account.getPaidIn());
+				paidMember.setShouldPay(AccountCalculator.fixed2(account.getPaidIn()));
 				accountService.addMember(paidMember);
 				
 				PayTarget newTarget = new PayTarget();
@@ -621,7 +621,7 @@ public class AccountController {
 						Member oldMember=getMemberById(findAccount.getMembers(), newMember.getMemberId());
 						accountService.deleteMember(oldMember.getId());
 						oldMember.setPaidIn(oldMember.getPaidIn()+newMember.getPaidIn());
-						oldMember.setShouldPay(oldMember.getShouldPay()+oldMember.getShouldPay());
+						oldMember.setShouldPay(AccountCalculator.fixed2(oldMember.getShouldPay()+oldMember.getShouldPay()));
 						accountService.addMember(oldMember);
 					}
 			

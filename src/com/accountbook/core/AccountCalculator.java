@@ -102,7 +102,7 @@ public class AccountCalculator {
                 payTarget.setReceiptId(IN_P.getMemberId());
 
                 double needMoney=IN_P.getPaidIn()-(IN_P.getShouldPay()+IN_P.getCalcData());//还需收的钱.
-                if(needMoney<0.001)
+                if(needMoney==0)
                     break;
                 if(needMoney>=OUT_P.getShouldPay()-(OUT_P.getPaidIn()+OUT_P.getCalcData())){
                     //收钱的人多付的钱大于付钱的人还需付的钱,把付钱人还需付的钱全部收来
@@ -158,7 +158,7 @@ public class AccountCalculator {
             if(p.getRuleType()==0) {
                 noRulePersonCount++;
                 //排除总金额中有些人给自己花了一部分钱,别人无需AA支付这个钱
-                p.setShouldPay(p.getMoneyForSelf());
+                p.setShouldPay(fixed2(p.getMoneyForSelf()));
                 hasRuleMoney+=p.getMoneyForSelf();
                 continue;
             }
@@ -168,12 +168,12 @@ public class AccountCalculator {
                     if(p.getRuleNum()>1)
                         throw new CalculatorException("您为"+p.getMemberName()+"设置的支付类型是基于总支出百分比的值,取值范围[0~1]!");
                     //应缴金额
-                    p.setShouldPay(mAccount.getPaidIn()*p.getRuleNum());
+                    p.setShouldPay(fixed2(mAccount.getPaidIn()*p.getRuleNum()));
                     break;
                 case Member.RULE_TYPE_NUMBER:
                     if(p.getRuleNum()>mAccount.getPaidIn())
                         throw new CalculatorException(p.getMemberName()+"支付的金额超过总支出!");
-                    p.setShouldPay(p.getRuleNum());
+                    p.setShouldPay(fixed2(p.getRuleNum()));
                     break;
             }
             hasRuleMoney+=p.getShouldPay();
@@ -181,12 +181,22 @@ public class AccountCalculator {
 
         //======================step2=========================
         float averageMoney=(float) ((mAccount.getPaidIn()-hasRuleMoney)/noRulePersonCount);
+        System.out.println("平均消费:"+averageMoney);
+        
         for (Member p:mAccount.getMembers()) {
             if(p.getRuleType()==0) {
                 //没有设置规则用户需要支付的金额
-                p.setShouldPay(averageMoney+p.getShouldPay());
+                p.setShouldPay(fixed2(averageMoney+p.getShouldPay()));
+                System.out.println(p.getMemberName()+"保留小数:"+p.getShouldPay());
             }
         }
+        
+    }
+    
+    public static float fixed2(double num){
+        BigDecimal bd = new BigDecimal(num);   
+        float result = bd.setScale(2,BigDecimal.ROUND_HALF_UP).floatValue();
+        return result;
     }
     
     
