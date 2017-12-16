@@ -31,6 +31,7 @@ public class TokenFilter implements Filter {
 	public static List<String> C=new ArrayList<String>(){
 		{
 			add("");
+			add("tb.html");
 			
 		}
 	};
@@ -100,8 +101,8 @@ public class TokenFilter implements Filter {
 				return;
 			}
 			
-//			System.out.println("TokenFilter.controllerName:"+controllerName);
-//			System.out.println("TokenFilter.methodName:"+methodName);
+			System.out.println("TokenFilter.controllerName:"+controllerName);
+			System.out.println("TokenFilter.methodName:"+methodName);
 			if(C.contains(controllerName)){
 				chain.doFilter(request, response);
 				return;

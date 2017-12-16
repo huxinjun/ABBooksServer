@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.accountbook.core.AccountCalculator;
 import com.accountbook.model.Account;
 import com.accountbook.model.Friend;
 import com.accountbook.model.Group;
@@ -130,7 +131,7 @@ public class MessageController {
     			msgResult.put("date",dateStr);
     			msgResult.put("msgType",Message.MESSAGE_TYPE_ACCOUNT_SETTLE);
     			msgResult.put("targetId",targetId);
-    			msgResult.put("money",TextUtils.isEmpty(paidMoney)?target.getMoney():Double.parseDouble(paidMoney));
+    			msgResult.put("money",TextUtils.isEmpty(paidMoney)?target.getMoney():AccountCalculator.fixed2(Double.parseDouble(paidMoney)));
     			msgResult.put("paidId",target.getPaidId());
     			msgResult.put("paidName",userService.findUser(target.getPaidId()).nickname);
     			msgResult.put("receiptId",target.getReceiptId());
