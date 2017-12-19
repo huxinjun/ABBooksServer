@@ -244,6 +244,13 @@
 				
 				
 		UNION
+		
+		#查询月总收入(自己)----------------------------
+		SELECT 'month_sr' NAME,SUM(paid_in) AS number,COUNT(*) AS COUNT FROM account 
+		WHERE user_id=#{userId} AND TYPE='sr' 
+		AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+				
+		UNION	
 				
 				
 				

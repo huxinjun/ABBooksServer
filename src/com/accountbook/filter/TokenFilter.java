@@ -31,6 +31,7 @@ public class TokenFilter implements Filter {
 	public static List<String> C=new ArrayList<String>(){
 		{
 			add("");
+			add("images");
 			add("tb.html");
 			
 		}

@@ -207,11 +207,14 @@ public class MessageController {
     		//不添加重复的,因为数据库是用groupby查的,会出现重复的
     		 boolean repeat=false;
     		 for(Result res:results)
-    			 if(msg.fromId.equals(res.get("userId")) || msg.toId.equals(res.get("userId"))){
+    			 if(msg.fromId.equals(res.get("toId")) && msg.toId.equals(res.get("fromId")) && res.get("type").toString().equals("3")){
     				 repeat=true;
+    				 System.out.println("重复");
+    				 System.out.println(res);
+    				 System.out.println(msg);
     				 break;
     			 }
-    		 if(repeat && msg.type==3)
+    		 if(repeat)
 				 continue;
     		 
     		 
@@ -221,6 +224,8 @@ public class MessageController {
     		 msgResult.remove("content");
     		 msgResult.remove("fromId");
     		 msgResult.remove("toId");
+    		 msgResult.put("fromId",msg.fromId);
+    		 msgResult.put("toId", msg.toId);
     		 msgResult.put("userId", findId.equals(msg.fromId)?msg.toId:msg.fromId);
     		 msgResult.put("date", CommonUtils.getSinceTimeString2(new Date(msg.time.getTime())));
     		 if(msg.type==1 ||msg.type==2)

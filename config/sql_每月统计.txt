@@ -34,8 +34,13 @@ AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m'))AS total
 		
 		
 UNION
+
+#查询月总收入(自己)----------------------------
+SELECT 'month_sr' NAME,SUM(paid_in) AS number,COUNT(*) AS COUNT FROM account 
+WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND TYPE='sr' 
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
 		
-		
+UNION	
 		
 #查询所有待完善的账单-----------------
 SELECT 'wait_edit' NAME,COUNT(*) AS number,0 FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
