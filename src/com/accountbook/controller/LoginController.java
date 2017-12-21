@@ -2,8 +2,10 @@ package com.accountbook.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,7 @@ import com.accountbook.modle.result.Result;
 import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.HttpUtils;
+import com.accountbook.utils.TextUtils;
 import com.alibaba.fastjson.JSON;
 
 
@@ -33,7 +36,14 @@ public class LoginController {
 	
 	@ResponseBody
     @RequestMapping("/checkLogin")
-    public Result checkLogin(){
+    public Result checkLogin(HttpServletRequest request){
+		String findId = request.getAttribute("userid").toString();
+		UserInfo findUser = userService.findUser(findId);
+		if(findUser==null)
+			return new Result(Result.RESULT_FAILD,"无此用户");
+		if(TextUtils.isEmpty(findUser.nickname))
+			return new Result(Result.RESULT_USERINFO_INVALID,"未完善用户信息");
+		
 		return new Result(Result.RESULT_OK,"已登录");
 	}
 	

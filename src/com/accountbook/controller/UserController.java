@@ -25,6 +25,7 @@ import com.accountbook.service.ITokenService;
 import com.accountbook.service.IUserService;
 import com.accountbook.utils.FileUtils;
 import com.accountbook.utils.ImageUtils;
+import com.accountbook.utils.TextUtils;
 import com.accountbook.utils.WxUtil;
 import com.alibaba.fastjson.JSON;
 
@@ -94,17 +95,29 @@ public class UserController {
 		
 		Result result=new Result();
 		
-		UserInfo userinfo=JSON.parseObject(info, UserInfo.class);
+		
+		UserInfo userinfo;
+		if(TextUtils.isEmpty(info)){
+			//用户没有提供个人信息，以游客方式登录
+			userinfo=new UserInfo();
+			userinfo.nickname="游客";
+			userinfo.avatarUrl="https://timgsa.baidu.com/timg?image&quality=80&size=b10000_10000&sec=1513847354&di=5e58923ad6a9f7d8cc7a9c76c062d206&src=http://tupian.enterdesk.com/2014/lxy/2014/12/03/39/7.jpg";
+		}else
+			userinfo=JSON.parseObject(info, UserInfo.class);
+		
 		System.out.println(info);
 		System.out.println(userinfo);
 		
 			
 		userinfo.id=findId;
 		
-		//更新信息的时候下载微信头像到服务器
-		String iconName = ImageUtils.download(userinfo.avatarUrl,findId);
-		if(iconName!=null)
-			userinfo.icon=iconName;
+		if(userinfo.avatarUrl!=null){
+			//更新信息的时候下载微信头像到服务器
+			String iconName = ImageUtils.download(userinfo.avatarUrl,findId);
+			if(iconName!=null)
+				userinfo.icon=iconName;
+		}
+		
 		
 		userService.updateUser(userinfo);
 		
