@@ -1,0 +1,100 @@
+﻿#查询月度各类型下的消费额与消费次数----------------------------
+SELECT TYPE as name,SUM(paid_in) AS money,COUNT(paid_in) AS COUNT FROM(
+SELECT temp.id,temp.paid_in,acc.type FROM (
+SELECT id,paid_in FROM account WHERE is_private=1 AND TYPE!='sr' 
+AND user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+		
+UNION
+#多人账单中的应付(去除还款和借款的账单)
+SELECT b.id,a.should_pay FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id 
+WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND b.type!='hk' AND b.type!='jk'
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+		
+#还款账单中是付款者的账单(还款中的paid_id是还钱者,出钱的,与借款刚好相反)
+UNION
+SELECT b.id,wait_paid_money FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='hk' AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+		
+#借款账单中自己是借款者的账单(借款中的receipt_id指的是被借人,出钱的)
+UNION
+SELECT b.id,wait_paid_money FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='jk' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+)AS temp LEFT JOIN account AS acc ON temp.id=acc.id
+)AS temp2 GROUP BY temp2.type
+
+
+
+
+
+
+
+
+
+#查询月度(其他)类型下的消费额与消费次数----------------------------
+SELECT name,SUM(money)AS money,COUNT(*) AS COUNT FROM (
+SELECT temp.id,temp.money,acc.type,acc.name FROM (
+SELECT id,paid_in AS money FROM account WHERE is_private=1 AND TYPE!='sr' 
+AND user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+		
+UNION
+#多人账单中的应付(去除还款和借款的账单)
+SELECT b.id,a.should_pay AS money FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id 
+WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND b.type!='hk' AND b.type!='jk'
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+		
+#还款账单中是付款者的账单(还款中的paid_id是还钱者,出钱的,与借款刚好相反)
+UNION
+SELECT b.id,wait_paid_money AS money FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='hk' AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+		
+#借款账单中自己是借款者的账单(借款中的receipt_id指的是被借人,出钱的)
+UNION
+SELECT b.id,wait_paid_money AS money FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='jk' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+)AS temp LEFT JOIN account AS acc ON temp.id=acc.id
+)AS temp2 WHERE TYPE='qt' GROUP BY NAME
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#查询一年中和我相关的所有的支出-------------------------------------------------------
+SELECT temp.id,temp.money,acc.type,acc.name,acc.date_timestamp FROM (
+SELECT id,paid_in AS money FROM account WHERE is_private=1 AND TYPE!='sr' 
+AND user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+AND DATE_FORMAT(NOW(),'%Y')=DATE_FORMAT(date_timestamp,'%Y')
+		
+UNION
+#多人账单中的应付(去除还款和借款的账单)
+SELECT b.id,a.should_pay AS money FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id 
+WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND b.type!='hk' AND b.type!='jk'
+AND DATE_FORMAT(NOW(),'%Y')=DATE_FORMAT(date_timestamp,'%Y')
+		
+#还款账单中是付款者的账单(还款中的paid_id是还钱者,出钱的,与借款刚好相反)
+UNION
+SELECT b.id,wait_paid_money AS money FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='hk' AND a.paid_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+AND DATE_FORMAT(NOW(),'%Y')=DATE_FORMAT(date_timestamp,'%Y')
+		
+#借款账单中自己是借款者的账单(借款中的receipt_id指的是被借人,出钱的)
+UNION
+SELECT b.id,wait_paid_money AS money FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='jk' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+AND DATE_FORMAT(NOW(),'%Y')=DATE_FORMAT(date_timestamp,'%Y')
+)AS temp LEFT JOIN account AS acc ON temp.id=acc.id

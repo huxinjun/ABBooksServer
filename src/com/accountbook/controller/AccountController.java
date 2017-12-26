@@ -79,7 +79,9 @@ public class AccountController {
 		account.setId(IDUtil.generateNewId());
 		account.setDateTimestamp(Timestamp.valueOf(account.getDate() + " 00:00:00"));
 		account.setCreateTimestamp(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
-		
+		//换行处理
+		if(TextUtils.isNotEmpty(account.getDescription()))
+			account.setDescription(account.getDescription().replace("\\n", "\r\n"));
 		//如果是还款,需要特殊处理
 		if(account.getType().equals("hk")){
 			
