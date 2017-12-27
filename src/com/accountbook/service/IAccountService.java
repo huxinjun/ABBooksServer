@@ -37,9 +37,7 @@ public interface IAccountService {
 	public List<Member> findAllMembers(String userId);
 	public PayTarget findPayTarget(String targetId);
 	
-	public List<SummaryInfo> getSummaryInfo(String userId);
-	public List<SummaryInfo> getSummaryInfoToday(String userId);
-	public List<SummaryInfo> getSummaryInfo(String user1Id,String user2Id);
+	
 	
 	//更新支付方案中的状态
 	public void updatePayTarget(PayTarget target);
@@ -52,5 +50,16 @@ public interface IAccountService {
 	public void deleteAccount(String accountId);
 	
 	public void updateMemberIcon(String userId,String memberIcon);
+	
+	
+	
+	//-------------------------统计相关---------------------------------------------
+	public List<SummaryInfo> getSummaryInfo(String userId);
+	public List<SummaryInfo> getSummaryInfoToday(String userId);
+	public List<SummaryInfo> getSummaryInfo(String user1Id,String user2Id);
+	/**查询月度各类型下的消费额与消费次数*/
+	public List<SummaryInfo> getSummaryInfoMonthPaid(String userId,Integer year,Integer month);
+	/**查询月度(其他)类型下的消费额与消费次数*/
+	public List<SummaryInfo> getSummaryInfoMonthPaidForOther(String userId,Integer year,Integer month);
 	
 }

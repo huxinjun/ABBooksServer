@@ -206,6 +206,74 @@
 	</select>
 	
 	
+	
+	
+	
+	<select id="queryWaitPaidMoney" parameterType="map" resultType="double">
+	
+		#查询所有待付款(指定另一个人),抵消账单专用,会排除当前计算的target
+		SELECT p.number-r.number AS number FROM(SELECT 0 id, IFNULL(SUM(wait_paid_money),0) AS number FROM account_pay AS a
+		WHERE wait_paid_money>0 AND id!=#{targetId} AND a.paid_id=#{user1Id} AND a.receipt_id=#{user2Id}) p LEFT JOIN 
+		(SELECT 0 id,IFNULL(SUM(wait_paid_money),0) AS number FROM account_pay AS a 
+		WHERE wait_paid_money>0 AND id!=#{targetId} AND a.paid_id=#{user2Id} AND a.receipt_id=#{user1Id}) r ON p.id=r.id
+
+		
+	</select>
+	
+	<select id="queryEarliestNotSettledTarget" parameterType="map" resultMap="targetsMap">
+	
+		#查询最初始的一个待付大于0的PayTarget
+		SELECT * FROM account_pay AS p LEFT JOIN account AS a ON p.account_id=a.id
+		WHERE wait_paid_money>0 AND p.id!=#{targetId} AND p.paid_id=#{user1Id} AND p.receipt_id=#{user2Id} ORDER BY a.date_timestamp,a.create_timestamp ASC LIMIT 0,1
+		
+	</select>
+	
+	<select id="queryOriginOffsets" parameterType="string" resultMap="offsetMap">
+		#查询抵消记录列表,原始记录
+		
+		SELECT * from account_pay_offset where target_pay_id =#{payId} or origin_pay_id=#{payId}
+	</select>
+	
+	<select id="queryOffsets" parameterType="string" resultMap="offsetsMap">
+		#查询抵消记录列表,包装好的数据
+		
+		SELECT c.type,c.name,c.paid_in,c.date_timestamp,d.icon AS paid_icon,e.icon AS receipt_icon,b.money FROM account_pay_offset AS a 
+		LEFT JOIN account_pay AS b ON a.origin_pay_id=b.id 
+		LEFT JOIN account AS c ON b.account_id=c.id
+		LEFT JOIN USER AS d ON b.paid_id=d.id
+		LEFT JOIN USER AS e ON b.receipt_id=e.id
+		WHERE target_pay_id=#{payId}
+		UNION
+		SELECT c.type,c.name,c.paid_in,c.date_timestamp,d.icon AS paid_icon,e.icon AS receipt_icon,b.money FROM account_pay_offset AS a 
+		LEFT JOIN account_pay AS b ON a.target_pay_id=b.id 
+		LEFT JOIN account AS c ON b.account_id=c.id
+		LEFT JOIN USER AS d ON b.paid_id=d.id
+		LEFT JOIN USER AS e ON b.receipt_id=e.id
+		WHERE origin_pay_id=#{payId}
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- 统计数据相关 -->
+	
 	<select id="queryAccountSummary" parameterType="String" resultMap="summaryMap">
 	
 		#查询全部待付款(自己)----------------------------
@@ -337,48 +405,63 @@
 	</select>
 	
 	
-	<select id="queryWaitPaidMoney" parameterType="map" resultType="double">
-	
-		#查询所有待付款(指定另一个人),抵消账单专用,会排除当前计算的target
-		SELECT p.number-r.number AS number FROM(SELECT 0 id, IFNULL(SUM(wait_paid_money),0) AS number FROM account_pay AS a
-		WHERE wait_paid_money>0 AND id!=#{targetId} AND a.paid_id=#{user1Id} AND a.receipt_id=#{user2Id}) p LEFT JOIN 
-		(SELECT 0 id,IFNULL(SUM(wait_paid_money),0) AS number FROM account_pay AS a 
-		WHERE wait_paid_money>0 AND id!=#{targetId} AND a.paid_id=#{user2Id} AND a.receipt_id=#{user1Id}) r ON p.id=r.id
-
-		
-	</select>
-	
-	<select id="queryEarliestNotSettledTarget" parameterType="map" resultMap="targetsMap">
-	
-		#查询最初始的一个待付大于0的PayTarget
-		SELECT * FROM account_pay AS p LEFT JOIN account AS a ON p.account_id=a.id
-		WHERE wait_paid_money>0 AND p.id!=#{targetId} AND p.paid_id=#{user1Id} AND p.receipt_id=#{user2Id} ORDER BY a.date_timestamp,a.create_timestamp ASC LIMIT 0,1
-		
-	</select>
-	
-	<select id="queryOriginOffsets" parameterType="string" resultMap="offsetMap">
-		#查询抵消记录列表,原始记录
-		
-		SELECT * from account_pay_offset where target_pay_id =#{payId} or origin_pay_id=#{payId}
-	</select>
-	
-	<select id="queryOffsets" parameterType="string" resultMap="offsetsMap">
-		#查询抵消记录列表,包装好的数据
-		
-		SELECT c.type,c.name,c.paid_in,c.date_timestamp,d.icon AS paid_icon,e.icon AS receipt_icon,b.money FROM account_pay_offset AS a 
-		LEFT JOIN account_pay AS b ON a.origin_pay_id=b.id 
-		LEFT JOIN account AS c ON b.account_id=c.id
-		LEFT JOIN USER AS d ON b.paid_id=d.id
-		LEFT JOIN USER AS e ON b.receipt_id=e.id
-		WHERE target_pay_id=#{payId}
+	<select id="queryAccountSummaryMonthPaid" parameterType="String" resultMap="summaryMap">
+		#查询月度各类型下的消费额与消费次数----------------------------
+		SELECT TYPE AS NAME,SUM(paid_in) AS number,COUNT(paid_in) AS count FROM(
+		SELECT temp.id,temp.paid_in,acc.type FROM (
+		SELECT id,paid_in FROM account WHERE is_private=1 AND TYPE!='sr' 
+		AND user_id=#{0}
+		AND DATE_FORMAT(date_timestamp,'%Y-%m')=#{1}
+				
 		UNION
-		SELECT c.type,c.name,c.paid_in,c.date_timestamp,d.icon AS paid_icon,e.icon AS receipt_icon,b.money FROM account_pay_offset AS a 
-		LEFT JOIN account_pay AS b ON a.target_pay_id=b.id 
-		LEFT JOIN account AS c ON b.account_id=c.id
-		LEFT JOIN USER AS d ON b.paid_id=d.id
-		LEFT JOIN USER AS e ON b.receipt_id=e.id
-		WHERE origin_pay_id=#{payId}
+		#多人账单中的应付(去除还款和借款的账单)
+		SELECT b.id,a.should_pay FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id 
+		WHERE member_id=#{0} AND b.type!='hk' AND b.type!='jk'
+		AND DATE_FORMAT(date_timestamp,'%Y-%m')=#{1}
+				
+		#还款账单中是付款者的账单(还款中的paid_id是还钱者,出钱的,与借款刚好相反)
+		UNION
+		SELECT b.id,wait_paid_money FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+		WHERE b.type='hk' AND a.paid_id=#{0}
+		AND DATE_FORMAT(date_timestamp,'%Y-%m')=#{1}
+				
+		#借款账单中自己是借款者的账单(借款中的receipt_id指的是被借人,出钱的)
+		UNION
+		SELECT b.id,wait_paid_money FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+		WHERE b.type='jk' AND a.receipt_id=#{0}
+		AND DATE_FORMAT(date_timestamp,'%Y-%m')=#{1}
+		)AS temp LEFT JOIN account AS acc ON temp.id=acc.id
+		)AS temp2 GROUP BY temp2.type
 	</select>
 	
+	
+	<select id="queryAccountSummaryMonthPaidForOther" parameterType="String" resultMap="summaryMap">
+		#查询月度(其他)类型下的消费额与消费次数----------------------------
+		SELECT NAME,SUM(money)AS number,COUNT(*) AS count FROM (
+		SELECT temp.id,temp.money,acc.type,acc.name FROM (
+		SELECT id,paid_in AS money FROM account WHERE is_private=1 AND TYPE!='sr' 
+		AND user_id=#{0}
+		AND DATE_FORMAT(date_timestamp,'%Y-%m')=#{1}
+				
+		UNION
+		#多人账单中的应付(去除还款和借款的账单)
+		SELECT b.id,a.should_pay AS number FROM account_member AS a LEFT JOIN account AS b ON  a.account_id=b.id 
+		WHERE member_id=#{0} AND b.type!='hk' AND b.type!='jk'
+		AND DATE_FORMAT(date_timestamp,'%Y-%m')=#{1}
+				
+		#还款账单中是付款者的账单(还款中的paid_id是还钱者,出钱的,与借款刚好相反)
+		UNION
+		SELECT b.id,wait_paid_money AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+		WHERE b.type='hk' AND a.paid_id=#{0}
+		AND DATE_FORMAT(date_timestamp,'%Y-%m')=#{1}
+				
+		#借款账单中自己是借款者的账单(借款中的receipt_id指的是被借人,出钱的)
+		UNION
+		SELECT b.id,wait_paid_money AS number FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+		WHERE b.type='jk' AND a.receipt_id=#{0}
+		AND DATE_FORMAT(date_timestamp,'%Y-%m')=#{1}
+		)AS temp LEFT JOIN account AS acc ON temp.id=acc.id
+		)AS temp2 WHERE TYPE='qt' GROUP BY NAME
+	</select>
 	
 </mapper>

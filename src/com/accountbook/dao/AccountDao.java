@@ -38,11 +38,7 @@ public interface AccountDao {
 	public List<PayTarget> queryPayTargetByAccountId(String accountId);
 	/**查询和userId相关的所有成员:分组和帐友*/
 	public List<Member> queryMembers(String userId);
-	/**查询userId本月支出,待付款,代收款等信息*/
-	public List<SummaryInfo> queryAccountSummary(String userId);
-	/**查询userId当日支出,支出账单个数等信息*/
-	public List<SummaryInfo> queryAccountSummaryToday(String userId);
-	public List<SummaryInfo> queryAccountSummary2P(Map<String,Object> map);
+	
 	
 	/**查询两个用户待付的金额:user1Id向user2Id待付的*/
 	public double queryWaitPaidMoney(Map<String,Object> map);
@@ -66,4 +62,17 @@ public interface AccountDao {
 	
 	
 	public void updateMemberIcon(String userId,String memberIcon);
+	
+	
+	
+	//-----------------统计相关的---------------------------------------
+	/**查询userId本月支出,待付款,代收款等信息*/
+	public List<SummaryInfo> queryAccountSummary(String userId);
+	/**查询userId当日支出,支出账单个数等信息*/
+	public List<SummaryInfo> queryAccountSummaryToday(String userId);
+	public List<SummaryInfo> queryAccountSummary2P(Map<String,Object> map);
+	/**查询月度各类型下的消费额与消费次数*/
+	public List<SummaryInfo> queryAccountSummaryMonthPaid(String userId,String date);
+	/**查询月度(其他)类型下的消费额与消费次数*/
+	public List<SummaryInfo> queryAccountSummaryMonthPaidForOther(String userId,String date);
 }

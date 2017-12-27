@@ -1,6 +1,8 @@
 package com.accountbook.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -245,6 +247,27 @@ public class AccountServiceImpl implements IAccountService {
 	@Override
 	public void updateMemberIcon(String userId, String memberIcon) {
 		dao.updateMemberIcon(userId, memberIcon);
+	}
+
+	@Override
+	public List<SummaryInfo> getSummaryInfoMonthPaid(String userId,Integer year,Integer month) {
+		String date;
+		if(year==null || month==null)
+			date=new SimpleDateFormat("yyyy-MM").format(new Date());
+		else
+			date=year+"-"+month;
+			
+		return dao.queryAccountSummaryMonthPaid(userId,date);
+	}
+
+	@Override
+	public List<SummaryInfo> getSummaryInfoMonthPaidForOther(String userId,Integer year,Integer month) {
+		String date;
+		if(year==null || month==null)
+			date=new SimpleDateFormat("yyyy-MM").format(new Date());
+		else
+			date=year+"-"+month;
+		return dao.queryAccountSummaryMonthPaidForOther(userId,date);
 	}
 
 	

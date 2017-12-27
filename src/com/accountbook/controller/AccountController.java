@@ -24,7 +24,6 @@ import com.accountbook.model.Offset;
 import com.accountbook.model.PayOffset;
 import com.accountbook.model.PayResult;
 import com.accountbook.model.PayTarget;
-import com.accountbook.model.SummaryInfo;
 import com.accountbook.model.UserInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
@@ -941,40 +940,5 @@ public class AccountController {
 	}
 	
 	
-	
-	
-	
-	
-	/**
-	 * 统计一个用户的账本简要信息
-	 */
-	@ResponseBody
-	@RequestMapping("/getSummaryInfo")
-	public Object getSummarySimpleInfo(ServletRequest req,String userId) {
-		String findId=req.getAttribute("userid").toString();
-		Result result=new Result();
-		List<SummaryInfo> simpleInfo;
-		if(TextUtils.isEmpty(userId))
-			simpleInfo = accountService.getSummaryInfo(findId);
-		else
-			simpleInfo = accountService.getSummaryInfo(findId,userId);
-		System.out.println(simpleInfo);
-		return result.put(Result.RESULT_OK, "查询成功").put("infos",simpleInfo);
-	}
-	
-	
-	/**
-	 * 统计当前用户今日记账的简要信息
-	 */
-	@ResponseBody
-	@RequestMapping("/getTodaySummaryInfo")
-	public Object getTodaySummaryInfo(ServletRequest req) {
-		String findId=req.getAttribute("userid").toString();
-		Result result=new Result();
-		List<SummaryInfo> simpleInfo;
-		simpleInfo = accountService.getSummaryInfoToday(findId);
-		System.out.println("findId:"+findId+",result:"+simpleInfo);
-		return result.put(Result.RESULT_OK, "查询成功").put("infos",simpleInfo);
-	}
 
 }
