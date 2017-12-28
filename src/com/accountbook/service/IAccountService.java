@@ -4,6 +4,7 @@ import java.util.List;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
 import com.accountbook.model.Offset;
+import com.accountbook.model.PaidRecord;
 import com.accountbook.model.PayOffset;
 import com.accountbook.model.PayTarget;
 import com.accountbook.model.SummaryInfo;
@@ -61,5 +62,7 @@ public interface IAccountService {
 	public List<SummaryInfo> getSummaryInfoMonthPaid(String userId,Integer year,Integer month);
 	/**查询月度(其他)类型下的消费额与消费次数*/
 	public List<SummaryInfo> getSummaryInfoMonthPaidForOther(String userId,Integer year,Integer month);
+	/**查询所有支付记录,在java中进行统计*/
+	public List<PaidRecord> getAllPaidRecords(String userId);
 	
 }

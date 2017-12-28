@@ -1,8 +1,11 @@
 package com.accountbook.controller;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletRequest;
 
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.accountbook.model.PaidRecord;
 import com.accountbook.model.SummaryInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
@@ -97,6 +101,7 @@ public class SummaryController {
 			item.put("name", name);
 			item.put("data",info.getNumber());
 			item.put("color", color);
+			item.put("count", info.getCount());
 			results.add(item);
 		}
 		return result.put(Result.RESULT_OK, "查询成功").put("infos",results);
@@ -117,10 +122,51 @@ public class SummaryController {
 			item.put("name", info.getName());
 			item.put("data",info.getNumber());
 			item.put("color",genRandomColorStr());
+			item.put("count", info.getCount());
 			results.add(item);
 		}
 		return result.put(Result.RESULT_OK, "查询成功").put("infos",results);
 	}
+	
+	
+	
+	/**
+	 * 统计当前用户月度其他类型账单的支出金额
+	 */
+	@ResponseBody
+	@RequestMapping("/getYearMonthPaid")
+	public Object getYearMonthPaid(ServletRequest req) {
+		String findId=req.getAttribute("userid").toString();
+		Result result=new Result();
+		List<PaidRecord> records = accountService.getAllPaidRecords(findId);
+		
+		Map<Integer,Map<Integer,Float>> maps=new HashMap<>();
+		
+		for(PaidRecord record:records){
+			Calendar calendar=Calendar.getInstance();
+			calendar.setTime(new Date(record.date.getTime()));
+			
+			int year=calendar.get(Calendar.YEAR);
+			int month=calendar.get(Calendar.MONTH);
+			
+			if(!maps.containsKey(year))
+				maps.put(year, new HashMap<>());
+			
+			if(!maps.get(year).containsKey(month))
+				maps.get(year).put(month, record.money);
+			else
+				maps.get(year).put(month, maps.get(year).get(month)+record.money);
+		}
+		return result.put(Result.RESULT_OK, "查询成功").put("map",maps);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * 生成一个随机颜色

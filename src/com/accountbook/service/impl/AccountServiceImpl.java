@@ -13,6 +13,7 @@ import com.accountbook.dao.AccountDao;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
 import com.accountbook.model.Offset;
+import com.accountbook.model.PaidRecord;
 import com.accountbook.model.PayOffset;
 import com.accountbook.model.PayResult;
 import com.accountbook.model.PayTarget;
@@ -268,6 +269,11 @@ public class AccountServiceImpl implements IAccountService {
 		else
 			date=year+"-"+month;
 		return dao.queryAccountSummaryMonthPaidForOther(userId,date);
+	}
+
+	@Override
+	public List<PaidRecord> getAllPaidRecords(String userId) {
+		return dao.queryAllPaidRecords(userId);
 	}
 
 	
