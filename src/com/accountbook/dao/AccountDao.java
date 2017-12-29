@@ -7,7 +7,7 @@ import java.util.Map;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
 import com.accountbook.model.Offset;
-import com.accountbook.model.PaidRecord;
+import com.accountbook.model.AccountQueryRecord;
 import com.accountbook.model.PayOffset;
 import com.accountbook.model.PayTarget;
 import com.accountbook.model.SummaryInfo;
@@ -77,6 +77,8 @@ public interface AccountDao {
 	/**查询月度(其他)类型下的消费额与消费次数*/
 	public List<SummaryInfo> queryAccountSummaryMonthPaidForOther(String userId,String date);
 	
-	/**查询所有支付记录,在java中进行统计*/
-	public List<PaidRecord> queryAllPaidRecords(String userId);
+	/**查询所有支付记录*/
+	public List<AccountQueryRecord> queryAllPaidRecords(String userId);
+	/**查询所有收入记录*/
+	public List<AccountQueryRecord> queryAllReceiptRecords(String userId);
 }

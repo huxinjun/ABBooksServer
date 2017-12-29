@@ -13,7 +13,7 @@ import com.accountbook.dao.AccountDao;
 import com.accountbook.model.Account;
 import com.accountbook.model.Member;
 import com.accountbook.model.Offset;
-import com.accountbook.model.PaidRecord;
+import com.accountbook.model.AccountQueryRecord;
 import com.accountbook.model.PayOffset;
 import com.accountbook.model.PayResult;
 import com.accountbook.model.PayTarget;
@@ -272,8 +272,13 @@ public class AccountServiceImpl implements IAccountService {
 	}
 
 	@Override
-	public List<PaidRecord> getAllPaidRecords(String userId) {
+	public List<AccountQueryRecord> getAllPaidRecords(String userId) {
 		return dao.queryAllPaidRecords(userId);
+	}
+
+	@Override
+	public List<AccountQueryRecord> getAllReceiptRecords(String userId) {
+		return dao.queryAllReceiptRecords(userId);
 	}
 
 	

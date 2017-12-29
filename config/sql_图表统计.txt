@@ -94,3 +94,33 @@ UNION
 SELECT b.id,wait_paid_money AS money FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
 WHERE b.type='jk' AND a.receipt_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
 )AS temp LEFT JOIN account AS acc ON temp.id=acc.id ORDER BY acc.date_timestamp
+
+
+
+
+
+
+
+
+
+
+
+
+
+#查询一个人所有的收入记录(借款借入算是一种收入)------------------------------
+SELECT id,TYPE,paid_in AS money,date_timestamp AS DATE FROM account 
+WHERE user_id='oCBrx0JeF9VZDICxonPeDD1VtoQk' AND TYPE='sr'
+
+UNION
+
+SELECT b.id,b.type,a.wait_paid_money AS money,b.date_timestamp AS DATE FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+WHERE b.type='jk' AND a.paid_id='oCBrx0JeF9VZDICxonPeDD1VtoQk'
+
+
+
+
+
+
+
+
+

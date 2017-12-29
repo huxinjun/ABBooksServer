@@ -79,7 +79,7 @@
   </resultMap>
   
   
-  <resultMap id="paidRecordMap" type="com.accountbook.model.PaidRecord" >
+  <resultMap id="accountSimpleMap" type="com.accountbook.model.AccountQueryRecord" >
 	    <result column="id" property="accountId" jdbcType="VARCHAR" />
 	    <result column="money" property="money" jdbcType="FLOAT" />
 	    <result column="type" property="type" jdbcType="VARCHAR" />
@@ -322,9 +322,17 @@
 		UNION
 		
 		#查询月总收入(自己)----------------------------
+		SELECT NAME,SUM(number) AS number,SUM(COUNT) AS COUNT FROM (
 		SELECT 'month_sr' NAME,SUM(paid_in) AS number,COUNT(*) AS COUNT FROM account 
-		WHERE user_id=#{userId} AND TYPE='sr' 
+		WHERE user_id=#{userId} AND TYPE='sr'
 		AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+		
+		UNION
+		
+		SELECT 'month_jk' NAME,SUM(wait_paid_money) AS number,COUNT(*) AS COUNT FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+		WHERE b.type='jk' AND a.paid_id=#{userId}
+		AND DATE_FORMAT(NOW(),'%Y-%m')=DATE_FORMAT(date_timestamp,'%Y-%m')
+		)AS temp
 				
 		UNION	
 				
@@ -473,7 +481,7 @@
 	</select>
 	
 	
-	<select id="queryAllPaidRecords" parameterType="String" resultMap="paidRecordMap">
+	<select id="queryAllPaidRecords" parameterType="String" resultMap="accountSimpleMap">
 	
 		#查询所有和我相关的所有的支出-------------------------------------------------------
 		SELECT temp.id,temp.money,acc.type,acc.name,acc.date_timestamp as date FROM (
@@ -497,6 +505,17 @@
 		)AS temp LEFT JOIN account AS acc ON temp.id=acc.id ORDER BY acc.date_timestamp
 	</select>
 	
+	<select id="queryAllReceiptRecords" parameterType="String" resultMap="accountSimpleMap">
 	
+		#查询一个人所有的收入记录(借款借入算是一种收入)------------------------------
+		SELECT id,TYPE,paid_in AS money,date_timestamp AS DATE FROM account 
+		WHERE user_id=#{userId} AND TYPE='sr'
+		
+		UNION
+		
+		SELECT b.id,b.type,a.wait_paid_money AS money,b.date_timestamp AS DATE FROM account_pay AS a LEFT JOIN account AS b ON a.account_id=b.id 
+		WHERE b.type='jk' AND a.paid_id=#{userId}
+	
+	</select>
 	
 </mapper>

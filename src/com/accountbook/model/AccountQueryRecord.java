@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  * @author xinjun
  *
  */
-public class PaidRecord {
+public class AccountQueryRecord {
 	
 	public String accountId;
 	public float money;

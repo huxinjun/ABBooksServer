@@ -14,7 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.accountbook.model.PaidRecord;
+import com.accountbook.model.AccountQueryRecord;
 import com.accountbook.model.SummaryInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.IAccountService;
@@ -131,23 +131,54 @@ public class SummaryController {
 	
 	
 	/**
-	 * 统计当前用户月度其他类型账单的支出金额
+	 * 统计当前用户年度和月度支出金额
 	 */
 	@ResponseBody
 	@RequestMapping("/getYearMonthPaid")
 	public Object getYearMonthPaid(ServletRequest req) {
 		String findId=req.getAttribute("userid").toString();
 		Result result=new Result();
-		List<PaidRecord> records = accountService.getAllPaidRecords(findId);
+		List<AccountQueryRecord> records = accountService.getAllPaidRecords(findId);
 		
 		Map<Integer,Map<Integer,Float>> maps=new HashMap<>();
 		
-		for(PaidRecord record:records){
+		for(AccountQueryRecord record:records){
 			Calendar calendar=Calendar.getInstance();
 			calendar.setTime(new Date(record.date.getTime()));
 			
 			int year=calendar.get(Calendar.YEAR);
-			int month=calendar.get(Calendar.MONTH);
+			int month=calendar.get(Calendar.MONTH)+1;
+			
+			if(!maps.containsKey(year))
+				maps.put(year, new HashMap<>());
+			
+			if(!maps.get(year).containsKey(month))
+				maps.get(year).put(month, record.money);
+			else
+				maps.get(year).put(month, maps.get(year).get(month)+record.money);
+		}
+		return result.put(Result.RESULT_OK, "查询成功").put("map",maps);
+	}
+	
+	
+	/**
+	 * 统计当前用户年度和月度收入金额
+	 */
+	@ResponseBody
+	@RequestMapping("/getYearMonthReceipt")
+	public Object getYearMonthReceipt(ServletRequest req) {
+		String findId=req.getAttribute("userid").toString();
+		Result result=new Result();
+		List<AccountQueryRecord> records = accountService.getAllReceiptRecords(findId);
+		
+		Map<Integer,Map<Integer,Float>> maps=new HashMap<>();
+		
+		for(AccountQueryRecord record:records){
+			Calendar calendar=Calendar.getInstance();
+			calendar.setTime(new Date(record.date.getTime()));
+			
+			int year=calendar.get(Calendar.YEAR);
+			int month=calendar.get(Calendar.MONTH)+1;
 			
 			if(!maps.containsKey(year))
 				maps.put(year, new HashMap<>());
