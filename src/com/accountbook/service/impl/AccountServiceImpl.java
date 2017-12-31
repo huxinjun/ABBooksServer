@@ -256,7 +256,7 @@ public class AccountServiceImpl implements IAccountService {
 		if(year==null || month==null)
 			date=new SimpleDateFormat("yyyy-MM").format(new Date());
 		else
-			date=year+"-"+month;
+			date=year+"-"+(month<10?"0"+month:String.valueOf(month));
 			
 		return dao.queryAccountSummaryMonthPaid(userId,date);
 	}
@@ -267,7 +267,7 @@ public class AccountServiceImpl implements IAccountService {
 		if(year==null || month==null)
 			date=new SimpleDateFormat("yyyy-MM").format(new Date());
 		else
-			date=year+"-"+month;
+			date=year+"-"+(month<10?"0"+month:String.valueOf(month));
 		return dao.queryAccountSummaryMonthPaidForOther(userId,date);
 	}
 
