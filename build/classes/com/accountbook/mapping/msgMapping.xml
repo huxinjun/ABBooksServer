@@ -43,11 +43,11 @@
 				ORDER BY TIME ASC
 	</select>
 	<select id="queryInviteMsgs" parameterType="map" resultMap="map">
-		SELECT * FROM message WHERE to_id = #{userId} and state!=2 ORDER BY TIME DESC LIMIT #{ls},#{lc};
+		SELECT * FROM message WHERE to_id = #{userId} and state!=2 AND (TYPE=1 OR TYPE=2) ORDER BY TIME DESC LIMIT #{ls},#{lc};
 	</select>
 	
 	<select id="isRepeatInvite" parameterType="String" resultType="Boolean">
-		SELECT count(*) FROM message WHERE from_id = #{0} and to_id = #{1} and state!=12;
+		SELECT count(*) FROM message WHERE from_id = #{0} and to_id = #{1} AND (TYPE=1 OR TYPE=2) and (state!=2 and state!=12);
 	</select>
 	
 	<select id="queryAccountMsgs" parameterType="string" resultMap="map">

@@ -221,11 +221,14 @@ public class UserController {
 		Result result=new Result();
 		
 		if(findId.equals(friendId))
-			return result.put(Result.RESULT_COMMAND_INVALID, "我是自己的忠实粉丝！");
+			return result.put(Result.RESULT_COMMAND_INVALID, "不能添加自己");
+		
+		if(friendService.isFriend(findId, friendId))
+			return result.put(Result.RESULT_COMMAND_INVALID, "已经是好友了");
 		
 		//查询是否之前发起过请求
 		if(msgService.isRepeatInvite(findId, friendId))
-			return result.put(Result.RESULT_COMMAND_INVALID, "重复的好友邀请");
+			return result.put(Result.RESULT_COMMAND_INVALID, "重复好友邀请");
 		
 		
 		
@@ -245,9 +248,9 @@ public class UserController {
 		msgService.newMessage(msg);
 		
 		
-		String sendResult = WxUtil.sendTemplateInviteMessage(notifService,friendId,me.nickname, msg.content,false,null);
+		WxUtil.sendTemplateInviteMessage(notifService,friendId,me.nickname, msg.content,false,null);
 		
-		return result.put(Result.RESULT_OK, sendResult);
+		return result.put(Result.RESULT_OK, "邀请已发出");
 		
 	}
 	

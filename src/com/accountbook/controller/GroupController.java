@@ -296,8 +296,12 @@ public class GroupController {
 		
 		
 		Result result=new Result();
+		//查询是否之前发起过请求
+		if(msgService.isRepeatInvite(findId, groupId))
+			return result.put(Result.RESULT_COMMAND_INVALID, "重复进组邀请");
 		
 		UserInfo me = userService.findUser(findId);
+		
 		
 		Group groupInfo = groupService.queryGroupInfo(groupId);
 		//如果是管理自己要加入该组,那就直接进组,不用发消息

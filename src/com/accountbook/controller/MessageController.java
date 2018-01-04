@@ -421,23 +421,15 @@ public class MessageController {
 			return result.put(Result.RESULT_COMMAND_INVALID, "重复操作!");
 		}
 		
-		
 		boolean isGroup=false;
 		String tempToId=message.fromId;
-		String tempUserName="";
+		String tempUserName=userService.findUser(findId).nickname;
 		
 		switch (message.type) {
 			//处理拒绝分组请求
 			case Message.MESSAGE_TYPE_INVITE_GROUP:
 				isGroup=true;
-				String groupId=message.content;
-				Group group = groupService.queryGroupInfo(groupId);
-				groupService.joinGroup(groupId, message.fromId);
-				//更新分组icon
-				IconUtil.updateGroupIcon(groupService, groupId);
-				tempUserName=group.name;
-				
-				result.put(Result.RESULT_OK, "加入分组失败!");
+				result.put(Result.RESULT_OK, "已拒绝加入分组!");
 				break;
 			//处理拒绝帐友请求
 			case Message.MESSAGE_TYPE_INVITE_USER:
@@ -446,18 +438,7 @@ public class MessageController {
 				if(isFriend){
 					return result.put(Result.RESULT_COMMAND_INVALID, "已经是好友,不能拒绝!");
 				}
-				
-				Friend friend=new Friend();
-				friend.inviteId=message.fromId;
-				friend.acceptId=message.toId;
-				friend.time=System.currentTimeMillis();
-				
-				friendService.newFriend(friend);
-				
-				UserInfo me = userService.findUser(findId);
-				
-				tempUserName=me.nickname;
-				result.put(Result.RESULT_OK, "帐友添加失败!");
+				result.put(Result.RESULT_OK, "已拒绝帐友请求!");
 				break;
 		}
 		
