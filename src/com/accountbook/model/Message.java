@@ -27,7 +27,7 @@ public class Message {
 	public static final int STATUS_INVITE_REFUSE=12;
 	
 
-	public long id;
+	public String id;
 	public String fromId;
 	public String toId;
 	public int type;

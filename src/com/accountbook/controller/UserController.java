@@ -227,7 +227,7 @@ public class UserController {
 			return result.put(Result.RESULT_COMMAND_INVALID, "已经是好友了");
 		
 		//查询是否之前发起过请求
-		if(msgService.isRepeatInvite(findId, friendId))
+		if(msgService.isRepeatInvite(findId,friendId))
 			return result.put(Result.RESULT_COMMAND_INVALID, "重复好友邀请");
 		
 		

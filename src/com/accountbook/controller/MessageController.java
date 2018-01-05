@@ -153,7 +153,7 @@ public class MessageController {
     		
     		//设置为已读
     		if(msg.state==Message.STATUS_UNREAD)
-    			msgService.makeReaded(msg.id);
+    			msgService.makeReaded(findId,msg.id);
     	}
     	
     	result.put("hasNextPage",msgs.size()==0?false:true);
@@ -178,7 +178,7 @@ public class MessageController {
     public Object makeUserMsgsReaded(HttpServletRequest request,String userId){
 		String findId=request.getAttribute("userid").toString();
 		
-		msgService.updateStatusBatch(findId, userId,Message.STATUS_READED);
+		msgService.updateStatusBatch(findId,userId,Message.STATUS_READED);
 		
 		return new Result(Result.RESULT_OK, "已经全部标记为已读");
 	}
@@ -188,7 +188,7 @@ public class MessageController {
     public Object makeUserMsgsDeleted(HttpServletRequest request,String userId){
 		String findId=request.getAttribute("userid").toString();
 		
-		msgService.updateStatusBatch(findId, userId,Message.STATUS_DELETE);
+		msgService.updateStatusBatch(findId,userId,Message.STATUS_DELETE);
 		
 		return new Result(Result.RESULT_OK, "已经全部删除");
 	}
@@ -231,7 +231,7 @@ public class MessageController {
     		 if(msg.type==1 ||msg.type==2)
     			 msgResult.put("unreadCount",msgService.getInviteUnreadCount(findId));
 			 else if(msg.type==3)
-				 msgResult.put("unreadCount",msgService.getUserUnreadCount(msg.fromId,msg.toId));
+				 msgResult.put("unreadCount",msgService.getUserUnreadCount(findId,msg.fromId,msg.toId));
     		 
     		 UserInfo fromUser = userService.findUser(msg.fromId);
     		 UserInfo toUser = userService.findUser(msg.toId);
@@ -353,7 +353,7 @@ public class MessageController {
     
     @ResponseBody
     @RequestMapping("/invite/accept")
-    public Object accept(HttpServletRequest request,HttpServletResponse response,int msgId){
+    public Object accept(HttpServletRequest request,HttpServletResponse response,String msgId){
     	String findId=request.getAttribute("userid").toString();
 		
 		Result result=new Result();
@@ -400,7 +400,7 @@ public class MessageController {
 				break;
 		}
 		
-		msgService.makeAccepted(msgId);
+		msgService.makeAccepted(findId,msgId);
 		
 		//发送模板消息
 		String sendResult = WxUtil.sendTemplateInviteResultMessage(notifService,tempToId,tempUserName, true, new Date(message.time.getTime()), isGroup,groupId);
@@ -412,7 +412,7 @@ public class MessageController {
     
     @ResponseBody
     @RequestMapping("/invite/refuse")
-    public Object refuse(HttpServletRequest request,HttpServletResponse response,int msgId){
+    public Object refuse(HttpServletRequest request,HttpServletResponse response,String msgId){
     	String findId=request.getAttribute("userid").toString();
 
 		Result result=new Result();
@@ -442,7 +442,7 @@ public class MessageController {
 				break;
 		}
 		
-		msgService.makeRefused(msgId);
+		msgService.makeRefused(findId,msgId);
 		//发送模板消息
 		String sendResult = WxUtil.sendTemplateInviteResultMessage(notifService,tempToId,tempUserName, false, new Date(message.time.getTime()), isGroup,"");
 		
@@ -452,7 +452,8 @@ public class MessageController {
     
     @ResponseBody
     @RequestMapping("/invite/delete")
-    public Object delete(HttpServletRequest request,HttpServletResponse response,int msgId){
+    public Object delete(HttpServletRequest request,HttpServletResponse response,String msgId){
+    	String findId=request.getAttribute("userid").toString();
 
 		Result result=new Result();
 		Message message = msgService.findMessage(msgId);
@@ -461,7 +462,7 @@ public class MessageController {
 		}
 		
 		
-		msgService.makeDeleted(msgId);
+		msgService.makeDeleted(findId,msgId);
 		
 		return result.put(Result.RESULT_OK, "操作成功!");
 		

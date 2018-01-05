@@ -1,9 +1,10 @@
 ﻿#查询聊天信息,最近的10条
 SELECT * FROM 
-(SELECT * FROM message WHERE TYPE=3 AND
-		((from_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ' AND to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') OR
-		(from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND to_id='oCBrx0FreB-L8pIQM5_RYDGoWOJJ')) ORDER BY TIME DESC LIMIT 0,10)AS a
-		ORDER BY TIME ASC
+(SELECT a.id,a.`from_id`,a.`to_id`,a.`type`,a.`content`,a.time,b.state FROM message AS a LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid='oCBrx0ExpR4J4DM1qM342xQ4HYWQ'
+WHERE TYPE=3 AND state!=2 AND
+((a.from_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ' AND a.to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') OR
+(a.from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND a.to_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ')) ORDER BY TIME DESC LIMIT 0,10)AS a
+ORDER BY TIME ASC
 
 
 

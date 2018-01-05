@@ -2,14 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.accountbook.dao.MessageDao" >
   <resultMap id="map" type="com.accountbook.model.Message" >
-    <id column="id" property="id" jdbcType="BIGINT" />
+    <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="from_id" property="fromId" jdbcType="VARCHAR" />
     <result column="to_id" property="toId" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="TINYINT" />
     <result column="content" property="content" jdbcType="VARCHAR" />
     <result column="time" property="time" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <resultMap id="stateMap" type="com.accountbook.model.MessageState" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="msg_id" property="msgId" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="VARCHAR" />
     <result column="state" property="state" jdbcType="TINYINT" />
   </resultMap>
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   <!-- 查询聊天列表:每个用户的最后一条消息 -->
   	<select id="queryChatList" parameterType="String" resultMap="map">
@@ -74,7 +89,12 @@
 	
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.model.Message">
-		insert into message values(null,#{fromId},#{toId},#{type},#{content},#{time},#{state})
+		insert into message values(#{id},#{fromId},#{toId},#{type},#{content},#{time})
+	</insert>
+	
+	<!-- 插入消息状态 -->
+	<insert id="insertState" parameterType="com.accountbook.model.MessageState">
+		insert into message_state values(null,#{msgId},#{pid},#{state})
 	</insert>
 	
 	<!-- 更新 -->
@@ -91,5 +111,9 @@
 	<!-- 删除 -->
 	<delete id="delete" parameterType="long">
 		delete from message where id=#{id};
+	</delete>
+	<!-- 删除消息状态 -->
+	<delete id="deleteState" parameterType="long">
+		delete from message_state where msg_id=#{id};
 	</delete>
 </mapper>

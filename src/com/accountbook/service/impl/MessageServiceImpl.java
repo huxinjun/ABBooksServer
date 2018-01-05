@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 
 import com.accountbook.dao.MessageDao;
 import com.accountbook.model.Message;
+import com.accountbook.model.MessageState;
 import com.accountbook.service.IMessageService;
 import com.accountbook.utils.CommonUtils;
 import com.accountbook.utils.CommonUtils.Limit;
+import com.accountbook.utils.IDUtil;
 
 @Service
 public class MessageServiceImpl implements IMessageService{
@@ -23,37 +25,46 @@ public class MessageServiceImpl implements IMessageService{
 
 	@Override
 	public void newMessage(Message data) {
+		data.id=IDUtil.generateNewId();
 		dao.insert(data);
+		//邀请不需要记录发起者的状态
+		if(data.type!=3)
+			dao.insertState(new MessageState(data.id,data.fromId,Message.STATUS_READED));
+		dao.insertState(new MessageState(data.id,data.toId,Message.STATUS_UNREAD));
 	}
 	@Override
 	public void newMessage(int type, String from, String to, String content) {
 		Message msg=new Message();
+		msg.id=IDUtil.generateNewId();
 		msg.fromId=from;
 		msg.toId=to;
 		msg.type=type;
 		msg.content=content;
 		msg.time=Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-		msg.state=Message.STATUS_UNREAD;
 		newMessage(msg);
+		//邀请不需要记录发起者的状态
+		if(msg.type!=3)
+			dao.insertState(new MessageState(msg.id,msg.fromId,Message.STATUS_READED));
+		dao.insertState(new MessageState(msg.id,msg.toId,Message.STATUS_UNREAD));
 	}
 
 	@Override
-	public void makeReaded(long id) {
+	public void makeReaded(String findId,String id) {
 		dao.updateStatus(id, Message.STATUS_READED);
 	}
 
 	@Override
-	public void makeDeleted(long id) {
+	public void makeDeleted(String findId,String id) {
 		dao.updateStatus(id, Message.STATUS_DELETE);
 	}
 
 	@Override
-	public void makeAccepted(long id) {
+	public void makeAccepted(String findId,String id) {
 		dao.updateStatus(id, Message.STATUS_INVITE_ACCEPT);
 	}
 
 	@Override
-	public void makeRefused(long id) {
+	public void makeRefused(String findId,String id) {
 		dao.updateStatus(id, Message.STATUS_INVITE_REFUSE);
 	}
 	@Override
@@ -92,7 +103,7 @@ public class MessageServiceImpl implements IMessageService{
 		return msgs;
 	}
 	@Override
-	public int getUserUnreadCount(String user1Id, String user2Id) {
+	public int getUserUnreadCount(String findId,String user1Id, String user2Id) {
 		return dao.queryUserUnreadCount(new HashMap<String,Object>(){
 			/**
 			 * 
@@ -110,7 +121,7 @@ public class MessageServiceImpl implements IMessageService{
 		return dao.queryInviteUnreadCount(userId);
 	}
 	@Override
-	public Message findMessage(long id) {
+	public Message findMessage(String id) {
 		return dao.queryMsg(id);
 	}
 	@Override
@@ -125,8 +136,9 @@ public class MessageServiceImpl implements IMessageService{
 		return dao.queryAccountMsgs(p1,p2,p3);
 	}
 	@Override
-	public void delete(long id) {
+	public void delete(String id) {
 		dao.delete(id);
+		dao.deleteState(id);
 	}
 	@Override
 	public void updateStatusBatch(String user1Id, String user2Id,int state) {
