@@ -1,10 +1,16 @@
 package com.accountbook.service.impl;
 
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -165,6 +171,69 @@ public class MessageServiceImpl implements IMessageService{
 
 	
 
+	
+	
+	
+	
+	
+	public static void main(String[] args){
+		insertMsgState();
+	}
+	
+	
+	
+	private static void insertMsgState(){
+		
+        String sql;
+        String sqlBaseUrl=readJdbcProperty("url");
+        String user=readJdbcProperty("username");
+		String password=readJdbcProperty("password");
+        String url = sqlBaseUrl + "?user="+user+"&password="+password;
+ 
+        try {
+            Class.forName("com.mysql.jdbc.Driver");// 动态加载mysql驱动
+            Connection conn = DriverManager.getConnection(url);
+            System.out.println("成功加载MySQL驱动程序");
+            Statement stmt = conn.createStatement();
+            sql = "SELECT * FROM message;";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+            	String msgid=rs.getString("id");
+            	String fromid=rs.getString("from_id");
+            	String to=rs.getString("to_id");
+            	int type=rs.getInt("type");
+            	
+            	Statement stmt2 = conn.createStatement();
+            	System.out.println("insert into message_state values(null,"+msgid+","+fromid+","+"0)");
+            	if(type==3)
+            		stmt2.execute("insert into message_state values(null,'"+msgid+"','"+fromid+"',"+"0)");
+            	stmt2.execute("insert into message_state values(null,'"+msgid+"','"+to+"',"+"0)");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+	
+	/**
+	 * 读取jdbc.properties中的配置
+	 * 
+	 * @return
+	 */
+	public static String readJdbcProperty(String key) {
+		Properties jdbcProps = new Properties();
+		String value = null;
+		try {
+			// 配置文件位于当前目录中的config目录下
+			InputStream resourceAsStream = TokenServiceImpl.class.getClassLoader().getResourceAsStream("jdbc.properties");
+			jdbcProps.load(resourceAsStream);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		value = jdbcProps.getProperty(key);
+		return value;
+	}
+	
 	
 
 }
