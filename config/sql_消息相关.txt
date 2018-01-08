@@ -1,6 +1,6 @@
 ﻿#查询聊天信息,最近的10条
 SELECT * FROM 
-(SELECT a.id,a.`from_id`,a.`to_id`,a.`type`,a.`content`,a.time,b.state FROM message AS a LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid='oCBrx0ExpR4J4DM1qM342xQ4HYWQ'
+(SELECT a.id,a.from_id,a.to_id,a.type,a.content,a.time,b.state FROM message AS a LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid='oCBrx0ExpR4J4DM1qM342xQ4HYWQ'
 WHERE TYPE=3 AND state!=2 AND
 ((a.from_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ' AND a.to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') OR
 (a.from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND a.to_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ')) ORDER BY TIME DESC LIMIT 0,10)AS a
@@ -11,9 +11,13 @@ ORDER BY TIME ASC
 #查询聊天列表(最后一条消息)
 SELECT * FROM message WHERE id IN(
 SELECT MAX(id) FROM (
-(SELECT * FROM message WHERE  from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND TYPE=3 AND state!=2
+(SELECT a.id,a.from_id,a.to_id,a.type,a.content,a.time,b.state FROM message AS a 
+LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+WHERE  from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND TYPE=3 AND state!=2
 UNION
-SELECT * FROM message WHERE  to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND TYPE=3 AND state!=2)
+SELECT a.id,a.from_id,a.to_id,a.type,a.content,a.time,b.state FROM message AS a 
+LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+WHERE  to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND TYPE=3 AND state!=2)
 
 )AS b GROUP BY b.from_id,b.to_id
 )
@@ -21,7 +25,11 @@ SELECT * FROM message WHERE  to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND TYPE=3 AND
  UNION 
  
  SELECT * FROM ( 
- SELECT * FROM message WHERE to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND (TYPE=1 OR TYPE=2)ORDER BY TIME DESC LIMIT 0,1) AS b
+ SELECT a.id,a.from_id,a.to_id,a.type,a.content,a.time FROM message AS a 
+LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' 
+WHERE to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' 
+ AND (TYPE=1 OR TYPE=2) AND state!=2
+ ORDER BY TIME DESC LIMIT 0,1) AS b
  
  ORDER BY TIME DESC
  
@@ -32,4 +40,69 @@ SELECT * FROM message WHERE  to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND TYPE=3 AND
 content LIKE '[Create]:vKzGZBfU67lSXhkkbt7GLg==%' OR 
 content LIKE '[CreateInner]:vKzGZBfU67lSXhkkbt7GLg==%' OR
 content LIKE '[Settle]:vKzGZBfU67lSXhkkbt7GLg==%' 
+
+
+
+
+#查询未读数量（用户消息）
+SELECT COUNT(*) FROM message AS a LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+WHERE (  (from_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ' AND to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') 
+OR (from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND to_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ') ) AND state=0 AND TYPE=3;
  
+ 
+ 
+#查询邀请消息
+SELECT a.id,a.from_id,a.to_id,a.type,a.content,a.time,b.state FROM message AS a
+LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+WHERE to_id ='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND state!=2 AND (TYPE=1 OR TYPE=2) ORDER BY TIME DESC LIMIT 0,1000;
+
+
+#查询邀请消息未读数
+SELECT COUNT(*) FROM message AS a 
+LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+WHERE to_id = 'oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND (TYPE=1 OR TYPE=2) AND state=0;
+
+
+
+
+
+#是否是重复的邀请
+SELECT COUNT(*) FROM message AS a 
+LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+WHERE from_id = 'oCBrx0ExpR4J4DM1qM342xQ4HYWQ' AND to_id = 'oCBrx0FreB-L8pIQM5_RYDGoWOKQ' AND (TYPE=1 OR TYPE=2) AND (state!=2 AND state!=12);
+
+
+
+#更新消息状态
+UPDATE message_state SET state=1 WHERE msg_id='187' AND pid='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+
+
+#更新消息状态（批量）
+UPDATE message_state SET state='1'
+WHERE id IN (
+SELECT * FROM (
+(SELECT b.id FROM message AS a 
+LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid='oCBrx0ExpR4J4DM1qM342xQ4HYWQ'
+WHERE (from_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ' 
+AND to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') OR (from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' 
+AND to_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ')
+AND state!=2 and type=#{type}
+)AS a )
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

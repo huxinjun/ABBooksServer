@@ -55,23 +55,67 @@ public class MessageServiceImpl implements IMessageService{
 	}
 
 	@Override
-	public void makeReaded(String findId,String id) {
-		dao.updateStatus(id, Message.STATUS_READED);
+	public void makeReaded(String findId,String msgId) {
+		dao.updateStatus(new HashMap<String,Object>(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			{
+				put("msgId",msgId);
+				put("pid",findId);
+				put("state", Message.STATUS_READED);
+			}
+		});
 	}
 
 	@Override
-	public void makeDeleted(String findId,String id) {
-		dao.updateStatus(id, Message.STATUS_DELETE);
+	public void makeDeleted(String findId,String msgId) {
+		dao.updateStatus(new HashMap<String,Object>(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			{
+				put("msgId",msgId);
+				put("pid",findId);
+				put("state", Message.STATUS_DELETE);
+			}
+		});
 	}
 
 	@Override
-	public void makeAccepted(String findId,String id) {
-		dao.updateStatus(id, Message.STATUS_INVITE_ACCEPT);
+	public void makeAccepted(String findId,String msgId) {
+		dao.updateStatus(new HashMap<String,Object>(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			{
+				put("msgId",msgId);
+				put("pid",findId);
+				put("state", Message.STATUS_INVITE_ACCEPT);
+			}
+		});
 	}
 
 	@Override
-	public void makeRefused(String findId,String id) {
-		dao.updateStatus(id, Message.STATUS_INVITE_REFUSE);
+	public void makeRefused(String findId,String msgId) {
+		dao.updateStatus(new HashMap<String,Object>(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			{
+				put("msgId",msgId);
+				put("pid",findId);
+				put("state", Message.STATUS_INVITE_REFUSE);
+			}
+		});
 	}
 	@Override
 	public List<Message> findUserMsgs(String user1Id, String user2Id,Integer pageIndex,Integer pageSize) {
@@ -117,6 +161,7 @@ public class MessageServiceImpl implements IMessageService{
 			private static final long serialVersionUID = 1L;
 
 			{
+				put("findId",findId);
 				put("user1Id",user1Id);
 				put("user2Id",user2Id);
 			}
@@ -147,7 +192,7 @@ public class MessageServiceImpl implements IMessageService{
 		dao.deleteState(id);
 	}
 	@Override
-	public void updateStatusBatch(String user1Id, String user2Id,int state) {
+	public void updateStatusBatch(String user1Id, String user2Id,int type,int state) {
 		dao.updateStatusBatch(new HashMap<String,Object>(){
 			/**
 			 * 
@@ -157,6 +202,7 @@ public class MessageServiceImpl implements IMessageService{
 			{
 				put("user1Id",user1Id);
 				put("user2Id",user2Id);
+				put("type",type);
 				put("state",state);
 			}
 		});
@@ -171,6 +217,24 @@ public class MessageServiceImpl implements IMessageService{
 
 	
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
