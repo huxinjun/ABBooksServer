@@ -37,7 +37,7 @@ public class CommonUtils {
 		int hourDis=getAllHour(currTime)-getAllHour(time);
 		int minuteDis=getAllMinute(currTime)-getAllMinute(time);
 		
-		System.out.println(yearDis+"年\n"+monthDis+"月\n"+weekDis+"周\n"+dayDis+"日\n"+hourDis+"时\n"+minuteDis+"分\n--------------");
+//		System.out.println(yearDis+"年\n"+monthDis+"月\n"+weekDis+"周\n"+dayDis+"日\n"+hourDis+"时\n"+minuteDis+"分\n--------------");
 		if(minuteDis==0)
 			return "刚刚";
 		if(minuteDis>0 && hourDis==0)
@@ -64,6 +64,7 @@ public class CommonUtils {
 		long currTime=System.currentTimeMillis();
 		long time=date.getTime();
 		
+		@SuppressWarnings("unused")
 		int yearDis=getAllYear(currTime)-getAllYear(time);
 		int monthDis=getAllMonth(currTime)-getAllMonth(time);
 		int weekDis=getAllWeek(currTime)-getAllWeek(time);
@@ -72,7 +73,7 @@ public class CommonUtils {
 		int minuteDis=getAllMinute(currTime)-getAllMinute(time);
 		
 		
-		System.out.println(yearDis+"年\n"+monthDis+"月\n"+weekDis+"周\n"+dayDis+"日\n"+hourDis+"时\n"+minuteDis+"分\n--------------");
+//		System.out.println(yearDis+"年\n"+monthDis+"月\n"+weekDis+"周\n"+dayDis+"日\n"+hourDis+"时\n"+minuteDis+"分\n--------------");
 		
 		SimpleDateFormat format=new SimpleDateFormat("yyyy/MM/dd");
 		if(minuteDis==0)

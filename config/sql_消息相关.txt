@@ -86,7 +86,7 @@ LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid='oCBrx0ExpR4J4DM1qM342xQ
 WHERE (from_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ' 
 AND to_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ') OR (from_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ' 
 AND to_id='oCBrx0ExpR4J4DM1qM342xQ4HYWQ')
-AND state!=2 and type==3
+AND state!=2 and type=3
 )AS a )
 )
 
