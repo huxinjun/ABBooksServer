@@ -33,4 +33,5 @@ public interface MessageDao {
 	
 	public void updateStatus(Map<String,Object> params);
 	public void updateStatusBatch(Map<String,Object> params);
+	public void updateStatusBatchForInvite(Map<String,Object> params);
 }

@@ -132,9 +132,20 @@
 		WHERE (from_id=#{user1Id}
 		AND to_id=#{user2Id}) OR (from_id=#{user2Id}
 		AND to_id=#{user1Id})
-		AND state!=2 and type=#{type}
+		AND state!=2 and type==3
 		)AS a ))
 	
+	</update>
+	
+	<update id="updateStatusBatchForInvite" parameterType="map">
+		UPDATE message_state SET state=#{state}
+		WHERE id IN (
+		SELECT * FROM (
+		(SELECT b.id FROM message AS a 
+		LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid=#{userId}
+		WHERE  TYPE!=3
+		)AS a )
+		)
 	</update>
 	
 	

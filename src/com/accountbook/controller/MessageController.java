@@ -175,20 +175,28 @@ public class MessageController {
 	
 	@ResponseBody
     @RequestMapping("/readAll")
-    public Object makeUserMsgsReaded(HttpServletRequest request,String userId,int type){
+    public Object makeUserMsgsReaded(HttpServletRequest request,String userId){
 		String findId=request.getAttribute("userid").toString();
-		
-		msgService.updateStatusBatch(findId,userId,type,Message.STATUS_READED);
+		if(TextUtils.isEmpty(userId))
+			msgService.updateStatusBatch(findId,Message.STATUS_READED);
+		else
+			msgService.updateStatusBatch(findId,userId,Message.STATUS_READED);
 		
 		return new Result(Result.RESULT_OK, "已经全部标记为已读");
 	}
 	
 	@ResponseBody
     @RequestMapping("/deleteAll")
-    public Object makeUserMsgsDeleted(HttpServletRequest request,String userId,int type){
+    public Object makeUserMsgsDeleted(HttpServletRequest request,String userId){
 		String findId=request.getAttribute("userid").toString();
 		
-		msgService.updateStatusBatch(findId,userId,type,Message.STATUS_DELETE);
+		System.out.println(userId);
+		System.out.println(TextUtils.isEmpty(userId));
+		
+		if(TextUtils.isEmpty(userId))
+			msgService.updateStatusBatch(findId,Message.STATUS_DELETE);
+		else
+			msgService.updateStatusBatch(findId,userId,Message.STATUS_DELETE);
 		
 		return new Result(Result.RESULT_OK, "已经全部删除");
 	}

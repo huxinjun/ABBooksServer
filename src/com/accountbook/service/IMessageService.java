@@ -28,7 +28,8 @@ public interface IMessageService {
 	public void makeAccepted(String findId,String msgId);
 	public void makeRefused(String findId,String msgId);
 	
-	public void updateStatusBatch(String user1Id,String user2Id,int type,int state);
+	public void updateStatusBatch(String user1Id,String user2Id,int state);
+	public void updateStatusBatch(String userId,int state);//邀请消息专用
 	public boolean isRepeatInvite(String user1Id,String user2Id);
 	
 	
