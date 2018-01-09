@@ -1,7 +1,6 @@
 package com.accountbook.utils;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import com.accountbook.model.Member;
@@ -27,98 +26,97 @@ public class CommonUtils {
 	/**
 	 * 
 	 */
-	public static String getSinceTimeString(Date time){
-		Calendar currCalendar = Calendar.getInstance();
-		currCalendar.setTime(new Date());
+	public static String getSinceTimeString(Date date){
+		long currTime=System.currentTimeMillis();
+		long time=date.getTime();
 		
-		Calendar otherCalendar = Calendar.getInstance();
-		otherCalendar.setTime(time);
+		int yearDis=getAllYear(currTime)-getAllYear(time);
+		int monthDis=getAllMonth(currTime)-getAllMonth(time);
+		int weekDis=getAllWeek(currTime)-getAllWeek(time);
+		int dayDis=getAllDay(currTime)-getAllDay(time);
+		int hourDis=getAllHour(currTime)-getAllHour(time);
+		int minuteDis=getAllMinute(currTime)-getAllMinute(time);
 		
-		
-		int yearDis=currCalendar.get(Calendar.YEAR)-otherCalendar.get(Calendar.YEAR);
-		int monthDis=getAllMonth(currCalendar)-getAllMonth(otherCalendar);
-		int weekDis=getAllWeek(currCalendar)-getAllWeek(otherCalendar);
-		int dayDis=getAllDay(currCalendar)-getAllDay(otherCalendar);
-		int hourDis=getAllHour(currCalendar)-getAllHour(otherCalendar);
-		int minuteDis=getAllMinute(currCalendar)-getAllMinute(otherCalendar);
-		
-//		System.out.println(yearDis+"年"+monthDis+"月"+weekDis+"周"+dayDis+"日"+hourDis+"时"+minuteDis+"分");
+		System.out.println(yearDis+"年\n"+monthDis+"月\n"+weekDis+"周\n"+dayDis+"日\n"+hourDis+"时\n"+minuteDis+"分\n--------------");
+		if(minuteDis==0)
+			return "刚刚";
+		if(minuteDis>0 && hourDis==0)
+			return minuteDis+"分钟前";
+		if(hourDis>0 && dayDis==0)
+			return hourDis+"小时前";
+		if(dayDis>0 && weekDis==0)
+			return dayDis+"天前";
+		if(weekDis>0 && monthDis==0)
+			return weekDis+"周前";
+		if(monthDis>0 && yearDis==0)
+			return monthDis+"月前";
 		if(yearDis>0)
 			return yearDis+"年前";
-		if(monthDis>0)
-			return monthDis+"月前";
-		if(weekDis>0)
-			return weekDis+"周前";
-		if(dayDis>0)
-			return dayDis+"天前";
-		if(hourDis>0)
-			return hourDis+"小时前";
-		if(minuteDis>0)
-			return minuteDis+"分钟前";
-		return "刚刚";
+		return "";
 		
 	}
 	
 	/**
 	 * 
 	 */
-	public static String getSinceTimeString2(Date time){
-		Calendar currCalendar = Calendar.getInstance();
-		currCalendar.setTime(new Date());
+	public static String getSinceTimeString2(Date date){
 		
-		Calendar otherCalendar = Calendar.getInstance();
-		otherCalendar.setTime(time);
+		long currTime=System.currentTimeMillis();
+		long time=date.getTime();
+		
+		int yearDis=getAllYear(currTime)-getAllYear(time);
+		int monthDis=getAllMonth(currTime)-getAllMonth(time);
+		int weekDis=getAllWeek(currTime)-getAllWeek(time);
+		int dayDis=getAllDay(currTime)-getAllDay(time);
+		int hourDis=getAllHour(currTime)-getAllHour(time);
+		int minuteDis=getAllMinute(currTime)-getAllMinute(time);
 		
 		
-		int yearDis=currCalendar.get(Calendar.YEAR)-otherCalendar.get(Calendar.YEAR);
-		int monthDis=getAllMonth(currCalendar)-getAllMonth(otherCalendar);
-		int weekDis=getAllWeek(currCalendar)-getAllWeek(otherCalendar);
-		int dayDis=getAllDay(currCalendar)-getAllDay(otherCalendar);
-		int hourDis=getAllHour(currCalendar)-getAllHour(otherCalendar);
-		int minuteDis=getAllMinute(currCalendar)-getAllMinute(otherCalendar);
+		System.out.println(yearDis+"年\n"+monthDis+"月\n"+weekDis+"周\n"+dayDis+"日\n"+hourDis+"时\n"+minuteDis+"分\n--------------");
 		
-//		System.out.println(yearDis+"年"+monthDis+"月"+weekDis+"周"+dayDis+"日"+hourDis+"时"+minuteDis+"分");
 		SimpleDateFormat format=new SimpleDateFormat("yyyy/MM/dd");
-		if(yearDis>0 || monthDis>0)
-			return format.format(time);
-		if(weekDis>0)
-			return weekDis+"周前";
-		if(dayDis>0)
-			return dayDis+"天前";
-		if(hourDis>0)
-			return hourDis+"小时前";
-		if(minuteDis>0)
+		if(minuteDis==0)
+			return "刚刚";
+		if(minuteDis>0 && hourDis==0)
 			return minuteDis+"分钟前";
-		return "刚刚";
+		if(hourDis>0 && dayDis==0)
+			return hourDis+"小时前";
+		if(dayDis>0 && weekDis==0)
+			return dayDis+"天前";
+		if(weekDis>0 && monthDis==0)
+			return weekDis+"周前";
+		if(monthDis>0)
+			return format.format(time);
+		return "";
 		
 	}
 	
-	public static int getAllMonth(Calendar c){
-		int year=c.get(Calendar.YEAR);
-		int month=c.get(Calendar.MONTH);
-		return year*12+month;
+	public static int getAllYear(long time){
+		return getAllMonth(time)/12;
 	}
 	
-	public static int getAllWeek(Calendar c){
-		int year=c.get(Calendar.YEAR);
-		int weekOfYear=c.get(Calendar.WEEK_OF_YEAR);
-		return year*12+weekOfYear;
+	public static int getAllMonth(long time){
+//		Calendar c=Calendar.getInstance();
+//		c.setTime(new Date(time));
+//		int totalMonth=c.get(Calendar.YEAR)*12+c.get(Calendar.MONTH);
+//		return totalMonth;
+		return getAllDay(time)/30;
 	}
 	
-	public static int getAllDay(Calendar c){
-		int year=c.get(Calendar.YEAR);
-		int dayOfYear=c.get(Calendar.DAY_OF_YEAR);
-		return year*12+dayOfYear;
+	public static int getAllWeek(long time){
+		return getAllDay(time)/7;
 	}
 	
-	public static int getAllHour(Calendar c){
-		int hour=c.get(Calendar.HOUR_OF_DAY);
-		return getAllDay(c)*24+hour;
+	public static int getAllDay(long time){
+		return getAllHour(time)/24;
 	}
 	
-	public static int getAllMinute(Calendar c){
-		int minute=c.get(Calendar.MINUTE);
-		return getAllHour(c)*60+minute;
+	public static int getAllHour(long time){
+		return getAllMinute(time)/60;
+	}
+	
+	public static int getAllMinute(long time){
+		return (int) (time/1000/60);
 	}
 	
 	

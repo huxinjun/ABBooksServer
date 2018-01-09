@@ -1,5 +1,6 @@
 package com.accountbook.service.impl;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,9 +47,11 @@ public class AccountServiceImpl implements IAccountService {
 			account.getPayResult().add(new PayResult());
 			account.getPayResult().get(0).setPayTarget((ArrayList<PayTarget>) payTargets);
 			
-			for(PayTarget target:payTargets)
+			for(PayTarget target:payTargets){
+				target.setWaitPaidMoney(Float.parseFloat(new DecimalFormat("#.##").format(target.getWaitPaidMoney())));
 				if(target.getOffsetCount()>0)
 					target.setOffsetMoney((float) dao.queryOffsetMoney(target.getId()));
+			}
 		}
 		return account;
 	}
@@ -88,9 +91,11 @@ public class AccountServiceImpl implements IAccountService {
 				account.getPayResult().add(new PayResult());
 				account.getPayResult().get(0).setPayTarget((ArrayList<PayTarget>) payTargets);
 				
-				for(PayTarget target:payTargets)
+				for(PayTarget target:payTargets){
+					target.setWaitPaidMoney(Float.parseFloat(new DecimalFormat("#.##").format(target.getWaitPaidMoney())));
 					if(target.getOffsetCount()>0)
 						target.setOffsetMoney((float) dao.queryOffsetMoney(target.getId()));
+				}
 			}
 		}
 		return accounts;
