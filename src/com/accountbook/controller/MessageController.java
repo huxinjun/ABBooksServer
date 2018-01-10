@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.accountbook.core.AccountCalculator;
+import com.accountbook.globle.Constants;
 import com.accountbook.model.Account;
 import com.accountbook.model.Friend;
 import com.accountbook.model.Group;
@@ -253,7 +254,7 @@ public class MessageController {
     		 if(msg.type==1 ||msg.type==2){
     			 //邀请消息
     			 msgResult.put("name","邀请消息");
-    			 msgResult.put("icon","http://img4.imgtn.bdimg.com/it/u=3386476608,1677035006&fm=27&gp=0.jpg");
+    			 msgResult.put("icon",Constants.HOST+"/images/invite.jpg");
     		 }else if(msg.type==3){
     			 //帐友聊天
     			 String accountId =msg.content.split(":")[1];

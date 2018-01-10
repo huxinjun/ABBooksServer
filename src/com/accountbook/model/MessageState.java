@@ -9,13 +9,13 @@ public class MessageState {
 	
 
 	public long id;
-	public String msg_id;
+	public String msgId;
 	public String pid;
 	public int state;
 	
-	public MessageState(String msg_id, String pid, int state) {
+	public MessageState(String msgId, String pid, int state) {
 		super();
-		this.msg_id = msg_id;
+		this.msgId = msgId;
 		this.pid = pid;
 		this.state = state;
 	}

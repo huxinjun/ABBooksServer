@@ -34,7 +34,7 @@ public class MessageServiceImpl implements IMessageService{
 		data.id=IDUtil.generateNewId();
 		dao.insert(data);
 		//邀请不需要记录发起者的状态
-		if(data.type!=3)
+		if(data.type==3)
 			dao.insertState(new MessageState(data.id,data.fromId,Message.STATUS_READED));
 		dao.insertState(new MessageState(data.id,data.toId,Message.STATUS_UNREAD));
 	}
@@ -49,7 +49,7 @@ public class MessageServiceImpl implements IMessageService{
 		msg.time=Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		newMessage(msg);
 		//邀请不需要记录发起者的状态
-		if(msg.type!=3)
+		if(msg.type==3)
 			dao.insertState(new MessageState(msg.id,msg.fromId,Message.STATUS_READED));
 		dao.insertState(new MessageState(msg.id,msg.toId,Message.STATUS_UNREAD));
 	}

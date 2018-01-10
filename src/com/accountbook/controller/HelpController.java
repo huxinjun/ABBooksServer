@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.accountbook.globle.Constants;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.impl.TokenServiceImpl;
 
@@ -23,6 +24,8 @@ import com.accountbook.service.impl.TokenServiceImpl;
 @Controller
 @RequestMapping("/help")
 public class HelpController {
+	
+	
 	
 	private static ArrayList<Help> helps;
 	private static ArrayList<Help> helpsSimple;
@@ -42,6 +45,7 @@ public class HelpController {
 			loadHelpList();
 		Help help = Help.findByFileName(helps, fileName);
 		String detail=help!=null?help.content:null;
+		detail=detail.replaceAll("<img src='", "<img src='"+Constants.HOST+"/images/");
 		return new Result().put(Result.RESULT_OK, "查询成功！").put("content", detail);
 	}
 	

@@ -80,10 +80,8 @@
 	</select>
 	
 	<select id="isRepeatInvite" parameterType="String" resultType="Boolean">
-		SELECT count(*) FROM message WHERE from_id = #{0} and to_id = #{1} AND (TYPE=1 OR TYPE=2) and (state!=2 and state!=12);
-		
 		SELECT COUNT(*) FROM message AS a 
-		LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid=#{1}
+		LEFT JOIN message_state AS b ON a.id=b.msg_id AND b.pid=#{0}
 		WHERE from_id =#{0} AND to_id =#{1} AND (TYPE=1 OR TYPE=2) AND (state!=2 AND state!=12);
 	</select>
 	
