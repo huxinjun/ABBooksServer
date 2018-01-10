@@ -58,7 +58,7 @@ public class HelpController {
 		try {
 			// 配置文件位于当前目录中的config目录下
 			InputStream resourceAsStream = TokenServiceImpl.class.getClassLoader().getResourceAsStream("help_list.txt");
-			BufferedReader br=new BufferedReader(new InputStreamReader(resourceAsStream));
+			BufferedReader br=new BufferedReader(new InputStreamReader(resourceAsStream,"utf-8"));
 			String line;
 			while((line=br.readLine())!=null){
 				Help help=new Help();
@@ -71,7 +71,7 @@ public class HelpController {
 					byte[] bytes=new byte[length];
 					fileSteam.read(bytes, 0, length);
 					fileSteam.close();
-					help.content=new String(bytes);
+					help.content=new String(bytes,"utf-8");
 				}else
 					help.name=line;
 				
