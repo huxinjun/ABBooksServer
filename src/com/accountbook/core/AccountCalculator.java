@@ -165,10 +165,10 @@ public class AccountCalculator {
             //number_type   0:基于总支出的百分比的值  1:缴费为一个固定值
             switch (p.getRuleType()){
                 case Member.RULE_TYPE_PERCENT:
-                    if(p.getRuleNum()>1)
-                        throw new CalculatorException("您为"+p.getMemberName()+"设置的支付类型是基于总支出百分比的值,取值范围[0~1]!");
+                    if(p.getRuleNum()>100)
+                        throw new CalculatorException("您为"+p.getMemberName()+"设置的支付类型是基于总支出百分比的值,取值范围[0~100]!");
                     //应缴金额
-                    p.setShouldPay(fixed2(mAccount.getPaidIn()*p.getRuleNum()));
+                    p.setShouldPay(fixed2(mAccount.getPaidIn()*(p.getRuleNum()/100)));
                     break;
                 case Member.RULE_TYPE_NUMBER:
                     if(p.getRuleNum()>mAccount.getPaidIn())
