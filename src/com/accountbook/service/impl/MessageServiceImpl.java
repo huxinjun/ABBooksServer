@@ -48,10 +48,6 @@ public class MessageServiceImpl implements IMessageService{
 		msg.content=content;
 		msg.time=Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		newMessage(msg);
-		//邀请不需要记录发起者的状态
-		if(msg.type==3)
-			dao.insertState(new MessageState(msg.id,msg.fromId,Message.STATUS_READED));
-		dao.insertState(new MessageState(msg.id,msg.toId,Message.STATUS_UNREAD));
 	}
 
 	@Override
@@ -255,11 +251,12 @@ public class MessageServiceImpl implements IMessageService{
 	
 	
 	public static void main(String[] args){
-		insertMsgState();
+//		insertMsgState();
 	}
 	
 	
 	
+	@SuppressWarnings("unused")
 	private static void insertMsgState(){
 		
         String sql;

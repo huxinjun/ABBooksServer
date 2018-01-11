@@ -276,12 +276,20 @@ public class AccountController {
 					target.setWaitPaidMoney(0);// 标记为已付
 				}
 				// -------------------------------------------------------------------------------
-				// 支付组有人
-				if (paidGroupPersonCount > 1) {
+				if(paidGroupPersonCount > 1){
 					// 手动完善
 					target.setPaidStatus(PayTarget.STATUS_NEED);
 					accountService.updatePayTarget(target);
-				} else if (paidGroupPersonCount == 1) {
+				}
+				if (receiptGroupPersonCount > 1) {
+					// 手动完善
+					target.setReceiptStatus(PayTarget.STATUS_NEED);
+					accountService.updatePayTarget(target);
+				}
+				
+				// 支付组一个人需要自动完善
+				if (paidGroupPersonCount == 1) {
+					
 					// 自动完善,start
 					UserInfo user = groupService.findUsersByGroupId(target.getPaidId()).get(0);
 					PayTarget newTarget = new PayTarget();
@@ -290,18 +298,35 @@ public class AccountController {
 					newTarget.setPaidId(user.id);
 					newTarget.setReceiptId(target.getReceiptId());
 					newTarget.setMoney(target.getMoney());
+					newTarget.setWaitPaidMoney(target.getMoney());
+					newTarget.setPaidStatus(PayTarget.STATUS_COMPLETED);
+					newTarget.setReceiptStatus(target.getReceiptStatus());
+					
+					
+					Member groupMember = getMemberById(account.getMembers(), target.getPaidId());
+					Member member=new Member();
+					member.setId(IDUtil.generateNewId());
+					member.setAccountId(account.getId());
+					member.setIsGroup(false);
+					member.setMemberId(user.id);
+					member.setMemberName(user.nickname);
+					member.setMemberIcon(user.avatarUrl);
+					member.setRuleType(groupMember.getRuleType());
+					member.setRuleNum(groupMember.getRuleNum());
+					member.setMoneyForSelf(groupMember.getMoneyForSelf());
+					member.setPaidIn(groupMember.getPaidIn());
+					member.setShouldPay(groupMember.getShouldPay());
+					member.setParentMemberId(groupMember.getMemberId());
+					
+					accountService.addMember(member);
 					
 					accountService.addPayTarget(newTarget);
 
 					accountService.deletePayTarget(target.getId());
 				}
 				// -------------------------------------------------------------------------------
-				// 收款组有人
-				if (receiptGroupPersonCount > 1) {
-					// 手动完善
-					target.setReceiptStatus(PayTarget.STATUS_NEED);
-					accountService.updatePayTarget(target);
-				} else if (receiptGroupPersonCount == 1) {
+				// 收款组一个人需要自动完善
+				if (receiptGroupPersonCount == 1) {
 					// 自动完善,start
 					UserInfo user = groupService.findUsersByGroupId(target.getReceiptId()).get(0);
 					PayTarget newTarget = new PayTarget();
@@ -310,6 +335,26 @@ public class AccountController {
 					newTarget.setPaidId(target.getPaidId());
 					newTarget.setReceiptId(user.id);
 					newTarget.setMoney(target.getMoney());
+					newTarget.setWaitPaidMoney(target.getMoney());
+					newTarget.setReceiptStatus(PayTarget.STATUS_COMPLETED);
+					newTarget.setPaidStatus(target.getPaidStatus());
+					
+					Member groupMember = getMemberById(account.getMembers(), target.getReceiptId());
+					Member member=new Member();
+					member.setId(IDUtil.generateNewId());
+					member.setAccountId(account.getId());
+					member.setIsGroup(false);
+					member.setMemberId(user.id);
+					member.setMemberName(user.nickname);
+					member.setMemberIcon(user.avatarUrl);
+					member.setRuleType(groupMember.getRuleType());
+					member.setRuleNum(groupMember.getRuleNum());
+					member.setMoneyForSelf(groupMember.getMoneyForSelf());
+					member.setPaidIn(groupMember.getPaidIn());
+					member.setShouldPay(groupMember.getShouldPay());
+					member.setParentMemberId(groupMember.getMemberId());
+					
+					accountService.addMember(member);
 					
 					accountService.addPayTarget(newTarget);
 

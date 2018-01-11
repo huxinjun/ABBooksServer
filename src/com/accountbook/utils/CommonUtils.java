@@ -73,6 +73,7 @@ public class CommonUtils {
 		int minuteDis=getAllMinute(currTime)-getAllMinute(time);
 		
 		
+//		System.out.println("时间："+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
 //		System.out.println(yearDis+"年\n"+monthDis+"月\n"+weekDis+"周\n"+dayDis+"日\n"+hourDis+"时\n"+minuteDis+"分\n--------------");
 		
 		SimpleDateFormat format=new SimpleDateFormat("yyyy/MM/dd");

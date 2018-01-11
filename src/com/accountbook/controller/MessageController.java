@@ -69,7 +69,7 @@ public class MessageController {
     
     public Object getUserMessage(HttpServletRequest request,HttpServletResponse response,String userId,Integer pageIndex,Integer pageSize){
     	String findId=request.getAttribute("userid").toString();
-    	SimpleDateFormat format=new SimpleDateFormat("MM月dd日");
+    	SimpleDateFormat format=new SimpleDateFormat("yyyy年MM月dd日");
     	
     	UserInfo me = userService.findUser(findId);
     	UserInfo he = userService.findUser(userId);
@@ -216,7 +216,7 @@ public class MessageController {
     		//不添加重复的,因为数据库是用groupby查的,会出现重复的
     		 boolean repeat=false;
     		 for(Result res:results)
-    			 if(msg.fromId.equals(res.get("toId")) && msg.toId.equals(res.get("fromId")) && res.get("type").toString().equals("3")){
+    			 if(msg.fromId.equals(res.get("toId")) && msg.toId.equals(res.get("fromId")) && msg.type==3){
     				 repeat=true;
     				 System.out.println("重复");
     				 System.out.println(res);
@@ -261,17 +261,14 @@ public class MessageController {
         		 String memberId = null;
          		 String targetId=null;
         		 Account account = accountService.findAccount(accountId);
-        		 String dateStr=CommonUtils.getSinceTimeString2(new Date(account.getDateTimestamp().getTime()));
          		
          		if(msg.content.startsWith("[Create]")){
-         			msgResult.put("date",dateStr);
          			msgResult.put("content","[新账单]"+account.getPaidIn()+"元");
          			
          		}else if(msg.content.startsWith("[CreateInner]")){
          			memberId=msg.content.split(":")[2];
          			Member member=getMemberById(account.getMembers(),memberId);
          			
-         			msgResult.put("date",dateStr);
          			msgResult.put("content","[组内账单]"+member.getShouldPay()+"元");
          			
          		}else if(msg.content.startsWith("[Settle]")){
@@ -281,7 +278,6 @@ public class MessageController {
          			
          			String opt=findId.equals(msg.fromId)?findId.equals(target.getPaidId())?"付款":"收款":findId.equals(target.getPaidId())?"收款":"付款";
          			
-         			msgResult.put("date",dateStr);
          			msgResult.put("content","["+opt+"]"+(TextUtils.isEmpty(paidMoney)?target.getMoney():paidMoney)+"元");
          		}
     			 

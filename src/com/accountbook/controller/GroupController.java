@@ -330,7 +330,7 @@ public class GroupController {
 		
 		String sendResult = WxUtil.sendTemplateInviteMessage(notifService,groupInfo.adminId,me.nickname, msg.content,true,groupInfo.name);
 		
-		return result.put(Result.RESULT_OK, "已经向组管理员请求加入分组消息").put("templateResult", sendResult);
+		return result.put(Result.RESULT_OK, "已发出请求").put("templateResult", sendResult);
 		
 	}
 	
