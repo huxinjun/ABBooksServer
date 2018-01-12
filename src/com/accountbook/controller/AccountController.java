@@ -772,9 +772,9 @@ public class AccountController {
 		String findId = req.getAttribute("userid").toString();
 		PayTarget findPayTarget = accountService.findPayTarget(targetId);
 		if(findPayTarget==null)
-			return new Result(Result.RESULT_FAILD, "账单已被删除!");
+			return new Result(Result.RESULT_FAILD, "账单已被删除");
 		if(findPayTarget.getWaitPaidMoney()==0)
-			return new Result(Result.RESULT_FAILD, "重复操作!");
+			return new Result(Result.RESULT_FAILD, "重复操作");
 		float oldWaitPaidMoney = findPayTarget.getWaitPaidMoney();
 		findPayTarget.setWaitPaidMoney(0);
 		accountService.updatePayTarget(findPayTarget);
@@ -785,7 +785,7 @@ public class AccountController {
 		msgService.newMessage(Message.MESSAGE_TYPE_ACCOUNT, findId,toId, "[Settle]:"+accountId+":"+targetId+paidMoneyStr);
 		
 
-		return new Result(Result.RESULT_OK, "更新付款状态成功!");
+		return new Result(Result.RESULT_OK, "操作成功");
 	}
 	
 	
