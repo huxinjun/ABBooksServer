@@ -29,12 +29,12 @@ public class CommonUtils {
 			return minuteDis/60+"小时前";
 		if(minuteDis>=60*24 && minuteDis<60*24*7)
 			return minuteDis/60/24+"天前";
-		if(minuteDis>=60*24*7 && minuteDis<60*24*7*30)
+		if(minuteDis>=60*24*7 && minuteDis<60*24*30)
 			return minuteDis/60/24/7+"周前";
-		if(minuteDis>=60*24*7*30 && minuteDis<60*24*7*30*12)
-			return minuteDis/60/24/7/30+"月前";
-		if(minuteDis>=60*24*7*30*12)
-			return minuteDis/60/24/7/30/12+"年前";
+		if(minuteDis>=60*24*30 && minuteDis<60*24*30*12)
+			return minuteDis/60/24/30+"月前";
+		if(minuteDis>=60*24*30*12)
+			return minuteDis/60/24/30/12+"年前";
 		return "";
 		
 	}
@@ -54,9 +54,9 @@ public class CommonUtils {
 			return minuteDis/60+"小时前";
 		if(minuteDis>=60*24 && minuteDis<60*24*7)
 			return minuteDis/60/24+"天前";
-		if(minuteDis>=60*24*7 && minuteDis<60*24*7*30)
+		if(minuteDis>=60*24*7 && minuteDis<60*24*30)
 			return minuteDis/60/24/7+"周前";
-		if(minuteDis>=60*24*7*30)
+		if(minuteDis>=60*24*30)
 			return format.format(time);
 		return "";
 		
