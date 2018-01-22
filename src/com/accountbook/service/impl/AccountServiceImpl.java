@@ -41,6 +41,7 @@ public class AccountServiceImpl implements IAccountService {
 			return null;
 		account.setMembers((ArrayList<Member>) dao.queryMembersByAccountId(account.getId()));
 		
+		DecimalFormat decimalFormat = new DecimalFormat("#.##");
 		List<PayTarget> payTargets = dao.queryPayTargetByAccountId(account.getId());
 		if(payTargets!=null && payTargets.size()>0){
 			account.setPayResult(new ArrayList<PayResult>());
@@ -48,9 +49,9 @@ public class AccountServiceImpl implements IAccountService {
 			account.getPayResult().get(0).setPayTarget((ArrayList<PayTarget>) payTargets);
 			
 			for(PayTarget target:payTargets){
-				target.setWaitPaidMoney(Float.parseFloat(new DecimalFormat("#.##").format(target.getWaitPaidMoney())));
+				target.setWaitPaidMoney(Float.parseFloat(decimalFormat.format(target.getWaitPaidMoney())));
 				if(target.getOffsetCount()>0)
-					target.setOffsetMoney((float) dao.queryOffsetMoney(target.getId()));
+					target.setOffsetMoney(Float.parseFloat(decimalFormat.format(dao.queryOffsetMoney(target.getId()))));
 			}
 		}
 		return account;
@@ -84,7 +85,7 @@ public class AccountServiceImpl implements IAccountService {
 		for(Account account:accounts){
 			account.setMembers((ArrayList<Member>) dao.queryMembersByAccountId(account.getId()));
 			
-			
+			DecimalFormat decimalFormat = new DecimalFormat("#.##");
 			List<PayTarget> payTargets = dao.queryPayTargetByAccountId(account.getId());
 			if(payTargets!=null && payTargets.size()>0){
 				account.setPayResult(new ArrayList<PayResult>());
@@ -92,9 +93,9 @@ public class AccountServiceImpl implements IAccountService {
 				account.getPayResult().get(0).setPayTarget((ArrayList<PayTarget>) payTargets);
 				
 				for(PayTarget target:payTargets){
-					target.setWaitPaidMoney(Float.parseFloat(new DecimalFormat("#.##").format(target.getWaitPaidMoney())));
+					target.setWaitPaidMoney(Float.parseFloat(decimalFormat.format(target.getWaitPaidMoney())));
 					if(target.getOffsetCount()>0)
-						target.setOffsetMoney((float) dao.queryOffsetMoney(target.getId()));
+						target.setOffsetMoney(Float.parseFloat(decimalFormat.format(dao.queryOffsetMoney(target.getId()))));
 				}
 			}
 		}
@@ -117,7 +118,7 @@ public class AccountServiceImpl implements IAccountService {
 		for(Account account:accounts){
 			account.setMembers((ArrayList<Member>) dao.queryMembersByAccountId(account.getId()));
 			
-			
+			DecimalFormat decimalFormat = new DecimalFormat("#.##");
 			List<PayTarget> payTargets = dao.queryPayTargetByAccountId(account.getId());
 			if(payTargets!=null && payTargets.size()>0){
 				account.setPayResult(new ArrayList<PayResult>());
@@ -126,7 +127,7 @@ public class AccountServiceImpl implements IAccountService {
 				
 				for(PayTarget target:payTargets)
 					if(target.getOffsetCount()>0)
-						target.setOffsetMoney((float) dao.queryOffsetMoney(target.getId()));
+						target.setOffsetMoney(Float.parseFloat(decimalFormat.format(dao.queryOffsetMoney(target.getId()))));
 			}
 		}
 			

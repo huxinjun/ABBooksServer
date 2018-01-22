@@ -77,6 +77,7 @@
   		<result column="paid_icon" property="paidIcon" jdbcType="VARCHAR" />
   		<result column="receipt_icon" property="receiptIcon" jdbcType="VARCHAR" />
   		<result column="money" property="money" jdbcType="DOUBLE" />
+  		<result column="offset_money" property="offsetMoney" jdbcType="DOUBLE" />
   </resultMap>
   
   
@@ -246,14 +247,14 @@
 	<select id="queryOffsets" parameterType="string" resultMap="offsetsMap">
 		#查询抵消记录列表,包装好的数据
 		
-		SELECT c.id,c.type,c.name,c.paid_in,c.date_timestamp,d.icon AS paid_icon,e.icon AS receipt_icon,b.money FROM account_pay_offset AS a 
+		SELECT c.id,c.type,c.name,c.paid_in,c.date_timestamp,d.icon AS paid_icon,e.icon AS receipt_icon,b.money,a.money AS offset_money FROM account_pay_offset AS a 
 		LEFT JOIN account_pay AS b ON a.origin_pay_id=b.id 
 		LEFT JOIN account AS c ON b.account_id=c.id
 		LEFT JOIN USER AS d ON b.paid_id=d.id
 		LEFT JOIN USER AS e ON b.receipt_id=e.id
 		WHERE target_pay_id=#{payId}
 		UNION
-		SELECT c.id,c.type,c.name,c.paid_in,c.date_timestamp,d.icon AS paid_icon,e.icon AS receipt_icon,b.money FROM account_pay_offset AS a 
+		SELECT c.id,c.type,c.name,c.paid_in,c.date_timestamp,d.icon AS paid_icon,e.icon AS receipt_icon,b.money,a.money AS offset_money FROM account_pay_offset AS a 
 		LEFT JOIN account_pay AS b ON a.target_pay_id=b.id 
 		LEFT JOIN account AS c ON b.account_id=c.id
 		LEFT JOIN USER AS d ON b.paid_id=d.id

@@ -18,6 +18,7 @@ public class Offset {
 	public String paidIcon;
 	public String receiptIcon;
 	public float money;
+	public float offsetMoney;
 	
 	
 }
