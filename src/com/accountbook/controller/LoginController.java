@@ -68,6 +68,7 @@ public class LoginController {
     	//查找数据库有没有此openid为username的用户
     	UserInfo databaseUser=userService.findUser(loginInfo.openid);
     	System.out.println(databaseUser);
+    	
     	if(databaseUser==null){
     		databaseUser=new UserInfo();
     		databaseUser.id=loginInfo.openid;
