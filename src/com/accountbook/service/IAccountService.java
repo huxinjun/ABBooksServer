@@ -23,6 +23,7 @@ public interface IAccountService {
 	public Account findAccount(String accountId);
 	public List<Account> findAccounts(String userId,Integer pageIndex,Integer pageSize);
 	public List<Account> findAccounts(String userId,String bookId,Integer pageIndex,Integer pageSize);
+	public List<Account> findAccounts(String userId,String year,String month,String type,String name,Integer pageIndex,Integer pageSize);
 	public List<Account> findAccounts2P(String user1Id,String user2Id, Integer pageIndex, Integer pageSize);
 	
 	/**查询两个用户待付的金额:user1Id向user2Id待付的*/

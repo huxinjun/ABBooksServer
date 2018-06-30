@@ -873,7 +873,26 @@ public class AccountController {
 				results = accountService.findAccounts(findId, bookId,pageIndex,pageSize);
 		}
 
+		wrapAccountsResult(findId,result,results,pageIndex,pageSize);
 
+		return result.put(Result.RESULT_OK, "查询账单成功!");
+	}
+	/**
+	 * 查询一个用户的某年某月的某类型账单,如果是其他类型,那么必须提供账单名称
+	 */
+	@ResponseBody
+	@RequestMapping("/getByMonthType")
+	public Object findAccountsByMonthType(ServletRequest req,String year,String month,String type,String name,String userId,Integer pageIndex,Integer pageSize) {
+		String findId=req.getAttribute("userid").toString();
+		Result result = new Result();
+		List<Account> results=accountService.findAccounts(findId,year,month,type,name,pageIndex,pageSize);;
+		
+		wrapAccountsResult(findId,result,results,pageIndex,pageSize);
+		
+		return result.put(Result.RESULT_OK, "查询账单成功!");
+	}
+	
+	private void wrapAccountsResult(String findId,Result result,List<Account> results,Integer pageIndex,Integer pageSize){
 		// 将字符串的icons替换为数组形式
 		List<Result> resultsWapper = new ArrayList<>();
 		for (Account account : results) {
@@ -883,12 +902,12 @@ public class AccountController {
 				put.put("imgs", null);
 			else
 				put.put("imgs", account.getImgs().split(","));
-
+			
 			UserInfo createUser = userService.findUser(account.getUserId());
 			put.put("user_icon", createUser.icon);
 			put.put("date", new SimpleDateFormat("yyyy年MM月dd日").format(new Date(account.getDateTimestamp().getTime())));
 			put.put("dateDis", CommonUtils.getSinceTimeString(account.getCreateTimestamp()));
-
+			
 			// 成员为组时查找当前用户是否在改组内
 			if (account.getMembers() != null && account.getMembers().size() > 0) {
 				for (Member member : account.getMembers()) {
@@ -898,18 +917,16 @@ public class AccountController {
 					}
 				}
 			}
-
+			
 			resultsWapper.add(put);
 		}
-
+		
 		result.put("accounts", resultsWapper);
 		result.put("hasNextPage",results.size()==0?false:true);
 		result.put("pageIndex", pageIndex==null || pageIndex<=0 ? CommonUtils.PAGE_DEFAULT_INDEX : pageIndex);
 		result.put("pageSize", pageSize==null || pageSize<=0 ? CommonUtils.PAGE_DEFAULT_SIZE : pageSize);
-
-		return result.put(Result.RESULT_OK, "查询账单成功!");
+				
 	}
-	
 	
 	
 	/**

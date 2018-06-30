@@ -39,21 +39,7 @@ public class AccountServiceImpl implements IAccountService {
 		Account account = dao.queryAccount(accountId);
 		if(account==null)
 			return null;
-		account.setMembers((ArrayList<Member>) dao.queryMembersByAccountId(account.getId()));
-		
-		DecimalFormat decimalFormat = new DecimalFormat("#.##");
-		List<PayTarget> payTargets = dao.queryPayTargetByAccountId(account.getId());
-		if(payTargets!=null && payTargets.size()>0){
-			account.setPayResult(new ArrayList<PayResult>());
-			account.getPayResult().add(new PayResult());
-			account.getPayResult().get(0).setPayTarget((ArrayList<PayTarget>) payTargets);
-			
-			for(PayTarget target:payTargets){
-				target.setWaitPaidMoney(Float.parseFloat(decimalFormat.format(target.getWaitPaidMoney())));
-				if(target.getOffsetCount()>0)
-					target.setOffsetMoney(Float.parseFloat(decimalFormat.format(dao.queryOffsetMoney(target.getId()))));
-			}
-		}
+		wrapAccount(account);
 		return account;
 	}
 	
@@ -82,23 +68,24 @@ public class AccountServiceImpl implements IAccountService {
 					put("lc", limit.count);
 				}
 			});
-		for(Account account:accounts){
-			account.setMembers((ArrayList<Member>) dao.queryMembersByAccountId(account.getId()));
-			
-			DecimalFormat decimalFormat = new DecimalFormat("#.##");
-			List<PayTarget> payTargets = dao.queryPayTargetByAccountId(account.getId());
-			if(payTargets!=null && payTargets.size()>0){
-				account.setPayResult(new ArrayList<PayResult>());
-				account.getPayResult().add(new PayResult());
-				account.getPayResult().get(0).setPayTarget((ArrayList<PayTarget>) payTargets);
-				
-				for(PayTarget target:payTargets){
-					target.setWaitPaidMoney(Float.parseFloat(decimalFormat.format(target.getWaitPaidMoney())));
-					if(target.getOffsetCount()>0)
-						target.setOffsetMoney(Float.parseFloat(decimalFormat.format(dao.queryOffsetMoney(target.getId()))));
-				}
+		wrapAccount(accounts);
+		return accounts;
+	}
+	public List<Account> findAccounts(String userId,String year,String month,String type,String name,Integer pageIndex,Integer pageSize) {
+		List<Account> accounts;
+		Limit limit = CommonUtils.getLimit(pageIndex, pageSize);
+		accounts=dao.queryMyAccountsByMonthType(new HashMap<String,Object>(){
+			private static final long serialVersionUID = 1L;
+			{
+				put("userId", userId);
+				put("date", year+"-"+(Integer.parseInt(month)<10?"0"+month:month));
+				put("type", type);
+				put("name", name);
+				put("ls", limit.start);
+				put("lc", limit.count);
 			}
-		}
+		});
+		wrapAccount(accounts);
 		return accounts;
 	}
 	@Override
@@ -115,6 +102,30 @@ public class AccountServiceImpl implements IAccountService {
 				put("lc", limit.count);
 			}
 		});
+		wrapAccount(accounts);
+			
+		return accounts;
+		
+	}
+	
+	
+	
+	private void wrapAccount(Account account){
+		wrapAccount(new ArrayList<Account>(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			{
+				add(account);
+			}
+		});
+	}
+	/**
+	 * 为查询出来的account添加成员和抵消记录
+	 */
+	private void wrapAccount(List<Account> accounts){
 		for(Account account:accounts){
 			account.setMembers((ArrayList<Member>) dao.queryMembersByAccountId(account.getId()));
 			
@@ -130,9 +141,6 @@ public class AccountServiceImpl implements IAccountService {
 						target.setOffsetMoney(Float.parseFloat(decimalFormat.format(dao.queryOffsetMoney(target.getId()))));
 			}
 		}
-			
-		return accounts;
-		
 	}
 	
 	

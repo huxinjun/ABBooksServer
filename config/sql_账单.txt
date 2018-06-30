@@ -53,3 +53,14 @@ LEFT JOIN account AS c ON b.account_id=c.id
 LEFT JOIN USER AS d ON b.paid_id=d.id
 LEFT JOIN USER AS e ON b.receipt_id=e.id
 WHERE origin_pay_id='lWJPttcP0mBeMeYOkLzE6w=='
+
+
+#查询某月某个类型下的所有账单(所有账本)
+SELECT * FROM account WHERE 
+(id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ'
+OR member_id IN (SELECT DISTINCT(group_id) id FROM group_user WHERE user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')) 
+OR user_id='oCBrx0FreB-L8pIQM5_RYDGoWOKQ')
+AND DATE_FORMAT(date_timestamp,'%Y-%m')='2018-06'
+AND TYPE='qt'
+AND NAME='车'
+ORDER BY date_timestamp DESC,create_timestamp DESC LIMIT 0,10

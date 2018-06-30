@@ -26,6 +26,7 @@ public interface AccountDao {
 	
 	public Account queryAccount(String accountId);
 	public List<Account> queryMyAccounts(Map<String,Object> map);
+	public List<Account> queryMyAccountsByMonthType(Map<String,Object> map);
 	public List<Account> queryMyAccountsByBookId(Map<String,Object> map);
 	public List<Account> queryTwoPersonAccounts(Map<String,Object> map);
 	

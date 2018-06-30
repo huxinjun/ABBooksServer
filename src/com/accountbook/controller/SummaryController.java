@@ -98,6 +98,7 @@ public class SummaryController {
 			String name=TYPE_MAP.get(info.getName()).split("_")[0];
 			String color=TYPE_MAP.get(info.getName()).split("_")[1];
 			Result item=new Result();
+			item.put("type", info.getName());
 			item.put("name", name);
 			item.put("data",info.getNumber());
 			item.put("color", color);
@@ -119,6 +120,7 @@ public class SummaryController {
 		List<Result> results=new ArrayList<>();
 		for(SummaryInfo info:infos){
 			Result item=new Result();
+			item.put("type", "qt");
 			item.put("name", info.getName());
 			item.put("data",info.getNumber());
 			item.put("color",genRandomColorStr());
