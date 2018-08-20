@@ -170,7 +170,7 @@
 		<if test="type=='qt' and name!=null and name.length()>0">
 			AND NAME=#{name}
 		</if>
-		ORDER BY date_timestamp DESC,create_timestamp DESC LIMIT 0,10
+		ORDER BY date_timestamp DESC,create_timestamp DESC LIMIT #{ls},#{lc}
 		
 	</select>
 	<select id="queryMyAccountsByBookId" parameterType="map" resultMap="accountMap">
