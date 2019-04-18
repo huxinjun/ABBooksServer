@@ -151,10 +151,14 @@
 	<select id="queryMyAccounts" parameterType="map" resultMap="accountMap">
 	
 		#查询自己记录或者涉及到自己的账单(所有账本)
+		
 		SELECT * FROM account WHERE 
 		id IN(SELECT DISTINCT account_id FROM account_member WHERE member_id=#{userId}
-		OR member_id IN (SELECT DISTINCT(group_id) id FROM group_user WHERE user_id=#{userId})) 
-		OR user_id=#{userId}
+		OR member_id IN (SELECT DISTINCT(group_id) id FROM group_user WHERE user_id=#{userId}))
+		UNION
+		SELECT * FROM account WHERE 
+				user_id=#{userId}
+		
 		ORDER BY date_timestamp DESC,create_timestamp DESC limit #{ls},#{lc}
 		
 	</select>

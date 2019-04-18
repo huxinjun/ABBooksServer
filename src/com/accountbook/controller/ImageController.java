@@ -79,22 +79,22 @@ public class ImageController {
 			sendServerFile(response,file,urlPath);
 		else{
 			//判断文件是否过期
-			long modifySince;
-			try{
-				modifySince=Long.parseLong(modifySinceStr);
-			}catch(Exception ex){
-				modifySince=0;
-			}
-			long serverFileLastModify=file.exists()?file.lastModified():0;
-			if(serverFileLastModify>modifySince)
-				sendServerFile(response,file,urlPath);
-			else{
+//			long modifySince;
+//			try{
+//				modifySince=Long.parseLong(modifySinceStr);
+//			}catch(Exception ex){
+//				modifySince=0;
+//			}
+//			long serverFileLastModify=file.exists()?file.lastModified():0;
+//			if(serverFileLastModify>modifySince)
+//				sendServerFile(response,file,urlPath);
+//			else{
 				//没有过期，客户端资源可用
 				response.setStatus(304);
 				response.addHeader("Last-Modified", String.valueOf(file.lastModified()));
 				System.out.println(".........................304使用缓存");
-				return;
-			}
+//				return;
+//			}
 		}
 	}
 	
