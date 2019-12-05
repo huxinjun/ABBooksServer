@@ -7,6 +7,20 @@
 <title>Insert title here</title>
 </head>
 <body>
-aaa${test}
+welcome,My friend!${test}
+
+<div style='position: absolute;bottom: 0;left: 50%;transform: translate(-50%, -50%);'>
+Copyright © 2019 www.xzbenben.cn All rights reserved.
+<a href="http://www.beian.miit.gov.cn/" target="ii">京ICP备17061398号-1</a>
+
+</div>
+
+
+
+
+
 </body>
+
+
+
 </html>
