@@ -34,6 +34,7 @@ public class TokenFilter implements Filter {
 			add("images");
 			add("tb.html");
 			add("help");
+			add("testing");
 			
 		}
 	};

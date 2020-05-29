@@ -21,6 +21,7 @@
 		<mapper resource="com/accountbook/mapping/groupMapping.xml"/>
 		<mapper resource="com/accountbook/mapping/accountMapping.xml"/>
 		<mapper resource="com/accountbook/mapping/notifMapping.xml"/>
+		<mapper resource="com/accountbook/mapping/testingMapping.xml"/>
 		</mappers>
 
 
