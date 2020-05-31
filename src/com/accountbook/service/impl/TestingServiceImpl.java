@@ -25,5 +25,9 @@ public class TestingServiceImpl implements ITestingService {
 	public int findMaxId() {
 		return dao.queryMaxId();
 	}
+	@Override
+	public TestingInfo findTestingInfoByFileUrl(String fileurl) {
+		return dao.queryTestingInfoByFileUrl(fileurl);
+	}
 
 }

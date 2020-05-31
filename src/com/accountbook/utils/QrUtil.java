@@ -100,6 +100,7 @@ public class QrUtil {
 			// 设置logo图标
 			QRCodeFactory logoConfig = new QRCodeFactory();
 			image = logoConfig.setMatrixLogo(image, logUri);
+			
 
 			if (!ImageIO.write(image, format, stream)) {
 				throw new IOException("Could not write an image of format " + format);

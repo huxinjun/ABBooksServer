@@ -6,13 +6,16 @@
     <result column="device" property="device" jdbcType="VARCHAR" />
     <result column="fileurl" property="fileurl" jdbcType="VARCHAR" />
     <result column="comments" property="comments" jdbcType="VARCHAR" />
-    <result column="timestamp" property="timestamp" jdbcType="BIGINT" />
+    <result column="timestamp" property="timestamp" jdbcType="TIMESTAMP" />
   </resultMap>
   
 	
 	<!-- 查询-->
 	<select id="queryTestingInfo" parameterType="String" resultMap="map">
 		SELECT * FROM testing WHERE id = #{id};
+	</select>
+	<select id="queryTestingInfoByFileUrl" parameterType="String" resultMap="map">
+		SELECT * FROM testing WHERE fileurl = #{fileurl};
 	</select>
 	<select id="queryMaxId" parameterType="String" resultType="INTEGER">
 		SELECT MAX(id) FROM testing

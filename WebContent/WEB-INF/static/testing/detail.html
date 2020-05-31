@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=0">
+	<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+	<title>a</title>
+</head>
+
+<script>
+	//通过window.screen.width获取屏幕的宽度
+	var offWidth = window.screen.width / 30; //这里用宽度/30表示1rem取得的px
+	document.getElementsByTagName("html")[0].style.fontSize = offWidth + 'px'; //把rem的值复制给顶级标签html的font-size
+</script>
+<style>
+	html,
+	body {
+		width: 100%;
+	}
+
+	#main {
+		width: 100%;
+		display: flex;
+		flex-flow: column nowrap;
+		justify-content: center;
+		align-items: center;
+
+	}
+
+
+
+	#desc_title {
+		margin-bottom: 1rem;
+		font-size: 1em;
+	}
+
+
+	#time {
+		margin-top: 20px;
+		margin-bottom: 20px;
+	}
+
+	#desc{
+		display: flex;
+		width: 50%;
+	}
+
+
+	#downloadBtn {
+		/* 按钮美化 */
+		width: 15rem;
+		/* 宽度 */
+		height: 3rem;
+		/* 高度 */
+		margin-top: 3rem;
+		margin-bottom: 3rem;
+		border-width: 0px;
+		/* 边框宽度 */
+		border-radius: 10px;
+		/* 边框半径 */
+		background: #1E90FF;
+		/* 背景颜色 */
+		cursor: pointer;
+		/* 鼠标移入按钮范围时出现手势 */
+		outline: none;
+		/* 不显示轮廓线 */
+		font-family: Microsoft YaHei;
+		/* 设置字体 */
+		color: white;
+		/* 字体颜色 */
+		font-size: 1.3rem;
+		/* 字体大小 */
+	}
+
+	#downloadBtn:hover {
+		/* 鼠标移入按钮范围时改变颜色 */
+		background: #5599FF;
+
+	}
+
+	#reserved {
+		font-size: 1rem;
+		width: 100%;
+		text-align: center;
+	}
+</style>
+
+<body>
+	<div id="main">
+
+		<div id="desc_title">更新内容:</div>
+
+		<div id="desc"></div>
+
+		<div id="time">上传时间:</div>
+
+		<button id="downloadBtn">下载该测试包</button>
+	</div>
+
+
+	<div id="reserved">
+		<div>Copyright © xzbenben.cn提供技术服务</div>
+	</div>
+
+</body>
+<script>
+	function getQueryVariable(variable) {
+		var query = window.location.search.substring(1);
+		var vars = query.split("&");
+		for (var i = 0; i < vars.length; i++) {
+			var pair = vars[i].split("=");
+			if (pair[0] == variable) {
+				return pair[1];
+			}
+		}
+		return (false);
+	}
+
+	$(document).ready(function () {
+		var loc
+		function getInfo() {
+			$.ajax({
+				url: "./info?id=" + getQueryVariable('id'),
+				type: 'GET',
+				context: this,
+				success(data) {
+
+					var reg = new RegExp("\\n", "g");//g,表示全部替换。
+					var comment = data.data.comments.replace(reg, "<br/>");
+
+					$('#desc').html(comment)
+					$('#time').text('上传时间:' + data.data.uploadDate)
+					loc = data.data.fileurl
+				},
+				error() {
+				}
+			});
+		}
+
+		getInfo();
+
+		$('#downloadBtn').click(function () {
+			location.href = loc;
+		});
+
+
+	});
+
+
+
+
+
+
+
+
+</script>
+
+</html>
