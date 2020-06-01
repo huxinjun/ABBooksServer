@@ -41,7 +41,7 @@
 		margin-bottom: 20px;
 	}
 
-	#desc{
+	#desc {
 		display: flex;
 		width: 50%;
 	}
@@ -127,9 +127,12 @@
 				success(data) {
 
 					var reg = new RegExp("\\n", "g");//g,表示全部替换。
-					var comment = data.data.comments.replace(reg, "<br/>");
+					if (data.data.comments) {
+						var comment = data.data.comments.replace(reg, "<br/>");
+						$('#desc').html(comment)
+					}
 
-					$('#desc').html(comment)
+
 					$('#time').text('上传时间:' + data.data.uploadDate)
 					loc = data.data.fileurl
 				},
