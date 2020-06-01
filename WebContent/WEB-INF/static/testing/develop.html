@@ -434,12 +434,12 @@
         var param = {};
 
         param.fileurl = fileUrl
-        param.comment = $('#textarea').val()
+        param.comment = $('.comment').val()
         param.device = $('input:radio:checked').val()
 
         $.ajax({
             type: "POST",
-            url: "http://localhost:8080/AccountBook/testing/qrcode_b64",
+            url: "./qrcode_b64",
             data: param,			//这里上传的数据使用了formData 对象
             contentType: "application/x-www-form-urlencoded",
             dataType: "json",
@@ -463,12 +463,12 @@
         var param = {};
 
         param.fileurl = fileUrl
-        param.comment = $('#textarea').val()
+        param.comment = $('.comment').val()
         param.device = $('input:radio:checked').val()
 
         var oReq = new XMLHttpRequest();
 
-        oReq.open("POST", "http://localhost:8080/AccountBook/testing/qrcode", true);
+        oReq.open("POST", "./qrcode", true);
         //设置请求头
         oReq.setRequestHeader("content-type", "application/x-www-form-urlencoded")
 

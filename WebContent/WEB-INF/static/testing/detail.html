@@ -17,6 +17,7 @@
 	html,
 	body {
 		width: 100%;
+		margin: 0;
 	}
 
 	#main {
@@ -28,11 +29,23 @@
 
 	}
 
+	#title {
+		width: 100%;
+		height: 4rem;
+		font-size: 1.5rem;
+		text-align: center;
+		line-height: 4rem;
+		color: white;
+
+		background-color: #1E90FF;
+	}
+
 
 
 	#desc_title {
 		margin-bottom: 1rem;
 		font-size: 1em;
+		margin-top: 1rem;
 	}
 
 
@@ -44,6 +57,8 @@
 	#desc {
 		display: flex;
 		width: 50%;
+		word-wrap: break-word;
+		word-break: break-all;
 	}
 
 
@@ -89,6 +104,8 @@
 <body>
 	<div id="main">
 
+		<div id="title">测试包详情</div>
+
 		<div id="desc_title">更新内容:</div>
 
 		<div id="desc"></div>
@@ -125,18 +142,20 @@
 				type: 'GET',
 				context: this,
 				success(data) {
-
-					var reg = new RegExp("\\n", "g");//g,表示全部替换。
-					if (data.data.comments) {
-						var comment = data.data.comments.replace(reg, "<br/>");
-						$('#desc').html(comment)
-					}
-
+					console.log(data.data)
+					if (data.data == undefined)
+						return;
 
 					$('#time').text('上传时间:' + data.data.uploadDate)
 					loc = data.data.fileurl
-				},
-				error() {
+
+
+					if (data.data.comments != undefined) {
+						var reg = new RegExp("\\n", "g");//g,表示全部替换。
+						var comment = data.data.comments.replace(reg, "<br/>");
+						$('#desc').html(comment)
+
+					}
 				}
 			});
 		}
