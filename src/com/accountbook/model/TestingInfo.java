@@ -8,12 +8,7 @@ public class TestingInfo {
 	public String device;
 	public String fileurl;
 	public String comments;
+	public String appinfo;
 	public Timestamp timestamp;
 	
-	public String uploadDate;
-
-
-	
-	
-
 }

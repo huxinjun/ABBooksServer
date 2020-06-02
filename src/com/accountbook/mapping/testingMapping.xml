@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.accountbook.dao.TestingDao" >
-  <resultMap id="map" type="com.accountbook.model.TestingInfo" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="device" property="device" jdbcType="VARCHAR" />
-    <result column="fileurl" property="fileurl" jdbcType="VARCHAR" />
-    <result column="comments" property="comments" jdbcType="VARCHAR" />
-    <result column="timestamp" property="timestamp" jdbcType="TIMESTAMP" />
-  </resultMap>
-  
-	
-	<!-- 查询-->
+<mapper namespace="com.accountbook.dao.TestingDao">
+	<resultMap id="map" type="com.accountbook.model.TestingInfo">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="device" property="device" jdbcType="VARCHAR" />
+		<result column="fileurl" property="fileurl" jdbcType="VARCHAR" />
+		<result column="comments" property="comments" jdbcType="VARCHAR" />
+		<result column="appinfo" property="appinfo" jdbcType="LONGVARCHAR" />
+		<result column="timestamp" property="timestamp" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+
+	<!-- 查询 -->
 	<select id="queryTestingInfo" parameterType="String" resultMap="map">
 		SELECT * FROM testing WHERE id = #{id};
 	</select>
-	<select id="queryTestingInfoByFileUrl" parameterType="String" resultMap="map">
+	<select id="queryTestingInfoByFileUrl" parameterType="String"
+		resultMap="map">
 		SELECT * FROM testing WHERE fileurl = #{fileurl};
 	</select>
 	<select id="queryMaxId" parameterType="String" resultType="INTEGER">
 		SELECT MAX(id) FROM testing
 	</select>
-	
+
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.model.TestingInfo">
-		insert into testing(device,comments,fileurl) values(#{device},#{comments},#{fileurl})
+		insert into testing(device,comments,fileurl,appinfo) values(#{device},#{comments},#{fileurl},#{appinfo})
 	</insert>
-	
+
 </mapper>

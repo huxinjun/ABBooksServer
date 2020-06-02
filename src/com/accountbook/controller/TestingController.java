@@ -7,13 +7,18 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,10 +43,9 @@ public class TestingController {
 	@ResponseBody
 	@RequestMapping(value = "/qrcode")
 	public Object qrcode(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException {
-		
+
 		int maxId = saveRecord(request);
-		
-		
+
 		@SuppressWarnings("deprecation")
 		String logoPath = request.getRealPath("/WEB-INF/static/images/app_icon.png");
 		System.out.println("logoPath=" + logoPath);
@@ -82,9 +86,9 @@ public class TestingController {
 		return new Result(Result.RESULT_OK, "").put("data", encode);
 	}
 
-	
 	/**
 	 * 存储记录到数据库
+	 * 
 	 * @param request
 	 * @return
 	 * @throws UnsupportedEncodingException
@@ -93,12 +97,14 @@ public class TestingController {
 		String comment = request.getParameter("comment");
 		String device = request.getParameter("device");
 		String fileurl = request.getParameter("fileurl");
+		String appinfo = request.getParameter("appinfo");
 
 		String encodeFileUrl = URLEncoder.encode(fileurl, "utf-8");
 
 		System.out.println("param comment=" + comment);
 		System.out.println("param device=" + device);
 		System.out.println("param fileurl=" + encodeFileUrl);
+		System.out.println("param appInfo=" + appinfo);
 
 		int maxId = 0;
 		TestingInfo findTestingInfoByFileUrl = testingService.findTestingInfoByFileUrl(fileurl);
@@ -108,6 +114,7 @@ public class TestingController {
 			testInfo.fileurl = fileurl;
 			testInfo.device = device;
 			testInfo.comments = comment;
+			testInfo.appinfo = appinfo;
 			testInfo.timestamp = new Timestamp(System.currentTimeMillis());
 			// 存到数据库
 			testingService.newTestingInfo(testInfo);
@@ -117,23 +124,27 @@ public class TestingController {
 
 			System.out.println("testing.qrcode repeat,old id=" + maxId);
 		}
-		
+
 		return maxId;
 	}
 
 	/**
 	 * 二维码点击跳转的地址
+	 * 
 	 * @param request
 	 * @param response
 	 * @param maxId
 	 * @return
 	 */
 	private String getQrLinkUrl(HttpServletRequest request, HttpServletResponse response, int maxId) {
+
+		String protocol = request.getServerPort() == 443 ? "https://" : "http://";
+
 		// 本地测试详情网页地址
-		String testDetailUrl = "http://192.168.1.6" + ":" + request.getServerPort() + request.getContextPath()
+		String testDetailUrl = protocol + "192.168.1.6" + ":" + request.getServerPort() + request.getContextPath()
 				+ "/testing/detail.html?id=" + maxId;
 		// 线上详情网页的地址
-		String releaseDetailUrl = "http://" + request.getServerName() + ":" + request.getServerPort()
+		String releaseDetailUrl = protocol + request.getServerName() + ":" + request.getServerPort()
 				+ request.getContextPath() + "/testing/detail.html?id=" + maxId;
 
 		System.out.println("testDetailUrl=" + testDetailUrl);
@@ -150,10 +161,64 @@ public class TestingController {
 		if (findTestingInfo == null)
 			return new Result(Result.RESULT_FAILD, "查询失败!");
 
-		SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 hh:mm:ss");
-		findTestingInfo.uploadDate = format.format(findTestingInfo.timestamp.getTime());
+		return assembleInfoResult(findTestingInfo);
+	}
 
-		return new Result(Result.RESULT_OK, "成功").put("data", findTestingInfo);
+	private Result assembleInfoResult(TestingInfo findTestingInfo) {
+		Result result = new Result();
+		try {
+			
+
+
+			result.put("comment", findTestingInfo.comments);
+			
+			
+			JSONObject infoObj = new JSONObject(findTestingInfo.appinfo);
+			result.put("iconBase64", infoObj.optString("icon"));
+
+			Map<String, String> info = new LinkedHashMap<>();
+			result.put("info", info);
+
+			SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 hh:mm:ss");
+			String date = format.format(findTestingInfo.timestamp.getTime());
+			
+
+			switch (findTestingInfo.device.toLowerCase()) {
+			case "android":
+
+				String appName = infoObj.getJSONObject("application").getJSONArray("label").get(0).toString();
+				info.put("名称", appName);
+
+				info.put("版本号", infoObj.optString("versionName"));
+
+				info.put("包名", infoObj.optString("package"));
+
+				break;
+
+			case "ios":
+
+				info.put("名称", infoObj.optString("CFBundleName"));
+
+				info.put("版本号", infoObj.optString("CFBundleShortVersionString"));
+
+				info.put("包名", infoObj.optString("CFBundleIdentifier"));
+
+				break;
+
+			default:
+				break;
+			}
+			info.put("类型", infoObj.optString("filetype"));
+			info.put("文件大小", FileUtils.size2str(infoObj.optString("filesize")));
+			info.put("上传时间", date);
+			
+			return result.put(Result.RESULT_OK, "成功");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return result.put(Result.RESULT_FAILD, "数据有误!");
+		}
+
 	}
 
 	@ResponseBody

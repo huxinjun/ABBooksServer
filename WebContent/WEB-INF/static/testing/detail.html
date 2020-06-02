@@ -4,8 +4,9 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=0">
-	<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-	<title>a</title>
+	<!-- <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script> -->
+	<script src="./jquery.min.js"></script>
+	<title>测试包详情</title>
 </head>
 
 <script>
@@ -24,73 +25,68 @@
 		width: 100%;
 		display: flex;
 		flex-flow: column nowrap;
-		justify-content: center;
-		align-items: center;
 
 	}
 
 	#title {
 		width: 100%;
-		height: 4rem;
+		height: 4.5rem;
 		font-size: 1.5rem;
 		text-align: center;
-		line-height: 4rem;
+		line-height: 4.5rem;
 		color: white;
 
-		background-color: #1E90FF;
+		background: linear-gradient(to right, #FA1F1F, #95080A);
+		display: none;
 	}
 
-
-
-	#desc_title {
-		margin-bottom: 1rem;
-		font-size: 1em;
+	#appicon {
+		align-self: center;
+		width: 10rem;
+		height: 10rem;
+		border-radius: 2rem;
 		margin-top: 1rem;
+		margin-bottom: 1rem;
 	}
 
-
-	#time {
-		margin-top: 20px;
-		margin-bottom: 20px;
-	}
-
-	#desc {
-		display: flex;
-		width: 50%;
-		word-wrap: break-word;
-		word-break: break-all;
-	}
 
 
 	#downloadBtn {
 		/* 按钮美化 */
-		width: 15rem;
+		width: 12rem;
+
 		/* 宽度 */
-		height: 3rem;
+		height: 4rem;
 		/* 高度 */
-		margin-top: 3rem;
+		margin-top: 1rem;
 		margin-bottom: 3rem;
 		border-width: 0px;
 		/* 边框宽度 */
-		border-radius: 10px;
-		/* 边框半径 */
-		background: #1E90FF;
+		border-radius: 2rem;
 		/* 背景颜色 */
 		cursor: pointer;
 		/* 鼠标移入按钮范围时出现手势 */
 		outline: none;
 		/* 不显示轮廓线 */
 		font-family: Microsoft YaHei;
+		font-weight: 700;
 		/* 设置字体 */
 		color: white;
 		/* 字体颜色 */
-		font-size: 1.3rem;
+		font-size: 1.5rem;
 		/* 字体大小 */
+		margin-left: 1rem;
+		margin-right: 1rem;
+		box-sizing: border-box;
+
+		align-self: center;
+
+		background: linear-gradient(to right, #FA1F1F, #95080A);
 	}
 
 	#downloadBtn:hover {
 		/* 鼠标移入按钮范围时改变颜色 */
-		background: #5599FF;
+		background: #95080A;
 
 	}
 
@@ -98,6 +94,24 @@
 		font-size: 1rem;
 		width: 100%;
 		text-align: center;
+		margin-top: 5rem;
+	}
+
+	.item_name {
+		font-size: 2rem;
+		margin: 1rem;
+		font-weight: 900;
+		color: #555;
+
+	}
+
+	.item_content {
+		font-size: 1rem;
+		margin: 1rem;
+		box-sizing: border-box;
+		padding: 0;
+		word-break: break-all;
+		color: #888;
 	}
 </style>
 
@@ -106,13 +120,22 @@
 
 		<div id="title">测试包详情</div>
 
-		<div id="desc_title">更新内容:</div>
+		<img id="appicon">
 
-		<div id="desc"></div>
+		<div class="item_name">内容</div>
 
-		<div id="time">上传时间:</div>
+		<div id="desc" class="item_content"></div>
 
-		<button id="downloadBtn">下载该测试包</button>
+
+		<div class="item_name">信息</div>
+
+		<div id="info_c" class="item_content"></div>
+
+
+		<button id="downloadBtn">下载安装</button>
+
+
+		<div class="item_name">相关</div>
 	</div>
 
 
@@ -138,24 +161,40 @@
 		var loc
 		function getInfo() {
 			$.ajax({
-				url: "./info?id=" + getQueryVariable('id'),
+				// url: "./info?id=" + getQueryVariable('id'),
+				// url: "http://xzbenben.cn/AccountBook/testing/info?id=" + getQueryVariable('id'),
+				url: "http://localhost:8080/AccountBook/testing/info?id=" + getQueryVariable('id'),
 				type: 'GET',
 				context: this,
 				success(data) {
-					console.log(data.data)
-					if (data.data == undefined)
-						return;
+					console.log(data)
 
-					$('#time').text('上传时间:' + data.data.uploadDate)
-					loc = data.data.fileurl
-
-
-					if (data.data.comments != undefined) {
+					if (data.comment !== null
+						&& data.comment !== undefined
+						&& data.comment !== '') {
 						var reg = new RegExp("\\n", "g");//g,表示全部替换。
-						var comment = data.data.comments.replace(reg, "<br/>");
+						var comment = data.comment.replace(reg, "<br/>");
 						$('#desc').html(comment)
 
+					} else {
+						$('#desc').html("未填写")
 					}
+
+					if(data.iconBase64)
+						$("#appicon")[0].src = data.iconBase64
+
+
+					
+
+					var html = ""
+					for (var key in data.info) {
+						console.log(key + ":" + data.info[key]);//json对象中属性的名字：对象中属性的值
+						html+=key+":"+data.info[key]+"<br/>"
+					}
+
+					$("#info_c").html(html)
+
+
 				}
 			});
 		}
@@ -168,12 +207,6 @@
 
 
 	});
-
-
-
-
-
-
 
 
 </script>

@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -200,6 +201,24 @@ public class FileUtils {
 
 	public static String getDefaultImagePath() {
 		return Constants.EXTERN_FILE_DIR + "\\img\\image.png";
+	}
+	
+	
+	
+	public static String size2str(String sizeStr) {
+		int size = 0;
+		try {
+
+			size = Integer.parseInt(sizeStr);
+		} catch (Exception e) {
+
+		}
+
+		if (size <= 0)
+			return "0";
+		final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
+		int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 	}
 
 }
