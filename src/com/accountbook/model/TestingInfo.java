@@ -9,6 +9,7 @@ public class TestingInfo {
 	public String fileurl;
 	public String comments;
 	public String appinfo;
+	public String packageName;
 	public Timestamp timestamp;
 	
 }

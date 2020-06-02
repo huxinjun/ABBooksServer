@@ -7,7 +7,8 @@
 		<result column="fileurl" property="fileurl" jdbcType="VARCHAR" />
 		<result column="comments" property="comments" jdbcType="VARCHAR" />
 		<result column="appinfo" property="appinfo" jdbcType="LONGVARCHAR" />
-		<result column="timestamp" property="timestamp" jdbcType="TIMESTAMP" />
+		<result column="package" property="packageName" jdbcType="LONGVARCHAR" />
+		<result column="time" property="timestamp" jdbcType="TIMESTAMP" />
 	</resultMap>
 
 
@@ -22,10 +23,14 @@
 	<select id="queryMaxId" parameterType="String" resultType="INTEGER">
 		SELECT MAX(id) FROM testing
 	</select>
+	
+	<select id="queryRecordList" parameterType="map" resultMap="map">
+		SELECT * FROM testing WHERE package=#{packageName} and id!=#{id} ORDER BY TIME DESC LIMIT #{ls},#{lc}
+	</select>
 
 	<!-- 插入 -->
 	<insert id="insert" parameterType="com.accountbook.model.TestingInfo">
-		insert into testing(device,comments,fileurl,appinfo) values(#{device},#{comments},#{fileurl},#{appinfo})
+		insert into testing(device,comments,fileurl,appinfo,package) values(#{device},#{comments},#{fileurl},#{appinfo},#{packageName})
 	</insert>
 
 </mapper>

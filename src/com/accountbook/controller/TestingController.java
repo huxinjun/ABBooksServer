@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,10 +28,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.accountbook.model.TestingInfo;
+import com.accountbook.model.TestingAppInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.ITestingService;
+import com.accountbook.utils.CommonUtils;
 import com.accountbook.utils.FileUtils;
 import com.accountbook.utils.QrUtil;
+import com.accountbook.utils.TextUtils;
 
 @Controller
 @RequestMapping("/testing")
@@ -50,8 +53,7 @@ public class TestingController {
 		String logoPath = request.getRealPath("/WEB-INF/static/images/app_icon.png");
 		System.out.println("logoPath=" + logoPath);
 
-		QrUtil.generateQRCodeImage(getQrLinkUrl(request, response, maxId), 500, 500, response.getOutputStream(),
-				logoPath);
+		QrUtil.generateQRCodeImage(getQrLinkUrl(request, maxId), 500, 500, response.getOutputStream(), logoPath);
 		return null;
 
 	}
@@ -74,7 +76,7 @@ public class TestingController {
 		FileOutputStream foo = new FileOutputStream(serverFile);
 
 		response.setContentType("image/png");
-		QrUtil.generateQRCodeImage(getQrLinkUrl(request, response, maxId), 500, 500, foo, logoPath);
+		QrUtil.generateQRCodeImage(getQrLinkUrl(request, maxId), 500, 500, foo, logoPath);
 
 		byte[] bytes = new byte[(int) serverFile.length()];
 
@@ -115,6 +117,7 @@ public class TestingController {
 			testInfo.device = device;
 			testInfo.comments = comment;
 			testInfo.appinfo = appinfo;
+			testInfo.packageName = getPackageName(device, appinfo);
 			testInfo.timestamp = new Timestamp(System.currentTimeMillis());
 			// 存到数据库
 			testingService.newTestingInfo(testInfo);
@@ -130,22 +133,17 @@ public class TestingController {
 
 	/**
 	 * 二维码点击跳转的地址
-	 * 
-	 * @param request
-	 * @param response
-	 * @param maxId
-	 * @return
 	 */
-	private String getQrLinkUrl(HttpServletRequest request, HttpServletResponse response, int maxId) {
+	private String getQrLinkUrl(HttpServletRequest request, int id) {
 
 		String protocol = request.getServerPort() == 443 ? "https://" : "http://";
 
 		// 本地测试详情网页地址
 		String testDetailUrl = protocol + "192.168.1.6" + ":" + request.getServerPort() + request.getContextPath()
-				+ "/testing/detail.html?id=" + maxId;
+				+ "/testing/detail.html?id=" + id;
 		// 线上详情网页的地址
 		String releaseDetailUrl = protocol + request.getServerName() + ":" + request.getServerPort()
-				+ request.getContextPath() + "/testing/detail.html?id=" + maxId;
+				+ request.getContextPath() + "/testing/detail.html?id=" + id;
 
 		System.out.println("testDetailUrl=" + testDetailUrl);
 		System.out.println("releaseDetailUrl=" + releaseDetailUrl);
@@ -154,70 +152,143 @@ public class TestingController {
 
 	@ResponseBody
 	@RequestMapping(value = "/info", method = RequestMethod.GET)
-	public Object info(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public Object info(HttpServletRequest request, Integer pageIndex, Integer pageSize) throws IOException {
 		String id = request.getParameter("id");
 
 		TestingInfo findTestingInfo = testingService.findTestingInfo(id);
 		if (findTestingInfo == null)
 			return new Result(Result.RESULT_FAILD, "查询失败!");
 
-		return assembleInfoResult(findTestingInfo);
+		return assembleInfoResult(request, findTestingInfo, pageIndex, pageSize);
 	}
 
-	private Result assembleInfoResult(TestingInfo findTestingInfo) {
-		Result result = new Result();
-		try {
-			
+	private String getPackageName(String device, String appinfo) {
 
+		String result = "other";
+		if (TextUtils.isEmpty(appinfo))
+			return result;
+		if (TextUtils.isEmpty(device))
+			return result;
+		try {
+
+			JSONObject infoObj = new JSONObject(appinfo);
+			switch (device.toLowerCase()) {
+			case "android":
+				result = infoObj.optString("package");
+				break;
+			case "ios":
+				result = infoObj.optString("CFBundleIdentifier");
+				break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return result;
+
+	}
+
+	private Result assembleInfoResult(HttpServletRequest request, TestingInfo findTestingInfo, Integer pageIndex,
+			Integer pageSize) {
+		Result result = new Result();
+
+		try {
 
 			result.put("comment", findTestingInfo.comments);
-			
-			
-			JSONObject infoObj = new JSONObject(findTestingInfo.appinfo);
-			result.put("iconBase64", infoObj.optString("icon"));
+
+			TestingAppInfo parseAppInfo = parseAppInfo(findTestingInfo);
+
+			result.put("iconBase64", parseAppInfo.iconBase64);
 
 			Map<String, String> info = new LinkedHashMap<>();
 			result.put("info", info);
 
-			SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 hh:mm:ss");
-			String date = format.format(findTestingInfo.timestamp.getTime());
-			
+			info.put("名称", parseAppInfo.appName);
+			info.put("版本号", parseAppInfo.versionName);
+			info.put("包名", parseAppInfo.packageName);
+			info.put("类型", parseAppInfo.fileType);
+			info.put("文件大小", parseAppInfo.fileSizeStr);
+			info.put("上传时间", parseAppInfo.uploadDate);
 
-			switch (findTestingInfo.device.toLowerCase()) {
-			case "android":
+			List<TestingInfo> findRecords = testingService.findRecords(findTestingInfo.id,findTestingInfo.packageName, pageIndex,
+					pageSize);
+			List<Map<String, String>> recordResults = new ArrayList<Map<String, String>>();
+			if (findRecords != null && findRecords.size() > 0) {
+				for (TestingInfo record : findRecords) {
 
-				String appName = infoObj.getJSONObject("application").getJSONArray("label").get(0).toString();
-				info.put("名称", appName);
+					TestingAppInfo recordAppInfo = parseAppInfo(record);
+					Map<String, String> recordInfo = new LinkedHashMap<>();
+					recordInfo.put("名称", recordAppInfo.appName);
+					recordInfo.put("版本号", recordAppInfo.versionName);
+					recordInfo.put("文件大小", recordAppInfo.fileSizeStr);
+					recordInfo.put("上传时间", recordAppInfo.uploadDate);
+					recordInfo.put("url", getQrLinkUrl(request, recordAppInfo.id));
 
-				info.put("版本号", infoObj.optString("versionName"));
+					recordResults.add(recordInfo);
 
-				info.put("包名", infoObj.optString("package"));
+				}
 
-				break;
-
-			case "ios":
-
-				info.put("名称", infoObj.optString("CFBundleName"));
-
-				info.put("版本号", infoObj.optString("CFBundleShortVersionString"));
-
-				info.put("包名", infoObj.optString("CFBundleIdentifier"));
-
-				break;
-
-			default:
-				break;
 			}
-			info.put("类型", infoObj.optString("filetype"));
-			info.put("文件大小", FileUtils.size2str(infoObj.optString("filesize")));
-			info.put("上传时间", date);
-			
+
+			result.put("hasmore",
+					findRecords != null && findRecords.size() == CommonUtils.getLimit(pageIndex, pageSize).count);
+			result.put("records", recordResults);
+
 			return result.put(Result.RESULT_OK, "成功");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return result.put(Result.RESULT_FAILD, "数据有误!");
 		}
+
+	}
+
+	private TestingAppInfo parseAppInfo(TestingInfo findTestingInfo) {
+
+		TestingAppInfo record = new TestingAppInfo();
+
+		try {
+			record.id = findTestingInfo.id;
+
+			JSONObject infoObj = new JSONObject(findTestingInfo.appinfo);
+			record.iconBase64 = infoObj.optString("icon");
+
+			switch (findTestingInfo.device.toLowerCase()) {
+			case "android":
+
+				record.appName = infoObj.getJSONObject("application").getJSONArray("label").get(0).toString();
+
+				record.versionName = infoObj.optString("versionName");
+
+				record.packageName = infoObj.optString("package");
+
+				break;
+
+			case "ios":
+
+				record.appName = infoObj.optString("CFBundleName");
+
+				record.versionName = infoObj.optString("CFBundleShortVersionString");
+
+				record.packageName = infoObj.optString("CFBundleIdentifier");
+
+				break;
+
+			default:
+				break;
+			}
+
+			record.fileType = infoObj.optString("filetype");
+
+			record.fileSizeStr = FileUtils.size2str(infoObj.optString("filesize"));
+
+			SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 hh:mm:ss");
+			record.uploadDate = format.format(findTestingInfo.timestamp.getTime());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return record;
 
 	}
 

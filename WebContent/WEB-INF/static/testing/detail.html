@@ -112,6 +112,8 @@
 		padding: 0;
 		word-break: break-all;
 		color: #888;
+		line-height: 2rem;
+		letter-spacing: 0.07rem;
 	}
 </style>
 
@@ -135,7 +137,7 @@
 		<button id="downloadBtn">下载安装</button>
 
 
-		<div class="item_name">相关</div>
+		<div class="item_name">历史</div>
 	</div>
 
 
@@ -163,7 +165,7 @@
 			$.ajax({
 				// url: "./info?id=" + getQueryVariable('id'),
 				// url: "http://xzbenben.cn/AccountBook/testing/info?id=" + getQueryVariable('id'),
-				url: "http://localhost:8080/AccountBook/testing/info?id=" + getQueryVariable('id'),
+				url: "http://localhost:8080/AccountBook/testing/info?id=" + getQueryVariable('id')+"&pageIndex=0&pageSize=10",
 				type: 'GET',
 				context: this,
 				success(data) {
