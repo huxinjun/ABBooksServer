@@ -39,7 +39,7 @@ public class TestingServiceImpl implements ITestingService {
 	}
 
 	@Override
-	public List<TestingInfo> findRecords(int id,String packageName, Integer pageIndex, Integer pageSize) {
+	public List<TestingInfo> findRecords(int id,String packageName,String device, Integer pageIndex, Integer pageSize) {
 		List<TestingInfo> results;
 		Limit limit = CommonUtils.getLimit(pageIndex, pageSize);
 		results = dao.queryRecordList(new HashMap<String, Object>() {
@@ -47,6 +47,7 @@ public class TestingServiceImpl implements ITestingService {
 			{
 				put("id", id);
 				put("packageName", packageName);
+				put("device", device);
 				put("ls", limit.start);
 				put("lc", limit.count);
 			}

@@ -11,7 +11,7 @@ public interface ITestingService {
 	public TestingInfo findTestingInfoByFileUrl(String fileurl);
 	public void newTestingInfo(TestingInfo testInfo);
 	
-	public List<TestingInfo> findRecords(int id,String packageName,Integer pageIndex,Integer pageSize);
+	public List<TestingInfo> findRecords(int id,String packageName,String device,Integer pageIndex,Integer pageSize);
 	
 	
 }

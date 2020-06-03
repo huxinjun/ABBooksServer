@@ -10,5 +10,6 @@ public class TestingAppInfo {
 	public String iconBase64;
 	public String packageName;
 	public String fileType;
+	public String developType;
 
 }

@@ -25,7 +25,7 @@
 	</select>
 	
 	<select id="queryRecordList" parameterType="map" resultMap="map">
-		SELECT * FROM testing WHERE package=#{packageName} and id!=#{id} ORDER BY TIME DESC LIMIT #{ls},#{lc}
+		SELECT * FROM testing WHERE package=#{packageName} and device=#{device} and id!=#{id} ORDER BY TIME DESC LIMIT #{ls},#{lc}
 	</select>
 
 	<!-- 插入 -->
