@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,14 +23,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import com.accountbook.model.TestingInfo;
 import com.accountbook.model.TestingAppInfo;
+import com.accountbook.model.TestingInfo;
 import com.accountbook.modle.result.Result;
 import com.accountbook.service.ITestingService;
 import com.accountbook.utils.CommonUtils;
@@ -41,8 +43,8 @@ import com.accountbook.utils.TextUtils;
 @Controller
 @RequestMapping("/testing")
 public class TestingController {
-	
-	private static final int QrcodeSize=1000;
+
+	private static final int QrcodeSize = 1000;
 
 	@Autowired
 	ITestingService testingService;
@@ -58,13 +60,13 @@ public class TestingController {
 			@SuppressWarnings("deprecation")
 			String logoPath = request.getRealPath("/WEB-INF/static/images/unknow_file.png");
 			System.out.println("logoPath=" + logoPath);
-			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, QrcodeSize, response.getOutputStream(),
-					logoPath);
+			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, QrcodeSize,
+					response.getOutputStream(), logoPath);
 		} else {
 			ByteArrayInputStream logoInputStream = new ByteArrayInputStream(
 					Base64.getDecoder().decode(parseAppInfo.iconBase64.split(",")[1]));
-			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, QrcodeSize, response.getOutputStream(),
-					logoInputStream);
+			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, QrcodeSize,
+					response.getOutputStream(), logoInputStream);
 		}
 
 		return null;
@@ -84,6 +86,7 @@ public class TestingController {
 		FileOutputStream foo = new FileOutputStream(serverFile);
 
 		TestingAppInfo parseAppInfo = parseAppInfo(testingInfo);
+		System.out.println("iconBase64=" + parseAppInfo.iconBase64);
 		if (TextUtils.isEmpty(parseAppInfo.iconBase64)) {
 			@SuppressWarnings("deprecation")
 			String logoPath = request.getRealPath("/WEB-INF/static/images/unknow_file.png");
@@ -92,9 +95,9 @@ public class TestingController {
 		} else {
 			ByteArrayInputStream logoInputStream = new ByteArrayInputStream(
 					Base64.getDecoder().decode(parseAppInfo.iconBase64.split(",")[1]));
-			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, QrcodeSize, foo, logoInputStream);
+			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, QrcodeSize, foo,
+					logoInputStream);
 		}
-
 
 		byte[] bytes = new byte[(int) serverFile.length()];
 
@@ -151,22 +154,21 @@ public class TestingController {
 	 * 二维码点击跳转的地址
 	 */
 	private String getQrLinkUrl(HttpServletRequest request, int id) {
+		String serverName = request.getServerName();
+		boolean isTestMode = serverName.startsWith("localhost") || serverName.startsWith("192")
+				|| serverName.startsWith("127");
 
-		// String protocol = request.getServerPort() == 443 ? "https://" :
-		// "http://";
-
-		String protocol = "http://";
-
-		// 本地测试详情网页地址
-		String testDetailUrl = protocol + "192.168.1.6" + ":" + request.getServerPort() + request.getContextPath()
-				+ "/testing/detail.html?id=" + id;
-		// 线上详情网页的地址
-		String releaseDetailUrl = protocol + request.getServerName() + request.getContextPath()
-				+ "/testing/detail.html?id=" + id;
-
-		System.out.println("testDetailUrl=" + testDetailUrl);
-		System.out.println("releaseDetailUrl=" + releaseDetailUrl);
-		return releaseDetailUrl;
+		String linkUrl = "";
+		if (isTestMode) {
+			// 测试
+			linkUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
+					+ "/testing/detail.html?id=" + id;
+		} else {
+			// 线上
+			linkUrl = "https://" + request.getServerName() + request.getContextPath() + "/testing/detail.html?id=" + id;
+		}
+		System.out.println("linkUrl=" + linkUrl);
+		return linkUrl;
 	}
 
 	@ResponseBody
@@ -221,6 +223,8 @@ public class TestingController {
 
 			result.put("comment", findTestingInfo.comments);
 			result.put("fileUrl", findTestingInfo.fileurl);
+			result.put("device", findTestingInfo.device);
+			result.put("id", findTestingInfo.id);
 
 			TestingAppInfo parseAppInfo = parseAppInfo(findTestingInfo);
 
@@ -251,7 +255,7 @@ public class TestingController {
 					recordInfo.put("size", recordAppInfo.fileSizeStr);
 					recordInfo.put("uploadDate", recordAppInfo.uploadDate);
 					recordInfo.put("comment", record.comments);
-					recordInfo.put("url", getQrLinkUrl(request, recordAppInfo.id));
+					recordInfo.put("id", record.id + "");
 
 					recordResults.add(recordInfo);
 
@@ -287,7 +291,9 @@ public class TestingController {
 			record.uploadDate = format.format(findTestingInfo.timestamp.getTime());
 
 			JSONObject infoObj = new JSONObject(findTestingInfo.appinfo);
-			record.iconBase64 = infoObj.optString("icon");
+			record.iconBase64 = infoObj.optString("icon", "");
+			if ("null".equals(record.iconBase64))
+				record.iconBase64 = null;
 
 			switch (findTestingInfo.device.toLowerCase()) {
 			case "android":
@@ -297,7 +303,6 @@ public class TestingController {
 				record.versionName = infoObj.optString("versionName");
 
 				record.packageName = infoObj.optString("package");
-				
 
 				break;
 
@@ -327,13 +332,47 @@ public class TestingController {
 			record.appName = "未知";
 			record.versionName = "未知";
 			record.packageName = "未知";
-			
+
 			record.fileType = "未知";
 			record.developType = "未知";
 			record.fileSizeStr = "未知";
 		}
 		return record;
 
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/ios/install_{id}.plist")
+	public Object upload(HttpServletRequest request, @PathVariable(value="id")String id) throws IOException {
+		
+		System.out.println("/ios/install.plist,id=" + id);
+
+		TestingInfo findTestingInfo = testingService.findTestingInfo(id);
+		if (findTestingInfo == null)
+			return null;
+
+		TestingAppInfo parseAppInfo = parseAppInfo(findTestingInfo);
+
+		@SuppressWarnings("deprecation")
+		String plist = request.getRealPath("/WEB-INF/static/testing/IOSInstallProfile.plist");
+		File plistFile = new File(plist);
+
+		FileInputStream inputStream = new FileInputStream(plistFile);
+		byte[] buf = new byte[(int) plistFile.length()];
+		int length = inputStream.read(buf);
+		inputStream.close();
+
+		// 将字节数组中指定位置的字节转码成对应的字符串
+		String content = new String(buf, 0, length, Charset.forName("UTF-8"));
+		
+
+		content = content.replace("#{url}#", findTestingInfo.fileurl)
+				.replace("#{packageName}#", parseAppInfo.packageName)
+				.replace("#{version}#", parseAppInfo.versionName)
+				.replace("#{appName}#", parseAppInfo.appName);
+		
+		System.out.println("the content is " + content);
+		return content;
 	}
 
 	@ResponseBody

@@ -91,6 +91,7 @@
 
 	}
 
+
 	#reserved {
 		font-size: 1rem;
 		width: 100%;
@@ -192,6 +193,7 @@
 
 		<button id="downloadBtn">下载安装</button>
 
+		<a class="ios_download_link" style="display: none;">ios下载安装</a>
 
 		<div class="item_name">历史</div>
 
@@ -229,6 +231,7 @@
 
 <script>
 
+	var pageData
 	$(document).ready(function () {
 
 
@@ -240,6 +243,7 @@
 				context: this,
 				success(data) {
 					console.log(data)
+					pageData = data
 
 					nextPageIndex = data.nextPage
 					hasMore = data.hasmore
@@ -308,7 +312,18 @@
 		getInfo(nextPageIndex);
 
 		$('#downloadBtn').click(function () {
-			location.href = fileUrl;
+			if (!pageData)
+				return
+			if ("ios" == pageData.device) {
+				// location.href = "itms-services://?action=download-manifest&url=https://www.xzbenben.cn/AccountBook/testing/ios_install?id="+pageData.id
+				// location.href = "https://www.xzbenben.cn/AccountBook/testing/iosdownload.html"
+				// var url="itms-services://?action=download-manifest&url=https://www.xzbenben.cn/AccountBook/testing/IOSInstallProfile.plist"
+				var url = "itms-services://?action=download-manifest&url=https://www.xzbenben.cn/AccountBook/testing/ios/install_" + pageData.id + ".plist"
+				$(".ios_download_link").attr("href", url)
+				$(".ios_download_link")[0].click()
+			}
+			else
+				location.href = fileUrl;
 		});
 
 
@@ -348,7 +363,11 @@
 
 			record_item.append(record_img)
 			record_item.append(record_info)
+			$(".records_c").append(record_item)
 
+			record_item[0].appInfoId = element.id
+			record_img[0].appInfoId = element.id
+			record_info[0].appInfoId = element.id
 
 
 			var version = $("<span class='record_info_version'></span>").html(element.version)
@@ -358,6 +377,11 @@
 			record_info.append(version)
 			record_info.append(size)
 			record_info.append(time)
+
+			version[0].appInfoId = element.id
+			size[0].appInfoId = element.id
+			time[0].appInfoId = element.id
+
 
 			if (element.comment != undefined && element.comment != null && element.comment != '') {
 
@@ -369,14 +393,15 @@
 
 
 				record_info.append(comment)
+				comment[0].appInfoId = element.id
 			}
 
-			$(".records_c").append(record_item)
-			$(".records_c").on("click", function () {
-				window.location.href = element.url
-			})
-
 		});
+
+		$(".records_c").on("click", function (event) {
+			console.log(event.target.appInfoId)
+			window.location.href = "./detail.html?id=" + event.target.appInfoId
+		})
 
 	}
 
