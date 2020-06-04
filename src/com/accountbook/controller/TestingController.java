@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -343,13 +344,13 @@ public class TestingController {
 
 	@ResponseBody
 	@RequestMapping(value = "/ios/install_{id}.plist")
-	public Object upload(HttpServletRequest request, @PathVariable(value="id")String id) throws IOException {
+	public void upload(HttpServletRequest request,HttpServletResponse response, @PathVariable(value="id")String id) throws IOException {
 		
 		System.out.println("/ios/install.plist,id=" + id);
 
 		TestingInfo findTestingInfo = testingService.findTestingInfo(id);
 		if (findTestingInfo == null)
-			return null;
+			return ;
 
 		TestingAppInfo parseAppInfo = parseAppInfo(findTestingInfo);
 
@@ -371,8 +372,12 @@ public class TestingController {
 				.replace("#{version}#", parseAppInfo.versionName)
 				.replace("#{appName}#", parseAppInfo.appName);
 		
-		System.out.println("the content is " + content);
-		return content;
+		byte[] bytes = content.getBytes("UTF-8");
+		
+		OutputStream os=response.getOutputStream();
+		os.write(bytes, 0, bytes.length);
+		os.flush();
+		os.close();
 	}
 
 	@ResponseBody
