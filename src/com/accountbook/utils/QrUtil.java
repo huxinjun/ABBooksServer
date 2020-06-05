@@ -21,36 +21,31 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 public class QrUtil {
 
-	public static void generateQRCodeImage(String text, int width, int height, OutputStream out, String logoPath) {
+	public static void generateQRCodeImage(String text, int size, OutputStream out, String logoPath) {
 
 		try {
-			QRCodeWriter qrCodeWriter = new QRCodeWriter();
+			// QRCodeWriter qrCodeWriter = new QRCodeWriter();
+			// bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE,
+			// width, height);
 
-			BitMatrix bitMatrix;
-			bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
+			BitMatrix bitMatrix = createBitMatrix(text, size);
 
-			MatrixToImageWriter.writeToStream(bitMatrix, "PNG", out, logoPath);
+			MatrixToImageWriter.writeToStream(bitMatrix, "PNG", out, new FileInputStream(logoPath), size);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	public static void generateQRCodeImage(String text, int width, int height, OutputStream out,
-			InputStream logoStream) {
+	public static void generateQRCodeImage(String text, int size, OutputStream out, InputStream logoStream) {
 
 		try {
-			QRCodeWriter qrCodeWriter = new QRCodeWriter();
-
-			BitMatrix bitMatrix;
-			bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
-
-			MatrixToImageWriter.writeToStream(bitMatrix, "PNG", out, logoStream);
+			BitMatrix bitMatrix = createBitMatrix(text, size);
+			MatrixToImageWriter.writeToStream(bitMatrix, "PNG", out, logoStream, size);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -64,8 +59,9 @@ public class QrUtil {
 
 			// 本地logo file
 			String logo = "C:/Users/Administrator/Java/AccountBook/WebContent/WEB-INF/static/images/unknow_file.png";
-//			String logo2 = "C:/Users/Administrator/Java/AccountBook/WebContent/WEB-INF/static/images/app_icon.png";
-			generateQRCodeImage("This is my first QR Code", 1000, 1000, fos, logo);
+			// String logo2 =
+			// "C:/Users/Administrator/Java/AccountBook/WebContent/WEB-INF/static/images/app_icon.png";
+			generateQRCodeImage("This is my first QR Code", 2000, fos, logo);
 
 			// logo流
 			// String testLogo =
@@ -106,44 +102,15 @@ public class QrUtil {
 			return image;
 		}
 
-		public static void writeToFile(BitMatrix matrix, String format, File file, String logUri) throws IOException {
-
-			System.out.println("write to file");
-			BufferedImage image = toBufferedImage(matrix);
-			// 设置logo图标
-			QRCodeFactory logoConfig = new QRCodeFactory();
-			image = logoConfig.setMatrixLogo(image, logUri);
-
-			if (!ImageIO.write(image, format, file)) {
-				System.out.println("生成图片失败");
-				throw new IOException("Could not write an image of format " + format + " to " + file);
-			} else {
-				System.out.println("图片生成成功！");
-			}
-		}
-
-		public static void writeToStream(BitMatrix matrix, String format, OutputStream stream, String logUri)
-				throws IOException {
-
-			BufferedImage image = toBufferedImage(matrix);
-
-			// 设置logo图标
-			QRCodeFactory logoConfig = new QRCodeFactory();
-			image = logoConfig.setMatrixLogo(image, logUri);
-
-			if (!ImageIO.write(image, format, stream)) {
-				throw new IOException("Could not write an image of format " + format);
-			}
-		}
-
-		public static void writeToStream(BitMatrix matrix, String format, OutputStream stream, InputStream logStream)
-				throws IOException {
+		public static void writeToStream(BitMatrix matrix, String format, OutputStream stream, InputStream logStream,
+				int size) throws IOException {
 
 			BufferedImage image = toBufferedImage(matrix);
 
 			// 设置logo图标
 			QRCodeFactory logoConfig = new QRCodeFactory();
 			image = logoConfig.setMatrixLogo(image, logStream);
+			image = logoConfig.drawAppInfo(image);
 
 			if (!ImageIO.write(image, format, stream)) {
 				throw new IOException("Could not write an image of format " + format);
@@ -164,14 +131,6 @@ public class QrUtil {
 
 		/**
 		 * 给生成的二维码添加中间的logo
-		 * 
-		 * @param matrixImage
-		 *            生成的二维码
-		 * @param logUri
-		 *            logo地址
-		 * @return 带有logo的二维码
-		 * @throws IOException
-		 *             logo地址找不到会有io异常
 		 */
 		public BufferedImage setMatrixLogo(BufferedImage matrixImage, InputStream logoInputStream) throws IOException {
 			/**
@@ -224,66 +183,53 @@ public class QrUtil {
 		}
 
 		/**
-		 * 创建我们的二维码图片
-		 * 
-		 * @param content
-		 *            二维码内容
-		 * @param format
-		 *            生成二维码的格式
-		 * @param outFileUri
-		 *            二维码的生成地址
-		 * @param logUri
-		 *            二维码中间logo的地址
-		 * @param size
-		 *            用于设定图片大小（可变参数，宽，高）
-		 * @throws IOException
-		 *             抛出io异常
-		 * @throws WriterException
-		 *             抛出书写异常
+		 * 画上app相关信息
 		 */
-		public void CreatQrImage(String content, String format, String outFileUri, String logUri, int... size)
-				throws IOException, WriterException {
+		public BufferedImage drawAppInfo(BufferedImage matrixImage) {
+			BufferedImage bimage = new BufferedImage(matrixImage.getWidth(),
+					matrixImage.getHeight() + getInfoHeight(matrixImage.getHeight()), BufferedImage.TYPE_INT_RGB);
 
-			int width = 430; // 二维码图片宽度 430
-			int height = 430; // 二维码图片高度430
+			Graphics2D g2 = bimage.createGraphics();
+			g2.setColor(Color.BLUE);
+			g2.fillRect(0, 0, bimage.getWidth(), bimage.getHeight());
+			g2.drawImage(matrixImage, 0, 0, matrixImage.getWidth(), matrixImage.getHeight(), null);
 
-			// 如果存储大小的不为空，那么对我们图片的大小进行设定
-			if (size.length == 2) {
-				width = size[0];
-				height = size[1];
-			} else if (size.length == 1) {
-				width = height = size[0];
-			}
-
-			Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
-			// 指定纠错等级,纠错级别（L 7%、M 15%、Q 25%、H 30%）
-			hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
-			// 内容所使用字符集编码
-			hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
-			// hints.put(EncodeHintType.MAX_SIZE, 350);//设置图片的最大值
-			// hints.put(EncodeHintType.MIN_SIZE, 100);//设置图片的最小值
-			hints.put(EncodeHintType.MARGIN, 1);// 设置二维码边的空度，非负数
-
-			BitMatrix bitMatrix = new MultiFormatWriter().encode(content, // 要编码的内容
-					// 编码类型，目前zxing支持：Aztec 2D,CODABAR 1D format,Code 39 1D,Code
-					// 93 1D ,Code 128 1D,
-					// Data Matrix 2D , EAN-8 1D,EAN-13 1D,ITF (Interleaved Two
-					// of Five) 1D,
-					// MaxiCode 2D barcode,PDF417,QR Code 2D,RSS 14,RSS
-					// EXPANDED,UPC-A 1D,UPC-E 1D,UPC/EAN
-					// extension,UPC_EAN_EXTENSION
-					BarcodeFormat.QR_CODE, width, // 条形码的宽度
-					height, // 条形码的高度
-					hints);// 生成条形码时的一些配置,此项可选
-
-			// 生成二维码图片文件
-			File outputFile = new File(outFileUri);
-
-			// 指定输出路径
-			System.out.println("输出文件路径为" + outputFile.getPath());
-
-			MatrixToImageWriter.writeToFile(bitMatrix, format, outputFile, logUri);
+			return bimage;
 		}
+
+		private int getInfoHeight(int qrSize) {
+			return qrSize / 10;
+		}
+
+	}
+
+	/**
+	 * 创建我们的二维码图片
+	 */
+	public static BitMatrix createBitMatrix(String content, int size) throws IOException, WriterException {
+
+		Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
+		// 指定纠错等级,纠错级别（L 7%、M 15%、Q 25%、H 30%）
+		hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+		// 内容所使用字符集编码
+		hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+		// hints.put(EncodeHintType.MAX_SIZE, 350);//设置图片的最大值
+		// hints.put(EncodeHintType.MIN_SIZE, 100);//设置图片的最小值
+		hints.put(EncodeHintType.MARGIN, 2);// 设置二维码边的空度，非负数
+
+		BitMatrix bitMatrix = new MultiFormatWriter().encode(content, // 要编码的内容
+				// 编码类型，目前zxing支持：Aztec 2D,CODABAR 1D format,Code 39 1D,Code
+				// 93 1D ,Code 128 1D,
+				// Data Matrix 2D , EAN-8 1D,EAN-13 1D,ITF (Interleaved Two
+				// of Five) 1D,
+				// MaxiCode 2D barcode,PDF417,QR Code 2D,RSS 14,RSS
+				// EXPANDED,UPC-A 1D,UPC-E 1D,UPC/EAN
+				// extension,UPC_EAN_EXTENSION
+				BarcodeFormat.QR_CODE, size, // 条形码的宽度
+				size, // 条形码的高度
+				hints);// 生成条形码时的一些配置,此项可选
+
+		return bitMatrix;
 	}
 
 }

@@ -61,12 +61,12 @@ public class TestingController {
 			@SuppressWarnings("deprecation")
 			String logoPath = request.getRealPath("/WEB-INF/static/images/unknow_file.png");
 			System.out.println("logoPath=" + logoPath);
-			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, QrcodeSize,
+			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize,
 					response.getOutputStream(), logoPath);
 		} else {
 			ByteArrayInputStream logoInputStream = new ByteArrayInputStream(
 					Base64.getDecoder().decode(parseAppInfo.iconBase64.split(",")[1]));
-			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, QrcodeSize,
+			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize,
 					response.getOutputStream(), logoInputStream);
 		}
 
@@ -92,11 +92,11 @@ public class TestingController {
 			@SuppressWarnings("deprecation")
 			String logoPath = request.getRealPath("/WEB-INF/static/images/unknow_file.png");
 			System.out.println("logoPath=" + logoPath);
-			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, QrcodeSize, foo, logoPath);
+			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id),  QrcodeSize, foo, logoPath);
 		} else {
 			ByteArrayInputStream logoInputStream = new ByteArrayInputStream(
 					Base64.getDecoder().decode(parseAppInfo.iconBase64.split(",")[1]));
-			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, QrcodeSize, foo,
+			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id),  QrcodeSize, foo,
 					logoInputStream);
 		}
 

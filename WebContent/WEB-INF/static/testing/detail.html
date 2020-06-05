@@ -315,9 +315,13 @@
 			if (!pageData)
 				return
 			if ("ios" == pageData.device) {
-				// location.href = "itms-services://?action=download-manifest&url=https://www.xzbenben.cn/AccountBook/testing/ios_install?id="+pageData.id
-				// location.href = "https://www.xzbenben.cn/AccountBook/testing/iosdownload.html"
-				// var url="itms-services://?action=download-manifest&url=https://www.xzbenben.cn/AccountBook/testing/IOSInstallProfile.plist"
+
+				var isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+				// alert(navigator.userAgent)
+				if (!isSafari) {
+					alert("点击右上角...在自带浏览器safari中打开本网页")
+					return
+				}
 				var url = "itms-services://?action=download-manifest&url=https://www.xzbenben.cn/AccountBook/testing/ios/install_" + pageData.id + ".plist"
 				$(".ios_download_link").attr("href", url)
 				$(".ios_download_link")[0].click()

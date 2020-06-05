@@ -170,7 +170,7 @@
             border-radius: 0px 0px 15px 15px;
             position: relative;
             display: block;
-            margin-top: -20px;
+            margin-top: -35px;
             padding-left: 35px;
             box-sizing: border-box;
         }
@@ -333,8 +333,8 @@
     var uploadUrl = "https://www.5aichang.cn/ac_android_test/checkup.php";//线上
 
     //生成二维码base64
-    var qrCodeUrlB64="http://192.168.10.133:8080/AccountBook/testing/qrcode_b64";//测试
-    // var qrCodeUrlB64 = "./qrcode_b64"//线上
+    // var qrCodeUrlB64="http://192.168.10.133:8080/AccountBook/testing/qrcode_b64";//测试
+    var qrCodeUrlB64 = "./qrcode_b64"//线上
 
     //生成二维码,二进制流
     // var qrCodeUrl="http://localhost:8080/AccountBook/testing/qrcode";//测试
@@ -550,9 +550,7 @@
                 success: function (data) {
                     console.log("upload success,return data:")
                     console.log(data)
-                    uploadBtn.val("生成二维码中...")
-
-                    getQrImage(data, appInfo)
+                    makeQrImage(data, appInfo)
                 },
 
                 //上传失败后回调
@@ -604,6 +602,10 @@
     }
 
 
+    function makeQrImage(fileUrl, appInfo) {
+        $(".uploadBtn").val("二维码制作中...")
+        getQrImage(fileUrl, appInfo)
+    }
 
 
     function getQrImage(fileUrl, appInfo) {
@@ -629,7 +631,9 @@
             },
             error: function (err) {
                 $(".uploadBtn").css("background-color", uploadBtnFaildColor);
-                $(".uploadBtn").val("生成二维码失败")
+                $(".uploadBtn").val("生成二维码失败,点击重新制作")
+                $(".uploadBtn").off();
+                $(".uploadBtn").on("click", function () { makeQrImage(fileUrl, appInfo) });
             }
         })
 
