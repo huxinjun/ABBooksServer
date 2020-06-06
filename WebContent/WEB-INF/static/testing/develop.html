@@ -113,7 +113,9 @@
             position: relative;
             font-size: 12px;
             color: #fff;
-            border-radius: 5px;
+            border-radius: 0px 0px 15px 15px;
+            border: none;
+            cursor: pointer;
         }
 
 
@@ -192,7 +194,7 @@
                 <span class="item_name">更新内容:</span>
                 <textarea placeholder="请输入更新内容" class="comment"></textarea>
 
-                <input type="button" value="上传" class="uploadBtn" />
+                <input type="button" value="上传" class="uploadBtn" onfocus="this.blur();"/>
 
 
 
@@ -271,6 +273,7 @@
 
         }
         initView()
+        addUploadEvent()
 
 
         developSelect.change(function () {
@@ -362,6 +365,10 @@
 
 
         function upload() {
+            if(!selectFile){
+                alert("没有选择文件")
+                return
+            }
             if (appInfo == undefined) {
                 alert("正在读取文件信息,请稍等...")
                 return
