@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -45,7 +46,7 @@ import com.accountbook.utils.TextUtils;
 @RequestMapping("/testing")
 public class TestingController {
 
-	private static final int QrcodeSize = 1000;
+	private static final int QrcodeSize = 2000;
 
 	@Autowired
 	ITestingService testingService;
@@ -59,15 +60,15 @@ public class TestingController {
 		TestingAppInfo parseAppInfo = parseAppInfo(testingInfo);
 		if (TextUtils.isEmpty(parseAppInfo.iconBase64)) {
 			@SuppressWarnings("deprecation")
-			String logoPath = request.getRealPath("/WEB-INF/static/images/unknow_file.png");
+			String logoPath = request.getRealPath("/WEB-INF/static/testing/images/unknow_file.png");
 			System.out.println("logoPath=" + logoPath);
-			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize,
-					response.getOutputStream(), logoPath);
+			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, response.getOutputStream(),
+					logoPath, parseAppInfo);
 		} else {
 			ByteArrayInputStream logoInputStream = new ByteArrayInputStream(
 					Base64.getDecoder().decode(parseAppInfo.iconBase64.split(",")[1]));
-			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize,
-					response.getOutputStream(), logoInputStream);
+			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, response.getOutputStream(),
+					logoInputStream, parseAppInfo);
 		}
 
 		return null;
@@ -81,7 +82,7 @@ public class TestingController {
 
 		TestingInfo testingInfo = saveRecord(request);
 
-		String relativePath = FileUtils.genarateFileRelativePathByName("temp", "testing");
+		String relativePath = FileUtils.genarateFileRelativePathByName("temp_" + testingInfo.id, "testing");
 		String serverPath = FileUtils.getImageAbsolutePath(relativePath);
 		File serverFile = new File(serverPath);
 		FileOutputStream foo = new FileOutputStream(serverFile);
@@ -90,14 +91,13 @@ public class TestingController {
 		System.out.println("iconBase64=" + parseAppInfo.iconBase64);
 		if (TextUtils.isEmpty(parseAppInfo.iconBase64)) {
 			@SuppressWarnings("deprecation")
-			String logoPath = request.getRealPath("/WEB-INF/static/images/unknow_file.png");
+			String logoPath = request.getRealPath("/WEB-INF/static/testing/images/unknow_file.png");
 			System.out.println("logoPath=" + logoPath);
-			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id),  QrcodeSize, foo, logoPath);
+			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, foo, logoPath, parseAppInfo);
 		} else {
-			ByteArrayInputStream logoInputStream = new ByteArrayInputStream(
-					Base64.getDecoder().decode(parseAppInfo.iconBase64.split(",")[1]));
-			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id),  QrcodeSize, foo,
-					logoInputStream);
+			InputStream logoInputStream = QrUtil.getImageStreamByBase64(parseAppInfo.iconBase64);
+			QrUtil.generateQRCodeImage(getQrLinkUrl(request, testingInfo.id), QrcodeSize, foo, logoInputStream,
+					parseAppInfo);
 		}
 
 		byte[] bytes = new byte[(int) serverFile.length()];
@@ -105,6 +105,9 @@ public class TestingController {
 		FileInputStream fis = new FileInputStream(serverFile);
 		fis.read(bytes);
 		fis.close();
+		
+		boolean delete = serverFile.delete();
+		System.out.println("temp file="+serverFile.getPath()+",is delete="+delete);
 
 		String encode = Base64.getEncoder().encodeToString(bytes);
 		return new Result(Result.RESULT_OK, "").put("data", encode);
@@ -287,6 +290,7 @@ public class TestingController {
 
 		try {
 			record.id = findTestingInfo.id;
+			record.device = findTestingInfo.device;
 
 			SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
 			record.uploadDate = format.format(findTestingInfo.timestamp.getTime());
@@ -344,13 +348,14 @@ public class TestingController {
 
 	@ResponseBody
 	@RequestMapping(value = "/ios/install_{id}.plist")
-	public void upload(HttpServletRequest request,HttpServletResponse response, @PathVariable(value="id")String id) throws IOException {
-		
+	public void upload(HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "id") String id)
+			throws IOException {
+
 		System.out.println("/ios/install.plist,id=" + id);
 
 		TestingInfo findTestingInfo = testingService.findTestingInfo(id);
 		if (findTestingInfo == null)
-			return ;
+			return;
 
 		TestingAppInfo parseAppInfo = parseAppInfo(findTestingInfo);
 
@@ -365,16 +370,14 @@ public class TestingController {
 
 		// 将字节数组中指定位置的字节转码成对应的字符串
 		String content = new String(buf, 0, length, Charset.forName("UTF-8"));
-		
 
 		content = content.replace("#{url}#", findTestingInfo.fileurl)
-				.replace("#{packageName}#", parseAppInfo.packageName)
-				.replace("#{version}#", parseAppInfo.versionName)
+				.replace("#{packageName}#", parseAppInfo.packageName).replace("#{version}#", parseAppInfo.versionName)
 				.replace("#{appName}#", parseAppInfo.appName);
-		
+
 		byte[] bytes = content.getBytes("UTF-8");
-		
-		OutputStream os=response.getOutputStream();
+
+		OutputStream os = response.getOutputStream();
 		os.write(bytes, 0, bytes.length);
 		os.flush();
 		os.close();

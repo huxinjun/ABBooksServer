@@ -46,12 +46,14 @@
 
         .fileDragArea {
             width: 100%;
-            height: 50px;
+            height: 100px;
             box-sizing: border-box;
             border: 2px dashed #ccc;
             text-align: center;
             line-height: 50px;
             position: relative;
+            border-radius: 15px;
+            
         }
 
         .fileInput {
@@ -73,6 +75,7 @@
             position: absolute;
             left: 0;
             top: 0;
+            border-radius: 15px;
 
         }
 
@@ -80,6 +83,7 @@
             width: 100%;
             height: 100%;
             font-size: 12px;
+            line-height:100px;
             position: absolute;
             color: #444;
             left: 0;
@@ -88,49 +92,18 @@
 
         .develop_type {
             width: 100%;
-            height: 25px;
+            height: 50px;
         }
 
         .comment {
             width: 100%;
-            height: 150px;
+            height: 190px;
             display: block;
             box-sizing: border-box;
             resize: none;
         }
 
-        .radio_c {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            margin: 30px 0;
-        }
 
-        .radio_item_c {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-left: 25px;
-            margin-right: 25px;
-        }
-
-        .androidImg {
-            width: 30px;
-            height: 30px;
-            margin-bottom: 10px;
-        }
-
-        .iosImg {
-            width: 30px;
-            height: 30px;
-            margin-bottom: 10px;
-        }
-
-        .otherImg {
-            width: 30px;
-            height: 30px;
-            margin-bottom: 10px;
-        }
 
         .uploadBtn {
             width: 100%;
@@ -147,59 +120,22 @@
 
 
         .content_r {
-            width: 400px;
             margin-left: 10px;
             display: flex;
             flex-direction: column;
+            
 
         }
 
         .qrcode {
-            width: 400px;
-            height: 400px;
+            width: 410px;
+            height: 480px;
             background-color: white;
-            border-radius: 15px 15px 0px 0px;
-
+            border-radius: 15px;
 
         }
 
-        .qr_desc_c {
-            width: 100%;
-            height: 100px;
-            background-color: white;
-            border-radius: 0px 0px 15px 15px;
-            position: relative;
-            display: block;
-            margin-top: -35px;
-            padding-left: 35px;
-            box-sizing: border-box;
-        }
 
-        .qr_info {
-            height: 50px;
-            width: 100%;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-        }
-
-        .qr_info img {
-            width: 40px;
-            height: 40px;
-        }
-
-        .qr_info span {
-            color: #555;
-            font-size: 25px;
-            margin-left: 10px;
-            font-weight: 900;
-        }
-
-        .qr_tip {
-            font-size: small;
-            color: #ccc;
-            padding-left: 5px;
-        }
 
 
 
@@ -256,28 +192,6 @@
                 <span class="item_name">更新内容:</span>
                 <textarea placeholder="请输入更新内容" class="comment"></textarea>
 
-                <div id="radio" class="radio_c">
-                    <div class="radio_item_c">
-                        <img class="androidImg">
-
-                        <input type="radio" class="radio_android" name="divice" value="android" checked="true" />
-
-                    </div>
-
-                    <div class="radio_item_c">
-                        <img class="iosImg">
-                        <input type="radio" class="radio_ios" name="divice" value="ios" />
-
-                    </div>
-
-                    <div class="radio_item_c">
-                        <img class="otherImg">
-                        <input type="radio" class="radio_other" name="divice" value="other" />
-
-                    </div>
-
-                </div>
-
                 <input type="button" value="上传" class="uploadBtn" />
 
 
@@ -287,22 +201,7 @@
 
             <div class="content_r">
 
-
-                <img class="qrcode"></img>
-
-                <div class="qr_desc_c">
-                    <div class="qr_info">
-
-                        <img class="qr_packtype_img">
-                        <span class="qr_develop_type"></span>
-
-
-                    </div>
-
-                    <span class="qr_tip">☺友情提示 : 请扫描二维码下载安装包</span>
-
-                </div>
-
+                <img class="qrcode" src="C:\Users\XINJUN\Desktop\下载.png"></img>
 
             </div>
 
@@ -319,9 +218,6 @@
 
 <script>
 
-    var androidIcon = "data:image/png;base64,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"
-    var iosIcon = "data:image/png;base64,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"
-    var otherIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAAAAkFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADDIYgjAAAAL3RSTlMA8PyABtA7WbkSx6r3wBcJ6tnDou1PA969mpBlDuXh1LKIe8t1ViuVhXBIRCJfMco6uF0AAAGhSURBVGje7dnJcoJAEIDhdgQCyCargIL7Ek3m/d8uFClMVQ4MMy0mVvV/4/QV3c0JoChKNe2WTMNJHATBalVVVZbNm+q61nV9t9vZth2Goeu6C7dYKhvvusMHZlpqxLJgfHjmUslwuVR5qoAUXLK1Jb8PJgMETGUvWs1l2u7bvWhyyI3JITBTuLGESzUFv1UWUspUFgFtw5tcGcWWRZoi2RubKCD+TPQueKSbWGiNiXQTi7RRke7GvFER8KN2Yt4YyAnufV9yOgJS+dB2n9jMezzCS/il2N7jkdiAe9q5R8EgPEisnz1E7cTkEXGxbXaFrHl28Ii4CSGEEEIIIYQQ8v8RJyoPb71dFmhkC8LSBRJxjiDu8gxkjx3X2gNRnxkW4dlm2l/uvMYJE0IIIYMQ1t8DkHh7NfpLcoZFPkBchEQcD8SVSIQZIO6MHZdt+Fp/y0OARTjL9P5Wr/OdEEIIIX+BzJ6BlM9ADIZG5kLEctDIGoSd0EgiRqw50sjRfxrFBd4QJN3HmK0fYFhHU5VghQVDS8vcjieyrcziChRFqfUFUAxZjMfqVF8AAAAASUVORK5CYII="
     var transparentImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAAAP0lEQVR42mL8//8/AzEAIICYGIgEAAFEtEKAACJaIUAAEa0QIICIVggQQEQrBAggohUCBBDRCgECiGiFAAEGANUSAxEZNm5vAAAAAElFTkSuQmCC"
 
     var uploadBtnNormalColor = "#708090"
@@ -355,31 +251,12 @@
         var progressView = $(".progressView");					//进度
         var progressTextView = $(".progressTextView");					//进度文本
 
-        var androidImg = $(".androidImg")[0];
-        var iosImg = $(".iosImg")[0];
-        var otherImg = $(".otherImg")[0];
-
-
-        // var radioAndroidC = $(".radio_android_c");
-        // var radioIosC = $(".radio_ios_c");
-
-
-        var radioAndroid = $(".radio_android");
-        var radioIos = $(".radio_ios");
-        var radioOther = $(".radio_other");
-
-        radioAndroid.attr("disabled", "disabled");
-        radioIos.attr("disabled", "disabled");
-        radioOther.attr("disabled", "disabled");
 
 
 
         var developSelect = $(".develop_type");//包类型
 
         var qrCode = $(".qrcode")[0];
-        var qr_desc_c = $(".qr_desc_c")[0];
-        var qr_packtype_img = $(".qr_packtype_img")[0];
-        var qr_develop_type = $(".qr_develop_type");
 
 
 
@@ -390,19 +267,8 @@
 
         function initView() {
 
-            androidImg.src = androidIcon
-            iosImg.src = iosIcon
-            otherImg.src = otherIcon
             qrCode.src = transparentImage
 
-            qr_packtype_img.src = androidIcon
-            qr_develop_type.html("内测版")
-
-
-            radioAndroid[0].checked = false;
-            radioIos[0].checked = false;
-            radioOther[0].checked = false;
-            qr_packtype_img.src = otherIcon
         }
         initView()
 
@@ -410,7 +276,6 @@
         developSelect.change(function () {
             //获取当前select选择的值
             var selectVal = $(".develop_type option:selected").val();
-            qr_develop_type.html(selectVal)
         });
 
 
@@ -472,25 +337,6 @@
                 return;
             }
 
-            if (type == 'apk') {
-                radioAndroid[0].checked = true;
-                radioIos[0].checked = false;
-                radioOther[0].checked = false;
-                qr_packtype_img.src = androidIcon
-            } else if (type == 'ipa') {
-                radioAndroid[0].checked = false;
-                radioIos[0].checked = true;
-                radioOther[0].checked = false;
-                qr_packtype_img.src = iosIcon
-            } else {
-                radioAndroid[0].checked = false;
-                radioIos[0].checked = false;
-                radioOther[0].checked = true;
-                qr_packtype_img.src = otherIcon
-            }
-
-
-
 
 
             progressTextView.text(name)
@@ -506,7 +352,7 @@
                     info = {}
                 info.filename = name
                 info.filesize = size
-                info.filetype = type
+                info.filetype = type.toLowerCase()
                 appInfo = info
             })
 
@@ -615,7 +461,7 @@
 
         param.fileurl = fileUrl
         param.comment = $('.comment').val()
-        param.device = $('input:radio:checked').val()
+        param.device = appInfo.filetype == 'apk' ? 'android' : appInfo.filetype == 'ipa' ? 'ios' : 'other'
         param.appinfo = JSON.stringify(appInfo)
 
         $.ajax({
@@ -647,7 +493,7 @@
 
         param.fileurl = fileUrl
         param.comment = $('.comment').val()
-        param.device = $('input:radio:checked').val()
+        param.device = appInfo.filetype == 'apk' ? 'android' : appInfo == 'ios' ? 'ios' : 'other'
 
         var oReq = new XMLHttpRequest();
 

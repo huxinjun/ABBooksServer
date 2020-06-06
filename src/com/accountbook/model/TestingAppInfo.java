@@ -4,6 +4,7 @@ public class TestingAppInfo {
 
 	public int id;
 	public String appName;
+	public String device;
 	public String versionName;
 	public String fileSizeStr;
 	public String uploadDate;
