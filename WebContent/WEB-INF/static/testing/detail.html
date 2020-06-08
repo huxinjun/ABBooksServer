@@ -314,6 +314,10 @@
 		$('#downloadBtn').click(function () {
 			if (!pageData)
 				return
+			if (pageData.status == 99) {
+				alert("未查找到相关数据,不能下载安装")
+				return
+			}
 			if ("ios" == pageData.device) {
 
 				var isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);

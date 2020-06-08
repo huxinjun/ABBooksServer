@@ -36,7 +36,7 @@
   </filter>
   <filter-mapping>
     <filter-name>token</filter-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/AccountBook/*</url-pattern>
   </filter-mapping>
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -62,7 +62,7 @@
     <url-pattern>/</url-pattern>
   </servlet-mapping>
   <welcome-file-list>
-    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>/WEB-INF/static/testing/up.jsp</welcome-file>
   </welcome-file-list>
   <error-page>
     <error-code>404</error-code>

@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="UTF-8"%>
 <!doctype html>
 <html>
 
@@ -6,8 +8,8 @@
     <meta http-equiv="Access-Control-Allow-Origin" content="*" />
     <title>爱唱发布测试包</title>
     <!-- <script src="http://www.jq22.com/jquery/1.11.1/jquery.min.js"></script> -->
-    <script src="./jquery.min.js"></script>
-    <script src="./app-info-parser.min.js"></script>
+    <script src="/AccountBook/testing/jquery.min.js"></script>
+    <script src="/AccountBook/testing/app-info-parser.min.js"></script>
 
     <style>
         body {
@@ -22,7 +24,7 @@
             font-size: 36px;
             line-height: 150px;
             text-align: center;
-            background-color: #3a445fab;
+            background-color: #708090;
         }
 
 
@@ -53,7 +55,7 @@
             line-height: 50px;
             position: relative;
             border-radius: 15px;
-            
+
         }
 
         .fileInput {
@@ -65,6 +67,7 @@
             right: 0;
             bottom: 0;
             opacity: 0;
+            cursor: pointer;
 
         }
 
@@ -83,7 +86,7 @@
             width: 100%;
             height: 100%;
             font-size: 12px;
-            line-height:100px;
+            line-height: 100px;
             position: absolute;
             color: #444;
             left: 0;
@@ -125,7 +128,7 @@
             margin-left: 10px;
             display: flex;
             flex-direction: column;
-            
+
 
         }
 
@@ -154,6 +157,14 @@
             font-size: 15px;
             font-weight: 500;
 
+        }
+
+        .copyright {
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            position: absolute;
+            bottom: 0;
         }
     </style>
 
@@ -194,7 +205,7 @@
                 <span class="item_name">更新内容:</span>
                 <textarea placeholder="请输入更新内容" class="comment"></textarea>
 
-                <input type="button" value="上传" class="uploadBtn" onfocus="this.blur();"/>
+                <input type="button" value="上传" class="uploadBtn" onfocus="this.blur();" />
 
 
 
@@ -203,15 +214,20 @@
 
             <div class="content_r">
 
-                <img class="qrcode" src="C:\Users\XINJUN\Desktop\下载.png"></img>
+                <img class="qrcode"></img>
 
             </div>
 
+        </div>
 
-
+        <div class="copyright">Copyright © 2019 www.xzbenben.cn All rights reserved.
+            <a href="http://www.beian.miit.gov.cn/" target="ii">京ICP备17061398号-1</a>
         </div>
 
     </div>
+
+
+
 
 
 </body>
@@ -232,16 +248,23 @@
 
     //生成二维码base64
     // var qrCodeUrlB64="http://192.168.10.133:8080/AccountBook/testing/qrcode_b64";//测试
-    var qrCodeUrlB64 = "./qrcode_b64"//线上
+    var qrCodeUrlB64 = "/AccountBook/testing/qrcode_b64"//线上
 
     //生成二维码,二进制流
     // var qrCodeUrl="http://localhost:8080/AccountBook/testing/qrcode";//测试
-    var qrCodeUrl = "./qrcode"//线上
+    var qrCodeUrl = "/AccountBook/testing/qrcode"//线上
 </script>
 
 <script>
 
+
+
     $(function () {
+        //copyright显示
+        window.onresize = function () {
+            onSizeChanged()
+        }
+        onSizeChanged()
 
 
         //元素
@@ -365,7 +388,7 @@
 
 
         function upload() {
-            if(!selectFile){
+            if (!selectFile) {
                 alert("没有选择文件")
                 return
             }
@@ -558,6 +581,18 @@
     }
 
 
+    function onSizeChanged(){
+        var copyright = $(".copyright")
+            var content = $(".content")
+            var contenBottom = content[0].offsetTop + content[0].offsetHeight
+            var copyrightTop = copyright[0].offsetTop
+            // console.log("resize:content.bottom=" + contenBottom + ",copyright.top=" + copyrightTop)
+
+            if (copyrightTop < contenBottom) {
+                copyright.css("visibility", "hidden")
+            } else
+                copyright.css("visibility", "visible")
+    }
 
 
 </script>

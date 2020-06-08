@@ -94,6 +94,7 @@ public class TokenFilter implements Filter {
 			String controllerName = split.length >= 3 ? split[2] : "";
 			String methodName = split.length >= 4 ? split[3] : "";
 
+
 			// 方便测试
 			if (request.getParameter("TEST") != null) {
 				request.setAttribute("userid", "oCBrx0FreB-L8pIQM5_RYDGoWOKQ");

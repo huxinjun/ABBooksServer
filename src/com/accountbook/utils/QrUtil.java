@@ -209,8 +209,8 @@ public class QrUtil {
 			g2.fillRect(0, 0, bimage.getWidth(), bimage.getHeight());
 			g2.drawImage(matrixImage, sizeInfo.qrX, sizeInfo.qrY, matrixImage.getWidth(), matrixImage.getHeight(),
 					null);
-			
-			if("ios".equalsIgnoreCase(appInfo.device))
+
+			if ("ios".equalsIgnoreCase(appInfo.device))
 				sizeInfo.correctionIosDeviceImage();
 
 			String icon = "android".equalsIgnoreCase(appInfo.device) ? androidIcon
@@ -231,6 +231,8 @@ public class QrUtil {
 
 			String developText = "debug".equalsIgnoreCase(appInfo.developType) ? "测试版"
 					: "release".equalsIgnoreCase(appInfo.developType) ? "正式版" : "未知";
+			if (!TextUtils.isEmpty(appInfo.versionName))
+				developText += "(" + appInfo.versionName + ")";
 			g2.setFont(sizeInfo.developFont);
 			g2.setColor(new Color(85, 85, 85));
 			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -238,7 +240,7 @@ public class QrUtil {
 
 			g2.setFont(sizeInfo.tipFont);
 			g2.setColor(new Color(204, 204, 204));
-			g2.drawString("温馨提示 : 请扫描二维码下载安装包", sizeInfo.tipX, sizeInfo.tipY);
+			g2.drawString("温馨提示 : 请扫描二维码下载安装包,或右击复制图片发给朋友", sizeInfo.tipX, sizeInfo.tipY);
 
 			g2.dispose();
 			bimage.flush();
