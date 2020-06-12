@@ -8,8 +8,10 @@
     <meta http-equiv="Access-Control-Allow-Origin" content="*" />
     <title>爱唱发布测试包</title>
     <!-- <script src="http://www.jq22.com/jquery/1.11.1/jquery.min.js"></script> -->
-    <script src="/AccountBook/testing/jquery.min.js"></script>
-    <script src="/AccountBook/testing/app-info-parser.min.js"></script>
+    <script src="/AccountBook/testing/js/jquery.min.js"></script>
+    <script src="/AccountBook/testing/js/app-info-parser.min.js"></script>
+    <script src="/AccountBook/testing/js/Uploader.js"></script>
+    <script src="/AccountBook/testing/js/SparkMd5.js"></script>
 
     <style>
         body {
@@ -242,10 +244,6 @@
     var uploadBtnSuccessColor = "#3CB371"
     var uploadBtnFaildColor = "#FF6A6A"
 
-    //上传文件地址
-    // var uploadUrl="http://localhost:8080/AccountBook/testing/upload";//测试
-    var uploadUrl = "https://www.5aichang.cn/ac_android_test/checkup.php";//线上
-
     //生成二维码base64
     // var qrCodeUrlB64="http://192.168.10.133:8080/AccountBook/testing/qrcode_b64";//测试
     var qrCodeUrlB64 = "/AccountBook/testing/qrcode_b64"//线上
@@ -398,66 +396,72 @@
             }
             appInfo.developType = $(".develop_type option:selected").text();
 
-            uploadBtn.val("上传中...")
+            
             uploadBtn.off();
 
-            var formData = new FormData();
+            // singleUpload(selectFile)
+            sliceUpload(selectFile)
+        }
 
-            // 从当前项中获取上传文件，放到 formData对象里面，formData参数以key name的方式
-            formData.append("file", selectFile);
-
-            var request = $.ajax({
-                type: "POST",
-                url: uploadUrl,
-                data: formData,			//这里上传的数据使用了formData 对象
-                processData: false, 	//必须false才会自动加上正确的Content-Type
-                contentType: false,
-
-                //这里我们先拿到jQuery产生的XMLHttpRequest对象，为其增加 progress 事件绑定，然后再返回交给ajax使用
-                xhr: function () {
-                    var xhr = $.ajaxSettings.xhr();
-                    if (onprogress && xhr.upload) {
-                        xhr.upload.addEventListener("progress", onprogress, false);
-                        return xhr;
-                    }
-                },
-
-                //上传成功后回调
+        //上传整个文件
+        function singleUpload(selectFile) {
+            var uploader = new SingleUploader();
+            uploader.upload(selectFile, {
                 success: function (data) {
-                    console.log("upload success,return data:")
-                    console.log(data)
                     makeQrImage(data, appInfo)
                 },
-
-                //上传失败后回调
                 error: function (e) {
                     progressView.css("width", "0%");
                     progressTextView.html("上传失败");
                     uploadBtn.css("background-color", uploadBtnFaildColor);
                     uploadBtn.val("重新上传");
                     addUploadEvent()
-                }
+                },
+                progress: function (p) {
+                    p = Math.floor(p * 100)
+                    progressView.css("width", p + "%");
+                    progressTextView.html(p + "%");
 
+                }
             });
 
+        }
 
-            //侦查附件上传情况 ,这个方法大概0.05-0.1秒执行一次
-            function onprogress(evt) {
-                var loaded = evt.loaded;	//已经上传大小情况  
-                var tot = evt.total;		//附件总大小  
-                var per = Math.floor(100 * loaded / tot);  //已经上传的百分比
-                progressView.css("width", per + "%");
-                progressTextView.html(per + "%");
-            }
+        //分片上传文件
+        function sliceUpload(selectFile) {
+            uploadBtn.val("正在准备上传文件必要的信息...")
+            calculate(selectFile, function (md5) {
+                uploadBtn.val("上传中...")
+                console.info("md5:", md5); // compute hash
+                var uploader = new SliceUploader("fix_count", 20);
+                uploader.upload(selectFile, md5, {
+                    success: function (data) {
+                        makeQrImage(data.file_path, appInfo)
 
+                    },
+                    error: function (e) {
+                        progressView.css("width", "0%");
+                        progressTextView.html("上传失败");
+                        uploadBtn.css("background-color", uploadBtnFaildColor);
+                        uploadBtn.val("重新上传");
+                        addUploadEvent()
+                    },
+                    progress: function (p) {
+                        p = Math.floor(p * 100)
+                        progressView.css("width", p + "%");
+                        progressTextView.html(p + "%");
 
+                    }
+                })
 
+            })
 
         }
 
 
-
     })
+
+
 
     function getAppInfo(file, callback) {
 
@@ -581,17 +585,17 @@
     }
 
 
-    function onSizeChanged(){
+    function onSizeChanged() {
         var copyright = $(".copyright")
-            var content = $(".content")
-            var contenBottom = content[0].offsetTop + content[0].offsetHeight
-            var copyrightTop = copyright[0].offsetTop
-            // console.log("resize:content.bottom=" + contenBottom + ",copyright.top=" + copyrightTop)
+        var content = $(".content")
+        var contenBottom = content[0].offsetTop + content[0].offsetHeight
+        var copyrightTop = copyright[0].offsetTop
+        // console.log("resize:content.bottom=" + contenBottom + ",copyright.top=" + copyrightTop)
 
-            if (copyrightTop < contenBottom) {
-                copyright.css("visibility", "hidden")
-            } else
-                copyright.css("visibility", "visible")
+        if (copyrightTop < contenBottom) {
+            copyright.css("visibility", "hidden")
+        } else
+            copyright.css("visibility", "visible")
     }
 
 
