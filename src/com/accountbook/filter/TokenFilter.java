@@ -73,8 +73,8 @@ public class TokenFilter implements Filter {
 		String token = request.getParameter("token");
 		String uri = ((HttpServletRequest) request).getRequestURI();
 
-		// System.out.println("TokenFilter.uri:"+uri);
-		// System.out.println("TokenFilter.token:"+token);
+		 System.out.println("TokenFilter.uri:"+uri);
+		 System.out.println("TokenFilter.token:"+token);
 		if (token != null && !"".equals(token)) {
 			if (tokenService == null)
 				tokenService = new TokenServiceImpl();
